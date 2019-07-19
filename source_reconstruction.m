@@ -1,5 +1,5 @@
-function [spike_sources] = source_reconstruction(Data, cluster, G3, ...
-    channel_type, f_low, f_high)
+function [spike_trials, maxamp_spike_av, channels_maxamp, spike_ts] = ...
+                source_reconstruction(Data, cluster, G3, channel_type, f_low, f_high)
 
     % channels mag or grad
     if strcmp(channel_type, 'grad') == 1
@@ -49,12 +49,12 @@ function [spike_sources] = source_reconstruction(Data, cluster, G3, ...
 %         subplot(2,4,i)
 %         plot(maxamp_spike_av{i}')
 %     end
-%     
-    figure
-    for i = 1:9
-        subplot(3,3,i)
-        plot(spike_trials{2}(channels_maxamp{2}(1:5),:,i)')
-    end
+%   
+%     figure
+%     for i = 1:9
+%         subplot(3,3,i)
+%         plot(spike_trials{2}(channels_maxamp{2}(1:5),:,i)')
+%     end
     
     for i = 1:size(cluster, 2)
         for j = 1:length(cluster{1,i})
