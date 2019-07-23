@@ -1,5 +1,29 @@
 function [spike_trials, maxamp_spike_av, channels_maxamp, spike_ts] = ...
-                source_reconstruction(Data, cluster, G3, channel_type, f_low, f_high)
+                source_reconstruction(Data, G3, channel_type, cluster, ...
+                f_low, f_high)
+% -------------------------------------------------------------------------
+% Source timeseries (dipole-fitting)
+% -------------------------------------------------------------------------
+% INPUTS:
+%   Data -- brainstorm structure with artifact corrected maxfiltered MEG data
+%   G3 -- brainstorm structure with forward operator
+%   channel_type -- channels used ('grad' or 'mag')
+%   cluster -- structure with spatial clusters
+%   f_low, f_high -- bandpass filtering for visualization
+%   
+% OUTPUTS:
+%   spike_trials -- cell (number of clusters size) with (number_of_channels x
+%                       121 x number_of_spikes_in_cluster) with cropped spikes
+%   maxamp_spike_av -- cell (number of clusters size) with average spike on
+%                       5 top amplitude channels (5 x 121)
+%   channels_maxamp -- cell (number of clusters size) with indices of 20 top 
+%                       amplitude channels (20 x 1)
+%   spike_ts -- cell (number of clusters size) with reconstructed timeseries
+%                       for each spike from the cluster (number_of_spike_in_cluster
+%                          x 121)
+% _______________________________________________________
+% Aleksandra Kuznetsova, kuznesashka@gmail.com
+% Alexei Ossadtchi, ossadtchi@gmail.com
 
     % channels mag or grad
     if strcmp(channel_type, 'grad') == 1
@@ -76,13 +100,13 @@ function [spike_trials, maxamp_spike_av, channels_maxamp, spike_ts] = ...
             if spike_ts{i}(j,40) > 0
                 spike_ts{i}(j,:) = -spike_ts{i}(j,:);
             end
-                
-            
+                            
 %             figure
 %             plot(spike_ts{i}(j,:))
         end
     end
 
+    
 %     figure
 %     for i = 1:length(cluster)
 %         subplot(4,2,i)
