@@ -1,4 +1,5 @@
-function [cluster] = clustering(spike_ind, G3, Nmin, ValMax, IndMax, ind_m, thr_dist, draw, cortex)
+function [cluster] = clustering(spike_ind, G3, Nmin, ValMax, IndMax, ...
+    ind_m, thr_dist, draw, cortex, RAP, spikeind)
 
 % -------------------------------------------------------------------------
 % Spatial clustering of localized spikes
@@ -12,7 +13,9 @@ function [cluster] = clustering(spike_ind, G3, Nmin, ValMax, IndMax, ind_m, thr_
 %   ind_m -- indices of sources survived after the subcorr thresholding
 %   draw -- draw plot or not 
 %   cortex -- cortical structure from brainstorm
-%   
+%   RAP -- 'RAP' to use complete RAP-MUSIC procedure, smth else for one-round 
+%   spikeind -- timeindices from RAP-MUSIC procedure
+% 
 % OUTPUTS:
 %   cluster -- structure [length(ind_m)x4], first column -- source
 %           location, second column -- spike timestamp, third -- the
@@ -24,7 +27,11 @@ function [cluster] = clustering(spike_ind, G3, Nmin, ValMax, IndMax, ind_m, thr_
 if size(spike_ind,2) == 1
     spike_ind = spike_ind';
 end
-src_idx = [IndMax(ind_m); spike_ind(ind_m); ValMax(ind_m); ind_m];
+if strcmp(RAP, 'RAP') == 0
+   src_idx = [IndMax(ind_m); spike_ind(ind_m); ValMax(ind_m); ind_m];
+else
+   src_idx = [IndMax; spikeind; ValMax; ind_m];
+end    
 
 locs = G3.GridLoc;
 for i = 1:size(src_idx,2) % distances between each vertex

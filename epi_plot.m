@@ -1,6 +1,7 @@
 function epi_plot(Data, channel_type, f_low, f_high, cortex, ...
     spike_trials, maxamp_spike_av, spike_ts, cluster, ...
-    channels, G3, MRI, corr_thresh)
+    channels, G3, MRI, corr_thresh, default_anat, channels_maxamp, ...
+    spike_ind)
 % 
 %  spike_ind, picked_components, picked_comp_top, spike_sources, ...
 %     bf_ts, corr_thresh, hemi)
@@ -165,7 +166,6 @@ function cluststatistics(source, event)
     setappdata(h, 'cluster', clust_num)
     set(gca,'fontsize', 14)
 
-    
     coord_scs = R(cluster{clust_num}(1,:),:);
     coord_mri = cs_convert(MRI, 'scs', 'voxel', coord_scs);
     mnslice = round(mean(coord_mri, 1));
@@ -181,21 +181,30 @@ function cluststatistics(source, event)
     axis off
     hold on
     idx = coord_mri(:,1:2);
-    scatter(idx(:,1), 257-idx(:,2),  50, 'filled', 'MarkerFaceColor', ...
-        c(clust_num,:), 'MarkerEdgeColor', 'k');
+    if default_anat == 0
+        scatter(idx(:,1), 257-idx(:,2),  50, 'filled', 'MarkerFaceColor', ...
+            c(clust_num,:), 'MarkerEdgeColor', 'k');
+    else
+        scatter(idx(:,1), 257-idx(:,2),  50, 'filled', 'MarkerFaceColor', ...
+            c(clust_num,:), 'MarkerEdgeColor', 'k');
+    end
    
     cla(h6)
     h6 = subplot(3,4,11)
     mri = flipud(squeeze(MRI.Cube(:,mnslice(2),:))');
     imagesc(mri)
-    colormap('gray')
     axis equal
     grid off
     axis off
     hold on
     idx = coord_mri(:,[1,3]);
-    scatter(idx(:,1), 257-idx(:,2), 50, 'filled', 'MarkerFaceColor', ...
-        c(clust_num,:), 'MarkerEdgeColor', 'k');
+    if default_anat == 0
+        scatter(idx(:,1), 257-idx(:,2), 50, 'filled', 'MarkerFaceColor', ...
+            c(clust_num,:), 'MarkerEdgeColor', 'k');
+    else
+        scatter(idx(:,1), idx(:,2), 50, 'filled', 'MarkerFaceColor', ...
+            c(clust_num,:), 'MarkerEdgeColor', 'k');
+    end
     
     cla(h7)
     h7 = subplot(3,4,12)
@@ -204,8 +213,13 @@ function cluststatistics(source, event)
     colormap('gray')
     hold on
     idx = coord_mri(:,[2,3]);
-    scatter(257-idx(:,1), 257-idx(:,2), 50, 'filled', 'MarkerFaceColor', ...
-        c(clust_num,:), 'MarkerEdgeColor', 'k');
+    if default_anat == 0
+        scatter(257-idx(:,1), 257-idx(:,2), 50, 'filled', 'MarkerFaceColor', ...
+            c(clust_num,:), 'MarkerEdgeColor', 'k');
+    else
+        scatter(257-idx(:,1), idx(:,2), 50, 'filled', 'MarkerFaceColor', ...
+            c(clust_num,:), 'MarkerEdgeColor', 'k');
+    end
     axis equal
     grid off
     axis off

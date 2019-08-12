@@ -1,5 +1,7 @@
-function [IndMax, ValMax, corr_thresh, ind_m] = spike_localization(spike_ind, Data, G3, ...
-    channel_type, f_low, f_high, spikydata, picked_components, picked_comp_top)
+function [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data, G3, ...
+    channel_type, f_low, f_high, spikydata, picked_components, ...
+    picked_comp_top, corr_thresh, RAP)
+
 % -------------------------------------------------------------------------
 % Spike localization with RAP-MUSIC
 % -------------------------------------------------------------------------
@@ -15,10 +17,15 @@ function [IndMax, ValMax, corr_thresh, ind_m] = spike_localization(spike_ind, Da
 %                           timeseries
 %   picked_comp_top -- if spikydata == 1, the picked ICA components
 %                           topographies
+%   corr_thresh -- subcorr threshold level
+%   RAP -- 'RAP' to run RAP-MUSIC and something else for fast one-round
+%       MUSIC
 %   
 % OUTPUTS:
 %   IndMax -- locations of fitted dipoles
 %   ValMax -- values of subspace correlation
+%   ind_m -- indices of spikes survived the subcorr threshold
+%   spikeind -- time indices of spikes in RAP-MUSIC
 % _______________________________________________________
 % Aleksandra Kuznetsova, kuznesashka@gmail.com
 % Alexei Ossadtchi, ossadtchi@gmail.com
@@ -38,7 +45,7 @@ end
 Fs = 1/(Data.Time(2)-Data.Time(1));
 [b,a] = butter(4, [f_low f_high]/(Fs/2)); % butterworth filter before ICA
 Ff = filtfilt(b, a, Data.F(channel_idx,:)')';
-    
+
 clear ValMax IndMax
 
 if spikydata == 0
@@ -59,37 +66,61 @@ else
 end
 
 T = size(Ff, 2);
-[U,S,V] = svd(spike);
-h = cumsum(diag(S)/sum(diag(S)));
-n = find(h>=0.95);
-corr = MUSIC_scan(G2, U(:,1:n(1)));
-[ValMax(1), IndMax(1)] = max(corr);
 
-for j = 2:length(spike_ind(spike_ind<T-30))
-    if spikydata == 0
-        spike = Ff(:,(spike_ind(j)-20):(spike_ind(j)+30));
-    else
-        spike = data_spike(:,(spike_ind(j)-20):(spike_ind(j)+30));
-    end
+if strcmp(RAP, 'RAP') == 0
+    spikeind = [];
     [U,S,V] = svd(spike);
     h = cumsum(diag(S)/sum(diag(S)));
     n = find(h>=0.95);
-    p(j) = n(1);
     corr = MUSIC_scan(G2, U(:,1:n(1)));
-    
-    [ValMax(j), IndMax(j)] = max(corr);
-    j
+    [ValMax(1), IndMax(1)] = max(corr);
+
+    for j = 2:length(spike_ind(spike_ind<T-30))
+        if spikydata == 0
+            spike = Ff(:,(spike_ind(j)-20):(spike_ind(j)+30));
+        else
+            spike = data_spike(:,(spike_ind(j)-20):(spike_ind(j)+30));
+        end
+        [U,S,V] = svd(spike);
+        h = cumsum(diag(S)/sum(diag(S)));
+        n = find(h>=0.95);
+        p(j) = n(1);
+        corr = MUSIC_scan(G2, U(:,1:n(1)));
+
+        [ValMax(j), IndMax(j)] = max(corr);
+        j
+    end
+else
+    ValMax = [];
+    IndMax = [];
+    spikeind = [];
+    [Valmax, Indmax] = RAP_MUSIC_scan(spike, G3.Gain(channel_idx,:), ...
+        G2, corr_thresh);
+    ValMax = [ValMax, Valmax];
+    IndMax = [IndMax, Indmax];
+    spikeind = [spikeind, repmat(spike_ind(1), 1, length(Indmax))];
+
+    for j = 2:length(spike_ind(spike_ind<T-30))
+        if spikydata == 0
+            spike = Ff(:,(spike_ind(j)-20):(spike_ind(j)+30));
+        else
+            spike = data_spike(:,(spike_ind(j)-20):(spike_ind(j)+30));
+        end
+        [Valmax, Indmax] = RAP_MUSIC_scan(spike, G3.Gain(channel_idx,:), ...
+            G2, corr_thresh);
+        ValMax = [ValMax, Valmax];
+        IndMax = [IndMax, Indmax];
+        spikeind = [spikeind, repmat(spike_ind(j), 1, length(Indmax))];
+        j
+    end
 end
 
-% figure
-% histogram(ValMax)
+figure
+histogram(ValMax)
 
-corr_thresh = 0.9;
 % corr_thresh = quantile(ValMax, 0.95);
 ind_m = find((ValMax > corr_thresh));
 disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
     num2str(length(ind_m))]);
-if corr_thresh < 0.9
-    disp('The subcorr threshold is too low!!')
-end
+
 end
