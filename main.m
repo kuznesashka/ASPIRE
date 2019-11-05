@@ -1,3 +1,5 @@
+% This is a workflow for one patient
+
 % 1. Export everything from brainstorm
 subj_name = 'B1C2';
 protocol_dir = '/home/ksasha/Documents/brainstorm_db/MEG_Tommaso/';
