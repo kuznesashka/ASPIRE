@@ -1,4 +1,5 @@
 function roc = roc_time(visual, grad, mag)
+%
 % -------------------------------------------------------------------------
 % DESCRIPTION:
 % Sensitivity and Specificity for comparison with visual detections
