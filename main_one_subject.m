@@ -1,6 +1,6 @@
-function = main_one_subject(detection_type, path_vis_detections, path_ICA_detections, path_SPC_detections,
-newdataset, resultsdir_root, subj_name, results_subfolder, mute_mode, computation_source, computation_clusters,
-draw_and_save_plots, raw_and_save_plots2, CORR_THR, Data, G3)
+function main_one_subject(detection_type, path_vis_detections, path_ICA_detections, path_SPC_detections, ...
+newdataset, resultsdir_root, subj_name, results_subfolder, mute_mode, computation_source, computation_clusters, ...
+draw_and_save_plots, draw_and_save_plots2, computation_ROC, plot_big_pic, CORR_THR, Data, G3)
 
 % -------------------------------------------------------------------------
 % All steps, one case
@@ -17,11 +17,11 @@ draw_and_save_plots, raw_and_save_plots2, CORR_THR, Data, G3)
 % computation_source
 % computation_clusters
 % draw_and_save_plots
-% raw_and_save_plots2
-% Data
-% G3
+% draw_and_save_plots2
 % computation_ROC
 % plot_big_pic
+% Data
+% G3
 %
 %
 % OUTPUTS:
@@ -70,7 +70,7 @@ for channel_type_loop = 1:2
                 
             case 3 % Spiking circus based
                 spikes_extraction = 'SpyCir_based';
-                spcirc_data = csvread(strcat([path_SPC_detections,'_', channel_type, '.csv'])),1,0);
+                spcirc_data = csvread(strcat([path_SPC_detections,'_', channel_type, '.csv']),1,0);
                 picked_components = [];
                 picked_comp_top = [];
                 spike_ind = spcirc_data(:,1);
