@@ -1,6 +1,6 @@
 function = main_one_subject(detection_type, path_vis_detections, path_ICA_detections, path_SPC_detections,
-    newdataset, resultsdir_root, subj_name, results_subfolder, mute_mode, computation_source, computation_clusters,
-    draw_and_save_plots, raw_and_save_plots2, CORR_THR, Data, G3)
+newdataset, resultsdir_root, subj_name, results_subfolder, mute_mode, computation_source, computation_clusters,
+draw_and_save_plots, raw_and_save_plots2, CORR_THR, Data, G3)
 
 % -------------------------------------------------------------------------
 % All steps, one case
@@ -20,6 +20,9 @@ function = main_one_subject(detection_type, path_vis_detections, path_ICA_detect
 % raw_and_save_plots2
 % Data
 % G3
+% computation_ROC
+% plot_big_pic
+%
 %
 % OUTPUTS:
 %
@@ -36,28 +39,28 @@ for channel_type_loop = 1:2
         
         switch spikes_detection
             case 1 % visual markings
-                spikes_extraction = 'visual';               
+                spikes_extraction = 'visual';
                 manual_data = csvread(path_vis_detections);
                 picked_components = [];
                 picked_comp_top = [];
                 spike_ind = manual_data(:,1);
                 spike_ind = spike_ind(spike_ind<600-30)*1000;
                 spcirc_clust = [];
-
+                
                 
             case 2 % ICA based
                 spikes_extraction = 'ICA_based';
                 decision = 0.9; % the amplitude threshold for decision
                 f_low = 3; % bandpass filter before the ICA decomposition
                 f_high = 70;
-                ICA_spikes_mat = path_ICA_detections;
-
+                ICA_spikes_mat = strcat([path_ICA_detections,'_', channel_type, '.mat']);
+                
                 if newdataset
                     [spike_ind, picked_components, picked_comp_top] = ...
                         ICA_detection(Data, G3, channel_type, decision, f_low, f_high);
                     save(ICA_spikes_mat,'spike_ind', 'picked_components', 'picked_comp_top')
                 end
-
+                
                 load(ICA_spikes_mat,'spike_ind', 'picked_components', 'picked_comp_top')
                 spcirc_clust = [];
                 spike_clust = zeros(size(spike_ind))';
@@ -67,7 +70,7 @@ for channel_type_loop = 1:2
                 
             case 3 % Spiking circus based
                 spikes_extraction = 'SpyCir_based';
-                spcirc_data = csvread(path_SPC_detections),1,0);
+                spcirc_data = csvread(strcat([path_SPC_detections,'_', channel_type, '.csv'])),1,0);
                 picked_components = [];
                 picked_comp_top = [];
                 spike_ind = spcirc_data(:,1);
@@ -98,14 +101,14 @@ for channel_type_loop = 1:2
                 picked_comp_top, corr_thresh, RAP);
             
             save([resultsdir_root, subj_name, results_subfolder '\sources_'  spikes_extraction '_' channel_type '.mat'],...
-                'IndMax','ValMax','ind_m','spikeind') 
+                'IndMax','ValMax','ind_m','spikeind')
         end
-
+        
         load([resultsdir_root, subj_name, results_subfolder '\sources_'  spikes_extraction '_' channel_type '.mat'],...
             'IndMax','ValMax','ind_m','spikeind')
         
         fig_gof_name = [spikes_extraction, '_', channel_type];
-
+        
         figure('Name','fig_gof_name','visible','off')
         histogram(ValMax)
         saveas(gcf,[resultsdir_root, subj_name, results_subfolder,...
@@ -128,7 +131,7 @@ for channel_type_loop = 1:2
             end
             ind_m = find((ValMax > corr_thresh));
             
-
+            
             
             disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
                 num2str(length(ind_m))]);
@@ -247,4 +250,87 @@ for channel_type_loop = 1:2
         end
         
     end
+end
+
+%% Plot BIGPIC
+if plot_big_pic
+    BIGPIC_clusters_191016(subj_name, results_subfolder, ...
+        resultsdir_root, cortex, CORR_THR)
+    
+end
+%% ROC curves
+if computation_ROC
+    
+    xlsTAB = subj_name;
+    backsalsh = find(xlsTAB=='\');
+    if backsalsh
+        xlsTAB(backsalsh)='_';
+    end
+    
+    for spikes_detection = detection_type%1:3
+        
+        switch spikes_detection
+            
+            case 2
+                
+                % ICA
+                fname = [resultsdir_root 'Aspire_ROC\ROC_COR_TR_' num2str(CORR_THR) '.xlsx'];
+                fname_labels = [resultsdir_root 'Aspire_ROC\Labels_COR_TR_' num2str(CORR_THR) '.xlsx'];
+                
+                ICA_grad = load([resultsdir_root, subj_name, results_subfolder,...
+                    'cluster_out_ICA_based_grad.csv']);
+                ICA_mag = load([resultsdir_root, subj_name, results_subfolder,...
+                    'cluster_out_ICA_based_mag.csv']);
+                ICA_visual = load([resultsdir_root, subj_name, results_subfolder,...
+                    'cluster_out_visual_grad.csv']);
+                ICA_visual_mag = load([resultsdir_root, subj_name, results_subfolder,...
+                    'cluster_out_visual_grad.csv']);
+                ICA_visual_grad = load([resultsdir_root, subj_name, results_subfolder, ...
+                    'cluster_out_visual_grad.csv']);
+                
+                [ICA_labels_results, ICA_roc_labels] = roc_curve_labels(ICA_visual_mag, ICA_visual_grad, ICA_mag,  ICA_grad, cortex.Atlas);
+                ICA_roc = roc_curve(ICA_visual(ICA_visual(:,1)<600000,:), ICA_grad, ICA_mag);
+                ICA_roc_spatial = roc_curve_spatial(ICA_visual_grad, ICA_visual_mag, ICA_grad, ICA_mag);
+                
+                xlswrite(fname,ICA_roc,xlsTAB,'A6');
+                xlswrite(fname,{'ICA'},xlsTAB,'A6');
+                xlswrite(fname,ICA_roc_spatial,xlsTAB,'A16');
+                xlswrite(fname,{'ICA'},xlsTAB,'A16');
+                xlswrite(fname,ICA_roc_labels,xlsTAB,'A26');
+                xlswrite(fname,{'ICA'},xlsTAB,'A26');
+                xlswrite(fname_labels,ICA_labels_results,xlsTAB,'I1');
+                xlswrite(fname_labels,{'ICA'},xlsTAB,'I1');
+                
+            case 3
+                % Spyking Circus
+                fname = [resultsdir_root 'Aspire_ROC\ROC_COR_TR_' num2str(CORR_THR) '.xlsx'];
+                fname_labels = [resultsdir_root 'Aspire_ROC\Labels_COR_TR_' num2str(CORR_THR) '.xlsx'];
+                
+                SPC_grad = load([resultsdir_root, subj_name,results_subfolder, ...
+                    'cluster_out_SpyCir_based_grad.csv']);
+                SPC_mag = load([resultsdir_root, subj_name, results_subfolder, ...
+                    'cluster_out_SpyCir_based_mag.csv']);
+                SPC_visual = load([resultsdir_root, subj_name, results_subfolder, ...
+                    'cluster_out_visual_grad.csv']);
+                SPC_visual_mag = load([resultsdir_root, subj_name, results_subfolder, ...
+                    'cluster_out_visual_grad.csv']);
+                SPC_visual_grad = load([resultsdir_root, subj_name, results_subfolder, ...
+                    'cluster_out_visual_grad.csv']);
+                
+                [SPC_labels_results, SPC_roc_labels] = roc_curve_labels(SPC_visual_mag, SPC_visual_grad, SPC_mag,  SPC_grad, cortex.Atlas);
+                SPC_roc = roc_curve(SPC_visual(SPC_visual(:,1)<600000,:), SPC_grad, SPC_mag);
+                SPC_roc_spatial = roc_curve_spatial(SPC_visual_grad, SPC_visual_mag, SPC_grad, SPC_mag);
+                
+                xlswrite(fname,SPC_roc,xlsTAB,'A1');
+                xlswrite(fname,{'SPC'},xlsTAB,'A1');
+                xlswrite(fname,SPC_roc_spatial,xlsTAB,'A11');
+                xlswrite(fname,{'SPC'},xlsTAB,'A11');
+                xlswrite(fname,SPC_roc_labels,xlsTAB,'A21');
+                xlswrite(fname,{'SPC'},xlsTAB,'A21');
+                xlswrite(fname_labels,SPC_labels_results,xlsTAB,'A1');
+                xlswrite(fname_labels,{'SPC'},xlsTAB,'A1');
+                
+        end
+    end
+    
 end
