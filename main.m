@@ -1,66 +1,58 @@
-% This is a workflow for one patient
+% -------------------------------------------------------------------------
+% Main with parameters
+% -------------------------------------------------------------------------
+% INPUTS:
+%   cases_files_190921.mat -- all cases with path, subject name etc.
+%   param_matrix190809.mat -- parametrs for iteration
+%   newdataset            = 0;
+%   computation_source    = 1; % compute dipoles
+%   computation_clusters  = 1; % compute clustering
+%   draw_and_save_plots   = 0; % plot clusters
+%   draw_and_save_plots2  = 0; % save clustering
+%   computation_ROC       = 1; % compute ROC stat
+%
+%
+% OUTPUTS:
+%
+% _______________________________________________________
+% Aleksandra Kuznetsova, kuznesashka@gmail.com
+% Alexei Ossadtchi, ossadtchi@gmail.com
 
-% 1. Export everything from brainstorm
-subj_name = 'B1C2';
-protocol_dir = '/home/ksasha/Documents/brainstorm_db/MEG_Tommaso/';
-file_name = 'B1C2_ii_run1_raw_tsss_mc_art_corr';
-channel_type = 'grad'; % channels you want to analyse ('grad' or 'mag')
-default_anat = 0; % 0 if individual anatomy, 1 if default
 
-if default_anat == 0
-    cortex = load(strcat([protocol_dir, 'anat/', subj_name,'/tess_cortex_pial_low.mat']));
-    MRI = load(strcat([protocol_dir, 'anat/', subj_name, '/subjectimage_T1.mat']));
-else
-    cortex = load(strcat([protocol_dir, 'anat/@default_subject','/tess_cortex_pial_low.mat']));
-    MRI = load(strcat([protocol_dir, 'anat/@default_subject', '/subjectimage_T1.mat']));
-end    
-Data = load(strcat([protocol_dir, 'data/', subj_name, '/', file_name,'/data_block001.mat']));
-channels = load(strcat([protocol_dir, 'data/', subj_name, '/', file_name, '/channel_vectorview306_acc1.mat']));
-G3 = load(strcat([protocol_dir, 'data/', subj_name, '/', file_name, '/headmodel_surf_os_meg.mat']));
 
-% 2. ICA-based spike detection
-decision = 0.9; % the amplitude threshold for decision 
-f_low = 3; % bandpass filter before the ICA decomposition
-f_high = 70;
-[spike_ind, picked_components, picked_comp_top] = ...
-    ICA_detection(Data, G3, channel_type, decision, f_low, f_high);
+load cases_files_190921.mat
 
-% 3. RAP-MUSIC (2) dipole fitting
-f_low = 10;
-f_high = 200;
-spikydata = 0;
-corr_thresh = 0.89;
-RAP = 'RAP';
-[IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data, G3, ...
-    channel_type, f_low, f_high, spikydata, picked_components, ...
-    picked_comp_top, corr_thresh, RAP);
+hdisk = 'D:\';
+subj_name = cases_files.cases{case_n};
+cases_unique_for_anat = cases_files.cases_unique{case_n};
+protocol_dir = [hdisk 'Valerii\EPILEPSY\MEG_Tommaso\'];
+file_name = cases_files.file_names{case_n};
+file_name_short = cases_files.file_names_short{case_n};
+resultsdir_root = [hdisk 'Valerii\45_cases\'];
+results_subfolder = '\ASPIRE\';
+mkdir([resultsdir_root subj_name '\' results_subfolder])
 
-% 4. Clustering
-thr_dist = 0.01; % maximal distance from the center of the cluster (radius)
-Nmin = 8; % minimum number of sources in one cluster
-cluster = clustering(spike_ind, G3, Nmin, ValMax, IndMax, ind_m, ...
-    thr_dist, 1, cortex, RAP, spikeind);
 
-% 5. Activation on sources 
-f_low = 3;
-f_high = 50;
-[spike_trials, maxamp_spike_av, channels_maxamp, spike_ts] = ...
-                source_reconstruction(Data, G3, channel_type, cluster, ...
-                f_low, f_high);
+computation_source    = 1; % compute dipoles
+computation_clusters  = 1; % compute clustering
+draw_and_save_plots   = 0; % plot clusters
+draw_and_save_plots2  = 0; % save clustering
+computation_ROC       = 1; % compute ROC stat
 
-% 6. Big plot
-f_low = 2; % bandpass filter for visualization
-f_high = 50;
-epi_plot(Data, channel_type, f_low, f_high, cortex, ...
-    spike_trials, maxamp_spike_av, spike_ts, cluster, ...
-    channels, G3, MRI, corr_thresh, default_anat, channels_maxamp, spike_ind)
+% subj info
+cortex         = load(strcat([protocol_dir, 'anat\', cases_unique_for_anat,'\tess_cortex_pial_low.mat']));
+MRI             = load(strcat([protocol_dir, 'anat\', cases_unique_for_anat, '\subjectimage_T1.mat']));
+Data            = load(strcat([protocol_dir, 'data\', cases_unique_for_anat, '\', file_name,'\data_block001.mat']));
+channels        = load(strcat([protocol_dir, 'data\', cases_unique_for_anat, '\@default_study', '\channel_vectorview306_acc1.mat']));
+G3              = load(strcat([protocol_dir, 'data\', cases_unique_for_anat, '\@default_study', '\headmodel_surf_os_meg.mat']));
 
-% 7. Individual plot for manually detected spikes
-spike_time = csvread('Manual_spikes_B1C2_ii_run1_raw_tsss_mc.csv');
-spike_time = spike_time(spike_time<600);
-spike_time = round(spike_time*1000);
+detection_type = [1 2 3];
 
-f_low = 2;
-f_high = 50;
-plot_individual(spike_time, Data, f_low, f_high, ...
-    channel_type, G3, MRI, channels)
+main_one_subject()
+
+
+
+
+
+
+

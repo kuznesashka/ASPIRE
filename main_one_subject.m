@@ -1,6 +1,6 @@
 function = main_one_subject(detection_type, path_vis_detections, path_ICA_detections, path_SPC_detections,
     newdataset, resultsdir_root, subj_name, results_subfolder, mute_mode, computation_source, computation_clusters,
-    draw_and_save_plots, raw_and_save_plots2)
+    draw_and_save_plots, raw_and_save_plots2, CORR_THR, Data, G3)
 
 % -------------------------------------------------------------------------
 % All steps, one case
@@ -18,6 +18,8 @@ function = main_one_subject(detection_type, path_vis_detections, path_ICA_detect
 % computation_clusters
 % draw_and_save_plots
 % raw_and_save_plots2
+% Data
+% G3
 %
 % OUTPUTS:
 %
@@ -49,11 +51,13 @@ for channel_type_loop = 1:2
                 f_low = 3; % bandpass filter before the ICA decomposition
                 f_high = 70;
                 ICA_spikes_mat = path_ICA_detections;
+
                 if newdataset
                     [spike_ind, picked_components, picked_comp_top] = ...
                         ICA_detection(Data, G3, channel_type, decision, f_low, f_high);
                     save(ICA_spikes_mat,'spike_ind', 'picked_components', 'picked_comp_top')
                 end
+
                 load(ICA_spikes_mat,'spike_ind', 'picked_components', 'picked_comp_top')
                 spcirc_clust = [];
                 spike_clust = zeros(size(spike_ind))';
