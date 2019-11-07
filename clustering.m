@@ -1,5 +1,5 @@
 function [cluster] = clustering(spike_ind, G3, Nmin, ValMax, IndMax, ...
-    ind_m, thr_dist, draw, cortex, RAP, spikeind)
+    ind_m, thr_dist, draw, cortex, RAP, spikeind, spike_clust)
 
 % -------------------------------------------------------------------------
 % Spatial clustering of localized spikes
@@ -17,9 +17,12 @@ function [cluster] = clustering(spike_ind, G3, Nmin, ValMax, IndMax, ...
 %   spikeind -- timeindices from RAP-MUSIC procedure
 % 
 % OUTPUTS:
-%   cluster -- structure [length(ind_m)x4], first column -- source
-%           location, second column -- spike timestamp, third -- the
-%           subcorr value, fourth -- index of the spike from the whole set
+%   cluster -- structure [length(ind_m)x4], 
+% first column -- source location, 
+% second column -- spike timestamp, 
+% third -- the subcorr value, 
+% fourth -- index of the spike from the whole set (spike_ind)
+% fifth -- spike_clust from Spyking Circus (number of template)
 % _______________________________________________________
 % Aleksandra Kuznetsova, kuznesashka@gmail.com
 % Alexei Ossadtchi, ossadtchi@gmail.com
@@ -28,9 +31,9 @@ if size(spike_ind,2) == 1
     spike_ind = spike_ind';
 end
 if strcmp(RAP, 'RAP') == 0
-   src_idx = [IndMax(ind_m); spike_ind(ind_m); ValMax(ind_m); ind_m];
+   src_idx = [IndMax(ind_m); spike_ind(ind_m); ValMax(ind_m); ind_m; spike_clust(ind_m)'];
 else
-   src_idx = [IndMax; spikeind; ValMax; ind_m];
+   src_idx = [IndMax; spikeind; ValMax; ind_m ; spike_clust(ind_m)'];
 end    
 
 locs = G3.GridLoc;
@@ -58,7 +61,7 @@ while fl == 1
     end
 end
 
-if draw == 1
+if draw == 0
     cortex_lr = cortex;
     cortex_hr = cortex;
     c = [lines(7); 0.15, 0.15, 0.15; ...

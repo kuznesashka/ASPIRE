@@ -1,6 +1,6 @@
 function [spike_ind, picked_components, picked_comp_top] = SpikeDetect(Data, ...
     channel_idx, G2, f_low, f_high, ncomp, check, decision,...
-    bad_idx, num_event)
+    bad_idx, num_event);
 
 Fs = 1/(Data.Time(2)-Data.Time(1));
 
@@ -14,7 +14,6 @@ Ff_wb = Ff;
 Ff_wb(:, bad_idx) = [];
 
 [w,s] = runica(Ff_wb, 'pca', ncomp); % compute ICA components
-% [spike, Q, W] = fastica(Ff_wb, 'numOfIC', ncomp);
 W = w*s; % unmixing matrix
 Q = pinv(W); % matrix of ICA topographies
 

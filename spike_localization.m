@@ -88,7 +88,7 @@ if strcmp(RAP, 'RAP') == 0
         corr = MUSIC_scan(G2, U(:,1:n(1)));
 
         [ValMax(j), IndMax(j)] = max(corr);
-        j
+        %j
     end
 else
     ValMax = [];
@@ -111,14 +111,31 @@ else
         ValMax = [ValMax, Valmax];
         IndMax = [IndMax, Indmax];
         spikeind = [spikeind, repmat(spike_ind(j), 1, length(Indmax))];
-        j
+        %j
     end
 end
 
-figure
-histogram(ValMax)
+%figure
+%histogram(ValMax)
 
-% corr_thresh = quantile(ValMax, 0.95);
+%corr_thresh = quantile(ValMax, 0.95);
+% if size(ValMax,2)<300
+%     quant = 0.0;
+% else
+%     quant = 1 - 300/size(ValMax,2);
+% end
+% if corr_thresh ~= 0.0
+% %     quant = 0.95;
+%     quant = corr_thresh;
+% else
+%     quant = 0.0;
+% end
+if corr_thresh  ~= 0.0
+    corr_thresh = 0.95;
+else
+  corr_thresh = prctile(ValMax,85); %quantile(ValMax, quant);
+end
+
 ind_m = find((ValMax > corr_thresh));
 disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
     num2str(length(ind_m))]);
