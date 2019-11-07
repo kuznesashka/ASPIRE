@@ -47,9 +47,11 @@ sources_saving_path = [resultsdir_root subj_name results_subfolder '\sources_'];
 path_cluster_out = [resultsdir_root subj_name results_subfolder '\cluster_out_'];
 
 % Path for results saving without [spikes_extraction '_' channel_type '.mat']
-results_saving_path = [resultsdir_root subj_name results_subfolder'\results_'];
+results_saving_path = [resultsdir_root subj_name results_subfolder '\results_'];
 
-
+% Path for saving big picture
+bigpic_saving_path = [resultsdir_root, subj_name, '\ASPIRE\CORR_THR_', ...
+    num2str(CORR_THR), '_', xlsTAB '.bmp']
 
 
 for channel_type_loop = 1:2
@@ -122,7 +124,7 @@ for channel_type_loop = 1:2
             end
             
             % corr_thresh = back to quantile(ValMax, 0.95)
-            [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data, G3, ...
+            [IndMax, ValMax, ~, spikeind] = spike_localization(spike_ind, Data, G3, ...
                 channel_type, f_low_RAP, f_high_RAP, spikydata, picked_components, ...
                 picked_comp_top, corr_thresh, RAP);
             
@@ -268,8 +270,8 @@ for channel_type_loop = 1:2
     
     %% Plot BIGPIC
     if plot_big_pic
-        BIGPIC_clusters_191016(subj_name, results_subfolder, ...
-            resultsdir_root, cortex, CORR_THR)
+        plot_bigpic(subj_name, results_saving_path, ...
+            cortex,bigpic_saving_path)
         
     end
     
