@@ -41,13 +41,13 @@ function main_one_subject(detection_type, path_vis_detections, ...
 %
 %% Paths
 % Path for sources saving without [spikes_extraction '_' channel_type '.mat']
-sources_saving_path = [resultsdir_root, subj_name, results_subfolder, '\sources_'] 
+sources_saving_path = [resultsdir_root subj_name results_subfolder '\sources_'];
 
 % Path for clusters saving without [spikes_extraction '_' channel_type '.csv']
-path_cluster_out = [resultsdir_root, subj_name, results_subfolder,'\cluster_out_']
+path_cluster_out = [resultsdir_root subj_name results_subfolder '\cluster_out_'];
 
 % Path for results saving without [spikes_extraction '_' channel_type '.mat']
-results_saving_path = [resultsdir_root, subj_name, results_subfolder,'\results_']
+results_saving_path = [resultsdir_root subj_name results_subfolder'\results_'];
 
 
 
@@ -144,9 +144,9 @@ for channel_type_loop = 1:2
         if computation_clusters
             
             % load dipoles
-            load([sources_saving_path spikes_extraction '_' channel_type '.mat'], ... 
-                 'IndMax','ValMax','ind_m','spikeind')
-
+            load([sources_saving_path spikes_extraction '_' channel_type '.mat'], ...
+                'IndMax','ValMax','ind_m','spikeind')
+            
             RAP = 'not';
             % set  CORR_TRESH
             if spikes_detection ~= 1
@@ -191,7 +191,7 @@ for channel_type_loop = 1:2
             
             % Write clusters in csv file
             cluster_out  = cluster_out(cluster, G3);
-
+            
             csvwrite([path_cluster_out spikes_extraction '_' channel_type '.csv'], cluster_out);
             
         end
@@ -201,7 +201,7 @@ for channel_type_loop = 1:2
             
             f_low  = 3;
             f_high = 50;
-            [spike_trials, maxamp_spike_av, channels_maxamp, spike_ts] = ...
+            [spike_trials, maxamp_spike_av, ~, spike_ts] = ...
                 source_reconstruction(Data, G3, channel_type, cluster, ...
                 f_low, f_high);
             
@@ -254,7 +254,7 @@ for channel_type_loop = 1:2
             param.f_high_vis            = f_high_vis;
             %             param.time_w                = time_w;
             %             param.distr                 = distr;
-
+            
             save([results_saving_path spikes_extraction '_' channel_type '.mat'] ,'cluster','param')
             
             % saveas(fig_cluster,[resultsdir_root, subj_name, results_subfolder, ...
