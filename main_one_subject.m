@@ -257,6 +257,7 @@ for channel_type_loop = 1:2
             resultsdir_root, cortex, CORR_THR)
         
     end
+    
     %% ROC curves
     if computation_ROC
 
@@ -275,7 +276,14 @@ for channel_type_loop = 1:2
         % Load visual timestamps
         visual = load([resultsdir_root, subj_name, results_subfolder,...
             'cluster_out_visual_grad.csv']);
-        ROC()
+
+        % Make paths to the results ROC files
+        roc_xlsx_fname = [resultsdir_root 'Aspire_ROC\ROC_COR_TR_' num2str(CORR_THR) '.xlsx'];
+        roc_labels_xlsx_fname = [resultsdir_root 'Aspire_ROC\Labels_COR_TR_' num2str(CORR_THR) '.xlsx'];
+
+        % Compute and save all results in the excel file
+        ROC(detection_type, ICA_grad, ICA_mag, SPC_grad, SPC_mag, visual, ...
+            cortex, roc_xlsx_fname, roc_labels_xlsx_fname)
         
     end
     

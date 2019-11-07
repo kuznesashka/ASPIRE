@@ -1,5 +1,5 @@
 function ROC(detection_type, ICA_grad, ICA_mag, SPC_grad, SPC_mag, visual, ...
-    cortex, roc_xlsx_fname, roc_labels_xlsx_fname, )
+    cortex, roc_xlsx_fname, roc_labels_xlsx_fname)
 %
 % -------------------------------------------------------------------------
 % Computation and saving ROC
