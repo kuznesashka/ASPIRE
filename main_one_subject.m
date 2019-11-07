@@ -3,7 +3,8 @@ function main_one_subject(detection_type, path_vis_detections, ...
     resultsdir_root, subj_name, results_subfolder, mute_mode, ...
     computation_source, computation_clusters, draw_and_save_plots,...
     draw_and_save_plots2, computation_ROC, plot_big_pic, CORR_THR, ...
-    Data, G3, THR_DIST, N_MIN, roc_xlsx_fname, roc_labels_xlsx_fname)
+    Data, G3, THR_DIST, N_MIN, roc_xlsx_fname, roc_labels_xlsx_fname, ...
+    bigpic_saving_path)
 
 % -------------------------------------------------------------------------
 % All steps, one case
@@ -48,10 +49,6 @@ path_cluster_out = [resultsdir_root subj_name results_subfolder '\cluster_out_']
 
 % Path for results saving without [spikes_extraction '_' channel_type '.mat']
 results_saving_path = [resultsdir_root subj_name results_subfolder '\results_'];
-
-% Path for saving big picture
-bigpic_saving_path = [resultsdir_root, subj_name, '\ASPIRE\CORR_THR_', ...
-    num2str(CORR_THR), '_', xlsTAB '.bmp']
 
 
 for channel_type_loop = 1:2
@@ -270,8 +267,7 @@ for channel_type_loop = 1:2
     
     %% Plot BIGPIC
     if plot_big_pic
-        plot_bigpic(subj_name, results_saving_path, ...
-            cortex,bigpic_saving_path)
+        plot_bigpic(subj_name, results_saving_path, cortex,bigpic_saving_path)
         
     end
     

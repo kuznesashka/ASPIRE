@@ -8,7 +8,7 @@
 %   computation_source    = 1; % compute dipoles
 %   computation_clusters  = 1; % compute clustering
 %   draw_and_save_plots   = 0; % plot clusters
-%   draw_and_save_plots2  = 0; % save clustering
+%   draw_and_save_plots2  = 0; % save 
 %   computation_ROC       = 1; % compute ROC stat
 %
 %
@@ -40,17 +40,25 @@ draw_and_save_plots2  = 0; % save clustering
 computation_ROC       = 1; % compute ROC stat
 
 % subj info
-cortex         = load(strcat([protocol_dir, 'anat\', cases_unique_for_anat,'\tess_cortex_pial_low.mat']));
-MRI             = load(strcat([protocol_dir, 'anat\', cases_unique_for_anat, '\subjectimage_T1.mat']));
-Data            = load(strcat([protocol_dir, 'data\', cases_unique_for_anat, '\', file_name,'\data_block001.mat']));
-channels        = load(strcat([protocol_dir, 'data\', cases_unique_for_anat, '\@default_study', '\channel_vectorview306_acc1.mat']));
-G3              = load(strcat([protocol_dir, 'data\', cases_unique_for_anat, '\@default_study', '\headmodel_surf_os_meg.mat']));
+cortex          = load(strcat([protocol_dir, 'anat\', cases_unique_for_anat, ...
+                            '\tess_cortex_pial_low.mat']));
+MRI             = load(strcat([protocol_dir, 'anat\', cases_unique_for_anat, ...
+                            '\subjectimage_T1.mat']));
+Data            = load(strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
+                            '\', file_name,'\data_block001.mat']));
+channels        = load(strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
+                            '\@default_study', '\channel_vectorview306_acc1.mat']));
+G3              = load(strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
+                            '\@default_study', '\headmodel_surf_os_meg.mat']));
 
 detection_type = [1 2 3];
 
-
+% ROC saving path
 roc_xlsx_fname = [resultsdir_root 'Aspire_ROC\ROC_COR_TR_' num2str(CORR_THR) '.xlsx'];
 roc_labels_xlsx_fname = [resultsdir_root 'Aspire_ROC\Labels_COR_TR_' num2str(CORR_THR) '.xlsx'];
+% Path for saving big picture
+bigpic_saving_path = [resultsdir_root, subj_name, '\ASPIRE\CORR_THR_', ...
+    num2str(CORR_THR), '_', xlsTAB '.bmp']
 
 main_one_subject()
 
