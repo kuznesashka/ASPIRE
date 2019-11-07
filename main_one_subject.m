@@ -1,6 +1,7 @@
 function main_one_subject(detection_type, path_vis_detections, path_ICA_detections, path_SPC_detections, ...
     newdataset, resultsdir_root, subj_name, results_subfolder, mute_mode, computation_source, computation_clusters, ...
-    draw_and_save_plots, draw_and_save_plots2, computation_ROC, plot_big_pic, CORR_THR, Data, G3)
+    draw_and_save_plots, draw_and_save_plots2, computation_ROC, plot_big_pic, CORR_THR, Data, G3, THR_DIST, ...
+    N_MIN)
 
 % -------------------------------------------------------------------------
 % All steps, one case
@@ -22,8 +23,8 @@ function main_one_subject(detection_type, path_vis_detections, path_ICA_detectio
 % plot_big_pic
 % Data
 % G3
-%
-%
+% THR_DIST - maximal distance from the center of the cluster (radius) in m
+% N_MIN - minimum number of sources in one cluster
 % OUTPUTS:
 %
 % _______________________________________________________
@@ -90,11 +91,13 @@ for channel_type_loop = 1:2
             spikydata = 0;
             %RAP = 'RAP'; corr_thresh = 0.99;
             RAP = 'not';
+
             if spikes_detection ~= 1
                 corr_thresh = 0.0;
             else
                 corr_thresh = CORR_THR; %0.95
             end
+
             % corr_thresh = back to quantile(ValMax, 0.95)
             [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data, G3, ...
                 channel_type, f_low_RAP, f_high_RAP, spikydata, picked_components, ...
@@ -102,18 +105,18 @@ for channel_type_loop = 1:2
             
             save([resultsdir_root, subj_name, results_subfolder '\sources_'  spikes_extraction '_' channel_type '.mat'],...
                 'IndMax','ValMax','ind_m','spikeind')
+        
+        else
+            load([resultsdir_root, subj_name, results_subfolder '\sources_'  spikes_extraction '_' channel_type '.mat'],...
+                  'IndMax','ValMax','ind_m','spikeind')
         end
-        
-        load([resultsdir_root, subj_name, results_subfolder '\sources_'  spikes_extraction '_' channel_type '.mat'],...
-            'IndMax','ValMax','ind_m','spikeind')
-        
-        fig_gof_name = [spikes_extraction, '_', channel_type];
-        
-        figure('Name','fig_gof_name','visible','off')
-        histogram(ValMax)
-        saveas(gcf,[resultsdir_root, subj_name, results_subfolder,...
-            'GOF_hist_',spikes_extraction, '_', channel_type, '.bmp']);
-        close(gcf);
+         % Plot and save ValMax      
+%        fig_gof_name = [spikes_extraction, '_', channel_type];        
+%        figure('Name','fig_gof_name','visible','off')
+%        histogram(ValMax)
+%        saveas(gcf,[resultsdir_root, subj_name, results_subfolder,...
+%            'GOF_hist_',spikes_extraction, '_', channel_type, '.bmp']);
+%        close(gcf);
         
         %% 4. Clustering
         if computation_clusters
@@ -133,8 +136,8 @@ for channel_type_loop = 1:2
             
             
             
-            disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
-                num2str(length(ind_m))]);
+            %disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
+            %    num2str(length(ind_m))]);
             
             thr_dist = THR_DIST; % maximal distance from the center of the cluster (radius) in m
             Nmin = N_MIN; % minimum number of sources in one cluster
@@ -257,7 +260,7 @@ for channel_type_loop = 1:2
             resultsdir_root, cortex, CORR_THR)
         
     end
-    
+
     %% ROC curves
     if computation_ROC
 
