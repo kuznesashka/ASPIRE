@@ -25,6 +25,8 @@ function main_one_subject(detection_type, path_vis_detections, path_ICA_detectio
 % G3
 % THR_DIST - maximal distance from the center of the cluster (radius) in m
 % N_MIN - minimum number of sources in one cluster
+%
+%
 % OUTPUTS:
 %
 % _______________________________________________________
@@ -105,7 +107,6 @@ for channel_type_loop = 1:2
             
             save([resultsdir_root, subj_name, results_subfolder '\sources_'  spikes_extraction '_' channel_type '.mat'],...
                 'IndMax','ValMax','ind_m','spikeind')
-        
         else
             load([resultsdir_root, subj_name, results_subfolder '\sources_'  spikes_extraction '_' channel_type '.mat'],...
                   'IndMax','ValMax','ind_m','spikeind')
@@ -133,8 +134,6 @@ for channel_type_loop = 1:2
                 %corr_thresh = CORR_THR;
             end
             ind_m = find((ValMax > corr_thresh));
-            
-            
             
             %disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
             %    num2str(length(ind_m))]);
@@ -166,13 +165,14 @@ for channel_type_loop = 1:2
                     end
                     cluster{1,1} = [IndMax ; spike_ind  ; ValMax ; 1:length(IndMax)];
                 end
-                % cluster creation labels
-                %             [~, cluster] = clustering_by_labels(spike_ind, ValMax, IndMax,...
-                %                 ind_m,RAP, spikeind, spike_clust, cortex.Atlas);
-                
-                
             end
-            close all
+            
+            % Write clusters in csv file
+            cluster_out  = cluster_out(cluster, G3);
+            path_cluster_out = [resultsdir_root, subj_name, results_subfolder, ...
+                                 '\cluster_out_' spikes_extraction '_' channel_type '.csv']
+            csvwrite(path_cluster_out, cluster_out);
+            
         end
         
         %% 5. Activation on sources
@@ -200,9 +200,7 @@ for channel_type_loop = 1:2
             
             plot_clusters_191015(Data, channel_type, f_low_vis, f_high_vis, cortex, ...
                 spike_trials, maxamp_spike_av, spike_ts, cluster, ...
-                channels, G3, MRI, corr_thresh, save_param ) %epi_plot_autoALLCLUSTERS
-            
-            
+                channels, G3, MRI, corr_thresh, save_param ) %epi_plot_autoALLCLUSTERS 
         end
         
         
@@ -210,14 +208,6 @@ for channel_type_loop = 1:2
         if 0
             time_w  = .1; % window of interest is  [-time_w time_w] in seconds
             distr = all2all_prop(cluster,time_w)
-        end
-        
-        
-        %% 8. write clusters in csv to file
-        if computation_clusters
-            cluster_out  = cluster_out_spycirc(cluster, G3);
-            csvwrite([resultsdir_root, subj_name, results_subfolder '\cluster_out_' spikes_extraction '_' channel_type '.csv'],cluster_out);
-            
         end
         
         %% saving
