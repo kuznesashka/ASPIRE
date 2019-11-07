@@ -1,6 +1,6 @@
 function main_one_subject(detection_type, path_vis_detections, path_ICA_detections, path_SPC_detections, ...
-newdataset, resultsdir_root, subj_name, results_subfolder, mute_mode, computation_source, computation_clusters, ...
-draw_and_save_plots, draw_and_save_plots2, computation_ROC, plot_big_pic, CORR_THR, Data, G3)
+    newdataset, resultsdir_root, subj_name, results_subfolder, mute_mode, computation_source, computation_clusters, ...
+    draw_and_save_plots, draw_and_save_plots2, computation_ROC, plot_big_pic, CORR_THR, Data, G3)
 
 % -------------------------------------------------------------------------
 % All steps, one case
@@ -250,87 +250,21 @@ for channel_type_loop = 1:2
         end
         
     end
+    
+    %% Plot BIGPIC
+    if plot_big_pic
+        BIGPIC_clusters_191016(subj_name, results_subfolder, ...
+            resultsdir_root, cortex, CORR_THR)
+        
+    end
+    %% ROC curves
+    if computation_ROC
+        
+        ROC()
+        
+    end
+    
+    
 end
 
-%% Plot BIGPIC
-if plot_big_pic
-    BIGPIC_clusters_191016(subj_name, results_subfolder, ...
-        resultsdir_root, cortex, CORR_THR)
-    
-end
-%% ROC curves
-if computation_ROC
-    
-    xlsTAB = subj_name;
-    backsalsh = find(xlsTAB=='\');
-    if backsalsh
-        xlsTAB(backsalsh)='_';
-    end
-    
-    for spikes_detection = detection_type%1:3
-        
-        switch spikes_detection
-            
-            case 2
-                
-                % ICA
-                fname = [resultsdir_root 'Aspire_ROC\ROC_COR_TR_' num2str(CORR_THR) '.xlsx'];
-                fname_labels = [resultsdir_root 'Aspire_ROC\Labels_COR_TR_' num2str(CORR_THR) '.xlsx'];
-                
-                ICA_grad = load([resultsdir_root, subj_name, results_subfolder,...
-                    'cluster_out_ICA_based_grad.csv']);
-                ICA_mag = load([resultsdir_root, subj_name, results_subfolder,...
-                    'cluster_out_ICA_based_mag.csv']);
-                ICA_visual = load([resultsdir_root, subj_name, results_subfolder,...
-                    'cluster_out_visual_grad.csv']);
-                ICA_visual_mag = load([resultsdir_root, subj_name, results_subfolder,...
-                    'cluster_out_visual_grad.csv']);
-                ICA_visual_grad = load([resultsdir_root, subj_name, results_subfolder, ...
-                    'cluster_out_visual_grad.csv']);
-                
-                [ICA_labels_results, ICA_roc_labels] = roc_curve_labels(ICA_visual_mag, ICA_visual_grad, ICA_mag,  ICA_grad, cortex.Atlas);
-                ICA_roc = roc_curve(ICA_visual(ICA_visual(:,1)<600000,:), ICA_grad, ICA_mag);
-                ICA_roc_spatial = roc_curve_spatial(ICA_visual_grad, ICA_visual_mag, ICA_grad, ICA_mag);
-                
-                xlswrite(fname,ICA_roc,xlsTAB,'A6');
-                xlswrite(fname,{'ICA'},xlsTAB,'A6');
-                xlswrite(fname,ICA_roc_spatial,xlsTAB,'A16');
-                xlswrite(fname,{'ICA'},xlsTAB,'A16');
-                xlswrite(fname,ICA_roc_labels,xlsTAB,'A26');
-                xlswrite(fname,{'ICA'},xlsTAB,'A26');
-                xlswrite(fname_labels,ICA_labels_results,xlsTAB,'I1');
-                xlswrite(fname_labels,{'ICA'},xlsTAB,'I1');
-                
-            case 3
-                % Spyking Circus
-                fname = [resultsdir_root 'Aspire_ROC\ROC_COR_TR_' num2str(CORR_THR) '.xlsx'];
-                fname_labels = [resultsdir_root 'Aspire_ROC\Labels_COR_TR_' num2str(CORR_THR) '.xlsx'];
-                
-                SPC_grad = load([resultsdir_root, subj_name,results_subfolder, ...
-                    'cluster_out_SpyCir_based_grad.csv']);
-                SPC_mag = load([resultsdir_root, subj_name, results_subfolder, ...
-                    'cluster_out_SpyCir_based_mag.csv']);
-                SPC_visual = load([resultsdir_root, subj_name, results_subfolder, ...
-                    'cluster_out_visual_grad.csv']);
-                SPC_visual_mag = load([resultsdir_root, subj_name, results_subfolder, ...
-                    'cluster_out_visual_grad.csv']);
-                SPC_visual_grad = load([resultsdir_root, subj_name, results_subfolder, ...
-                    'cluster_out_visual_grad.csv']);
-                
-                [SPC_labels_results, SPC_roc_labels] = roc_curve_labels(SPC_visual_mag, SPC_visual_grad, SPC_mag,  SPC_grad, cortex.Atlas);
-                SPC_roc = roc_curve(SPC_visual(SPC_visual(:,1)<600000,:), SPC_grad, SPC_mag);
-                SPC_roc_spatial = roc_curve_spatial(SPC_visual_grad, SPC_visual_mag, SPC_grad, SPC_mag);
-                
-                xlswrite(fname,SPC_roc,xlsTAB,'A1');
-                xlswrite(fname,{'SPC'},xlsTAB,'A1');
-                xlswrite(fname,SPC_roc_spatial,xlsTAB,'A11');
-                xlswrite(fname,{'SPC'},xlsTAB,'A11');
-                xlswrite(fname,SPC_roc_labels,xlsTAB,'A21');
-                xlswrite(fname,{'SPC'},xlsTAB,'A21');
-                xlswrite(fname_labels,SPC_labels_results,xlsTAB,'A1');
-                xlswrite(fname_labels,{'SPC'},xlsTAB,'A1');
-                
-        end
-    end
-    
-end
+
