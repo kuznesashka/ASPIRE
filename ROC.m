@@ -1,10 +1,15 @@
-function ROC(detection_type, resultsdir_root, subj_name,results_subfolder, ...
-    cortex, roc_xlsx_fname, roc_labels_xlsx_fname)
+function ROC(detection_type, ICA_grad, ICA_mag, SPC_grad, SPC_mag, visual, ...
+    cortex, roc_xlsx_fname, roc_labels_xlsx_fname, )
 %
 % -------------------------------------------------------------------------
 % Computation and saving ROC
 % -------------------------------------------------------------------------
 % INPUTS:
+% ICA_grad
+% ICA_mag
+% SPC_grad
+% SPC_mag
+%
 % roc_xlsx_fname - output file for ROC tables
 % roc_labels_xlsx_fname - output file for labels tables
 %
@@ -20,9 +25,6 @@ if backsalsh
     xlsTAB(backsalsh)='_';
 end
 
-% Load visual timestamps
-visual = load([resultsdir_root, subj_name, results_subfolder,...
-    'cluster_out_visual_grad.csv']);
 
 for spikes_detection = detection_type%1:3
     
@@ -33,12 +35,6 @@ for spikes_detection = detection_type%1:3
             % ICA
             fname = roc_xlsx_fname;
             fname_labels = roc_labels_xlsx_fname;
-            
-            % Load ICA detections
-            ICA_grad = load([resultsdir_root, subj_name, results_subfolder,...
-                'cluster_out_ICA_based_grad.csv']);
-            ICA_mag = load([resultsdir_root, subj_name, results_subfolder,...
-                'cluster_out_ICA_based_mag.csv']);
             
             ICA_visual = visual;
             ICA_visual_mag = visual;
@@ -68,12 +64,6 @@ for spikes_detection = detection_type%1:3
             % Spyking Circus
             fname = roc_xlsx_fname;
             fname_labels = roc_labels_xlsx_fname;
-            
-            % Load Spyking Circus detections
-            SPC_grad = load([resultsdir_root, subj_name,results_subfolder, ...
-                'cluster_out_SpyCir_based_grad.csv']);
-            SPC_mag = load([resultsdir_root, subj_name, results_subfolder, ...
-                'cluster_out_SpyCir_based_mag.csv']);
             
             SPC_visual = visual;
             SPC_visual_mag = visual;

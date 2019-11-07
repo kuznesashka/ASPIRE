@@ -259,7 +259,22 @@ for channel_type_loop = 1:2
     end
     %% ROC curves
     if computation_ROC
+
+        % Load Spyking Circus detected timestamps
+        SPC_grad = load([resultsdir_root, subj_name,results_subfolder, ...
+            'cluster_out_SpyCir_based_grad.csv']);
+        SPC_mag = load([resultsdir_root, subj_name, results_subfolder, ...
+            'cluster_out_SpyCir_based_mag.csv']);
         
+        % Load ICA detected timestamps
+        ICA_grad = load([resultsdir_root, subj_name, results_subfolder,...
+            'cluster_out_ICA_based_grad.csv']);
+        ICA_mag = load([resultsdir_root, subj_name, results_subfolder,...
+            'cluster_out_ICA_based_mag.csv']);
+        
+        % Load visual timestamps
+        visual = load([resultsdir_root, subj_name, results_subfolder,...
+            'cluster_out_visual_grad.csv']);
         ROC()
         
     end
