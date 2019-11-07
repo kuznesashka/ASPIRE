@@ -118,18 +118,6 @@ end
 %figure
 %histogram(ValMax)
 
-%corr_thresh = quantile(ValMax, 0.95);
-% if size(ValMax,2)<300
-%     quant = 0.0;
-% else
-%     quant = 1 - 300/size(ValMax,2);
-% end
-% if corr_thresh ~= 0.0
-% %     quant = 0.95;
-%     quant = corr_thresh;
-% else
-%     quant = 0.0;
-% end
 if corr_thresh  ~= 0.0
     corr_thresh = 0.95;
 else
