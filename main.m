@@ -48,6 +48,10 @@ G3              = load(strcat([protocol_dir, 'data\', cases_unique_for_anat, '\@
 
 detection_type = [1 2 3];
 
+
+roc_xlsx_fname = [resultsdir_root 'Aspire_ROC\ROC_COR_TR_' num2str(CORR_THR) '.xlsx'];
+roc_labels_xlsx_fname = [resultsdir_root 'Aspire_ROC\Labels_COR_TR_' num2str(CORR_THR) '.xlsx'];
+
 main_one_subject()
 
 
