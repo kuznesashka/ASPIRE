@@ -1,3 +1,5 @@
+function roc = roc_spatial(visual_grad, visual_mag, grad, mag)
+%
 % -------------------------------------------------------------------------
 % Spatial ROC curve
 % -------------------------------------------------------------------------
@@ -14,7 +16,6 @@
 %   distance_threshold -- distance between the manual dipole and the nearest our dipole
 %_______________________________________________________
 
-function roc = roc_curve_spatial(visual_grad, visual_mag, grad, mag)
 
     roc = {'Channels','Number_of_spikes' 'TP', 'FP', 'FN', 'TN','Sensitivity','Specificity'};
     roc(2:4,1) = {'grad','mag','both'};

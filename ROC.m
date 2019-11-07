@@ -9,8 +9,6 @@ function ROC(detection_type, subj_name, cortex, roc_xlsx_fname, roc_labels_xlsx_
 %
 % OUTPUTS:
 % 
-%
-%
 %_______________________________________________________
 %
 %
@@ -20,6 +18,10 @@ backsalsh = find(xlsTAB=='\');
 if backsalsh
     xlsTAB(backsalsh)='_';
 end
+
+% Load visual timestamps
+visual = load([resultsdir_root, subj_name, results_subfolder,...
+    'cluster_out_visual_grad.csv']);
 
 for spikes_detection = detection_type%1:3
     
@@ -31,22 +33,27 @@ for spikes_detection = detection_type%1:3
             fname = roc_xlsx_fname;
             fname_labels = roc_labels_xlsx_fname;
             
+            % Load ICA detections
             ICA_grad = load([resultsdir_root, subj_name, results_subfolder,...
                 'cluster_out_ICA_based_grad.csv']);
             ICA_mag = load([resultsdir_root, subj_name, results_subfolder,...
                 'cluster_out_ICA_based_mag.csv']);
-            ICA_visual = load([resultsdir_root, subj_name, results_subfolder,...
-                'cluster_out_visual_grad.csv']);
-            ICA_visual_mag = load([resultsdir_root, subj_name, results_subfolder,...
-                'cluster_out_visual_grad.csv']);
-            ICA_visual_grad = load([resultsdir_root, subj_name, results_subfolder, ...
-                'cluster_out_visual_grad.csv']);
+
+            ICA_visual = visual;
+            ICA_visual_mag = visual;
+            ICA_visual_grad = visual;
             
+            % ROC in time domain
+            ICA_roc = roc_time(ICA_visual(ICA_visual(:,1)<600000,:), ICA_grad, ICA_mag);
+
+            % ROC in spatial domain
+            ICA_roc_spatial = roc_spatial(ICA_visual_grad, ICA_visual_mag, ICA_grad, ICA_mag);
+
+            % ROC in anatomical labels domain
             [ICA_labels_results, ICA_roc_labels] = roc_labels(ICA_visual_mag, ICA_visual_grad, ICA_mag, ...
                                                                  ICA_grad, cortex.Atlas);
-            ICA_roc = roc_curve(ICA_visual(ICA_visual(:,1)<600000,:), ICA_grad, ICA_mag);
-            ICA_roc_spatial = roc_spatial(ICA_visual_grad, ICA_visual_mag, ICA_grad, ICA_mag);
             
+            % Save results in the Excel file
             xlswrite(fname,ICA_roc,xlsTAB,'A6');
             xlswrite(fname,{'ICA'},xlsTAB,'A6');
             xlswrite(fname,ICA_roc_spatial,xlsTAB,'A16');
@@ -61,22 +68,27 @@ for spikes_detection = detection_type%1:3
             fname = roc_xlsx_fname;
             fname_labels = roc_labels_xlsx_fname;
             
+            % Load Spyking Circus detections
             SPC_grad = load([resultsdir_root, subj_name,results_subfolder, ...
                 'cluster_out_SpyCir_based_grad.csv']);
             SPC_mag = load([resultsdir_root, subj_name, results_subfolder, ...
                 'cluster_out_SpyCir_based_mag.csv']);
-            SPC_visual = load([resultsdir_root, subj_name, results_subfolder, ...
-                'cluster_out_visual_grad.csv']);
-            SPC_visual_mag = load([resultsdir_root, subj_name, results_subfolder, ...
-                'cluster_out_visual_grad.csv']);
-            SPC_visual_grad = load([resultsdir_root, subj_name, results_subfolder, ...
-                'cluster_out_visual_grad.csv']);
+
+            SPC_visual = visual;
+            SPC_visual_mag = visual;
+            SPC_visual_grad = visual;
             
+            % ROC in time domain
+            SPC_roc = roc_time(SPC_visual(SPC_visual(:,1)<600000,:), SPC_grad, SPC_mag);
+
+            % ROC in spatial domain
+            SPC_roc_spatial = roc_spatial(SPC_visual_grad, SPC_visual_mag, SPC_grad, SPC_mag);
+
+            % ROC in anatomical labels domain
             [SPC_labels_results, SPC_roc_labels] = roc_labels(SPC_visual_mag, SPC_visual_grad, SPC_mag, ...
                                                                   SPC_grad, cortex.Atlas);
-            SPC_roc = roc_curve(SPC_visual(SPC_visual(:,1)<600000,:), SPC_grad, SPC_mag);
-            SPC_roc_spatial = roc_spatial(SPC_visual_grad, SPC_visual_mag, SPC_grad, SPC_mag);
-            
+
+            % Save results in the Excel file            
             xlswrite(fname,SPC_roc,xlsTAB,'A1');
             xlswrite(fname,{'SPC'},xlsTAB,'A1');
             xlswrite(fname,SPC_roc_spatial,xlsTAB,'A11');

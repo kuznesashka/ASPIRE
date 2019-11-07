@@ -1,4 +1,4 @@
-function [labels_results, roc] = roc_curve_labels(v_mag, v_grad, mag, grad, atlas)
+function [labels_results, roc] = roc_labels(v_mag, v_grad, mag, grad, atlas)
 
 % -------------------------------------------------------------------------
 % anatomical ROC curve
