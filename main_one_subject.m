@@ -198,7 +198,7 @@ for channel_type_loop = 1:2
         
         
         %% 7. all to all cluster propagation probability
-        if 0
+        if parameters.propagation_probability
             time_w  = .1; % window of interest is  [-time_w time_w] in seconds
             distr = all2all_prop(cluster,time_w)
         end
@@ -216,7 +216,7 @@ for channel_type_loop = 1:2
             param.channel_type          = channel_type;
             param.Nmin                  = parameters.clustering.N_MIN;
             param.thr_dist              = parameters.clustering.THR_DIST;
-            param.corr_thresh           = corr_thresh;
+            param.corr_thresh           = parameters.CORR_THR;
             %             param.f_low_RAP             = f_low_RAP;
             %             param.f_high_RAP            = f_high_RAP;
             param.f_low_vis             = parameters.draw.f_low_vis; % bandpass filter for visualization

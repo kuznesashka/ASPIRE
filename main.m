@@ -45,15 +45,15 @@ paths.path_SPC_detections =
 
 % subj info
 paths.cortex = strcat([protocol_dir, 'anat\', cases_unique_for_anat, ...
-                            '\tess_cortex_pial_low.mat'])
+                            '\tess_cortex_pial_low.mat']);
 paths.MRI = strcat([protocol_dir, 'anat\', cases_unique_for_anat, ...
-                            '\subjectimage_T1.mat'])
+                            '\subjectimage_T1.mat']);
 paths.Data = strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
-                            '\', file_name,'\data_block001.mat'])
+                            '\', file_name,'\data_block001.mat']);
 paths.channels = strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
-                            '\@default_study', '\channel_vectorview306_acc1.mat'])
+                    '\@default_study', '\channel_vectorview306_acc1.mat']);
 paths.G3 = strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
-                            '\@default_study', '\headmodel_surf_os_meg.mat'])
+                       '\@default_study', '\headmodel_surf_os_meg.mat']);
 
 
 %% Paths for saving
@@ -69,7 +69,7 @@ paths.roc_xlsx_fname = [resultsdir_root 'Aspire_ROC\ROC_COR_TR_' num2str(CORR_TH
 paths.roc_labels_xlsx_fname  = [resultsdir_root 'Aspire_ROC\Labels_COR_TR_' num2str(CORR_THR) '.xlsx'];
 % Path for saving big picture
 paths.bigpic_saving_path = [resultsdir_root, subj_name, '\ASPIRE\CORR_THR_', ...
-    num2str(CORR_THR), '_', xlsTAB '.bmp'] 
+    num2str(CORR_THR), '_', xlsTAB '.bmp'];
 
 
 % Path for sources saving without [spikes_extraction '_' channel_type '.mat']
@@ -89,6 +89,7 @@ parameters.computation_ROC       = 1; % compute ROC stat
 parameters.plot_big_pic      = 1; % 
 parameters.mute_mode      = 1; % not plot pictures
 parameters.newdataset     = 1; % not plot pictures
+parameters.propagation_probability = 0; % all to all cluster propagation probability
 
 cortex          = load(paths.cortex);
 MRI             = load(paths.MRI);
@@ -118,7 +119,7 @@ parameters.rap_music.RAP = 'not';
 % THR_DIST - maximal distance from the center of the cluster (radius) in m
 parameters.clustering.THR_DIST =  0.01;
 % N_MIN - minimum number of sources in one cluster
-parameters.N_MIN = 3;
+parameters.clustering.N_MIN = 3;
 parameters.CORR_THR = 0.95;
 
 
@@ -127,9 +128,6 @@ parameters.draw.f_low  = 3;
 parameters.draw.f_high = 50;
 parameters.draw.f_low_vis  = 2;
 parameters.draw.f_high_vis = 50;
-
-
-
 
 
 
