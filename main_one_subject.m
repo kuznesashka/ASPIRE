@@ -224,19 +224,8 @@ end
 %% ROC curves
 if parameters.computation_ROC
     
-    % Load Spyking Circus detected timestamps
-    SPC_grad = load([paths.path_cluster_out 'SpyCir_based_grad.csv']);
-    SPC_mag = load([paths.path_cluster_out 'SpyCir_based_mag.csv']);
-    
-    % Load ICA detected timestamps
-    ICA_grad = load([paths.path_cluster_out 'ICA_based_grad.csv']);
-    ICA_mag = load([paths.path_cluster_out 'ICA_based_mag.csv']);
-    
-    % Load visual timestamps
-    visual = load([paths.path_cluster_out 'visual_grad.csv']);
-    
     % Compute and save all results in the excel file
-    ROC(parameters.detection_type, ICA_grad, ICA_mag, SPC_grad, SPC_mag, visual, ...
+    ROC(paths.subj_name, parameters.detection_type, paths.path_cluster_out, ...
         cortex, paths.roc_xlsx_fname, paths.roc_labels_xlsx_fname)
     
 end
