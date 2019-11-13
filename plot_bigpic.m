@@ -37,7 +37,7 @@ for spikes_detection = 1:3
         if exist([results_saving_path spikes_extraction '_' channel_type '.mat'],'file')
             
             load([results_saving_path spikes_extraction '_' channel_type '.mat'],...
-                'cluster','param')
+                'cluster','parameters')
             
             what = (spikes_detection-1)*6+(channel_type_loop-1)*3;
             switch spikes_detection

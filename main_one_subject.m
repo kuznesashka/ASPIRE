@@ -14,7 +14,7 @@ function main_one_subject(cortex, Data, G3, channels, paths, parameters)
 % resultsdir_root
 % subj_name
 % results_subfolder
-% 
+%
 % PARAMETERS
 %
 % mute_mode -- not show plots
@@ -69,7 +69,7 @@ for channel_type_loop = 1:2
                 if parameters.newdataset
                     [spike_ind, picked_components, picked_comp_top] = ...
                         ICA_detection(Data, G3, channel_type, parameters.detection.ICA.decision, ...
-                                       parameters.detection.ICA.f_low, parameters.detection.ICA.f_high);
+                        parameters.detection.ICA.f_low, parameters.detection.ICA.f_high);
                     save(ICA_spikes_mat_saving_path,'spike_ind', 'picked_components', 'picked_comp_top')
                 end
                 
@@ -96,7 +96,7 @@ for channel_type_loop = 1:2
         close all
         
         %% 3. RAP-MUSIC (2) dipole fitting
-        if parameters.computation_source            
+        if parameters.computation_source
             if spikes_detection ~= 1
                 corr_thresh = 0.0;
             else
@@ -130,7 +130,7 @@ for channel_type_loop = 1:2
             % load dipoles
             load([paths.sources_saving_path spikes_extraction '_' channel_type '.mat'], ...
                 'IndMax','ValMax','ind_m','spikeind')
-
+            
             % set  CORR_TRESH
             if spikes_detection ~= 1
                 corr_thresh = prctile(ValMax,85);
@@ -208,34 +208,37 @@ for channel_type_loop = 1:2
         
     end
     
-    %% Plot BIGPIC
-    if parameters.plot_big_pic
-        
-        plot_bigpic(paths.subj_name, paths.results_saving_path, cortex, paths.bigpic_saving_path)
-        
-    end
     
-    %% ROC curves
-    if parameters.computation_ROC
-        
-        % Load Spyking Circus detected timestamps
-        SPC_grad = load([paths.path_cluster_out 'SpyCir_based_grad.csv']);
-        SPC_mag = load([paths.path_cluster_out 'SpyCir_based_mag.csv']);
-        
-        % Load ICA detected timestamps
-        ICA_grad = load([paths.path_cluster_out 'ICA_based_grad.csv']);
-        ICA_mag = load([paths.path_cluster_out 'ICA_based_mag.csv']);
-        
-        % Load visual timestamps
-        visual = load([paths.path_cluster_out 'visual_grad.csv']);
-        
-        % Compute and save all results in the excel file
-        ROC(parameters.detection_type, ICA_grad, ICA_mag, SPC_grad, SPC_mag, visual, ...
-            cortex, paths.roc_xlsx_fname, paths.roc_labels_xlsx_fname)
-        
-    end
     
     
 end
 
+
+%% Plot BIGPIC
+if parameters.plot_big_pic
+    
+    plot_bigpic(paths.subj_name, paths.results_saving_path, cortex, paths.bigpic_saving_path)
+    
+end
+
+%% ROC curves
+if parameters.computation_ROC
+    
+    % Load Spyking Circus detected timestamps
+    SPC_grad = load([paths.path_cluster_out 'SpyCir_based_grad.csv']);
+    SPC_mag = load([paths.path_cluster_out 'SpyCir_based_mag.csv']);
+    
+    % Load ICA detected timestamps
+    ICA_grad = load([paths.path_cluster_out 'ICA_based_grad.csv']);
+    ICA_mag = load([paths.path_cluster_out 'ICA_based_mag.csv']);
+    
+    % Load visual timestamps
+    visual = load([paths.path_cluster_out 'visual_grad.csv']);
+    
+    % Compute and save all results in the excel file
+    ROC(parameters.detection_type, ICA_grad, ICA_mag, SPC_grad, SPC_mag, visual, ...
+        cortex, paths.roc_xlsx_fname, paths.roc_labels_xlsx_fname)
+    
+end
+end
 
