@@ -11,12 +11,18 @@ function main_one_subject(detection_type, path_vis_detections, ...
 % -------------------------------------------------------------------------
 % INPUTS:
 % detection_type -- 1:visual, 2:ICA-based, 3:Spyking Circus
+%
+% PATHS
+%
 % path_vis_detections -- path to the visual detections file (csv)
 % path_ICA_detections -- path to the ICA detections (mat)
 % path_SPC_detections -- path to the Spyking Circus detections (csv)
 % resultsdir_root
 % subj_name
 % results_subfolder
+% 
+% PARAMETERS
+%
 % mute_mode -- not show plots
 % computation_source
 % computation_clusters
@@ -40,15 +46,6 @@ function main_one_subject(detection_type, path_vis_detections, ...
 %
 % _______________________________________________________
 %
-%% Paths
-% Path for sources saving without [spikes_extraction '_' channel_type '.mat']
-sources_saving_path = [resultsdir_root subj_name results_subfolder '\sources_'];
-
-% Path for clusters saving without [spikes_extraction '_' channel_type '.csv']
-path_cluster_out = [resultsdir_root subj_name results_subfolder '\cluster_out_'];
-
-% Path for results saving without [spikes_extraction '_' channel_type '.mat']
-results_saving_path = [resultsdir_root subj_name results_subfolder '\results_'];
 
 
 for channel_type_loop = 1:2
@@ -58,12 +55,12 @@ for channel_type_loop = 1:2
     end
     
     %% 2. Spike detection
-    for spikes_detection = detection_type
+    for spikes_detection = parameters.detection_type
         
         switch spikes_detection
             case 1 % visual markings
                 spikes_extraction = 'visual';
-                manual_data = csvread(path_vis_detections);
+                manual_data = csvread(paths.path_vis_detections);
                 picked_components = [];
                 picked_comp_top = [];
                 spike_ind = manual_data(:,1);
@@ -76,7 +73,7 @@ for channel_type_loop = 1:2
                 decision = 0.9; % the amplitude threshold for decision
                 f_low = 3; % bandpass filter before the ICA decomposition
                 f_high = 70;
-                ICA_spikes_mat_saving_path = [path_ICA_detections,'_', channel_type, '.mat'];
+                ICA_spikes_mat_saving_path = [paths.path_ICA_detections,'_', channel_type, '.mat'];
                 
                 if newdataset
                     [spike_ind, picked_components, picked_comp_top] = ...
@@ -93,7 +90,7 @@ for channel_type_loop = 1:2
                 
             case 3 % Spiking circus based
                 spikes_extraction = 'SpyCir_based';
-                spcirc_data = csvread([path_SPC_detections,'_', channel_type, '.csv'],1,0);
+                spcirc_data = csvread([paths.path_SPC_detections,'_', channel_type, '.csv'],1,0);
                 picked_components = [];
                 picked_comp_top = [];
                 spike_ind = spcirc_data(:,1);
@@ -117,7 +114,7 @@ for channel_type_loop = 1:2
             if spikes_detection ~= 1
                 corr_thresh = 0.0;
             else
-                corr_thresh = CORR_THR; %0.95
+                corr_thresh = parameters.CORR_THR; %0.95
             end
             
             % corr_thresh = back to quantile(ValMax, 0.95)
@@ -125,10 +122,10 @@ for channel_type_loop = 1:2
                 channel_type, f_low_RAP, f_high_RAP, spikydata, picked_components, ...
                 picked_comp_top, corr_thresh, RAP);
             
-            save([sources_saving_path spikes_extraction '_' channel_type '.mat'], ...
+            save([paths.sources_saving_path spikes_extraction '_' channel_type '.mat'], ...
                 'IndMax','ValMax','ind_m','spikeind')
         else
-            load([sources_saving_path spikes_extraction '_' channel_type '.mat'], ...
+            load([paths.sources_saving_path spikes_extraction '_' channel_type '.mat'], ...
                 'IndMax','ValMax','ind_m','spikeind')
         end
         % Plot and save ValMax
@@ -143,7 +140,7 @@ for channel_type_loop = 1:2
         if computation_clusters
             
             % load dipoles
-            load([sources_saving_path spikes_extraction '_' channel_type '.mat'], ...
+            load([paths.sources_saving_path spikes_extraction '_' channel_type '.mat'], ...
                 'IndMax','ValMax','ind_m','spikeind')
             
             RAP = 'not';
@@ -151,7 +148,7 @@ for channel_type_loop = 1:2
             if spikes_detection ~= 1
                 corr_thresh = prctile(ValMax,85);
             else
-                corr_thresh = CORR_THR; %0.95
+                corr_thresh = parameters.CORR_THR; %0.95
                 %corr_thresh = CORR_THR;
             end
             ind_m = find((ValMax > corr_thresh));
@@ -159,8 +156,8 @@ for channel_type_loop = 1:2
             %disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
             %    num2str(length(ind_m))]);
             
-            thr_dist = THR_DIST; % maximal distance from the center of the cluster (radius) in m
-            Nmin = N_MIN; % minimum number of sources in one cluster
+            thr_dist = parameters.THR_DIST; % maximal distance from the center of the cluster (radius) in m
+            Nmin = parameters.N_MIN; % minimum number of sources in one cluster
             
             clear cluster
             if spikes_detection == 1 % for manual spikes
@@ -191,7 +188,7 @@ for channel_type_loop = 1:2
             % Write clusters in csv file
             cluster_out  = cluster_out(cluster, G3);
             
-            csvwrite([path_cluster_out spikes_extraction '_' channel_type '.csv'], cluster_out);
+            csvwrite([paths.path_cluster_out spikes_extraction '_' channel_type '.csv'], cluster_out);
             
         end
         
@@ -213,9 +210,9 @@ for channel_type_loop = 1:2
             %             spike_trials, maxamp_spike_av, spike_ts, cluster, ...
             %             channels, G3, MRI, corr_thresh)
             
-            save_param.resultsdir_root    =  resultsdir_root;
-            save_param.subj_name          = subj_name;
-            save_param.results_subfolder  = [results_subfolder '\clusters'];
+            save_param.resultsdir_root    =  paths.resultsdir_root;
+            save_param.subj_name          = paths.subj_name;
+            save_param.results_subfolder  = [paths.results_subfolder '\clusters'];
             save_param.spikes_extraction  = spikes_extraction;
             
             plot_clusters_191015(Data, channel_type, f_low_vis, f_high_vis, cortex, ...
@@ -267,7 +264,7 @@ for channel_type_loop = 1:2
     
     %% Plot BIGPIC
     if plot_big_pic
-        plot_bigpic(subj_name, results_saving_path, cortex,bigpic_saving_path)
+        plot_bigpic(paths.subj_name, paths.results_saving_path, cortex, paths.bigpic_saving_path)
         
     end
     
@@ -275,20 +272,15 @@ for channel_type_loop = 1:2
     if computation_ROC
         
         % Load Spyking Circus detected timestamps
-        SPC_grad = load([resultsdir_root, subj_name,results_subfolder, ...
-            'cluster_out_SpyCir_based_grad.csv']);
-        SPC_mag = load([resultsdir_root, subj_name, results_subfolder, ...
-            'cluster_out_SpyCir_based_mag.csv']);
+        SPC_grad = load([paths.path_cluster_out 'SpyCir_based_grad.csv']);
+        SPC_mag = load([paths.path_cluster_out 'SpyCir_based_mag.csv']);
         
         % Load ICA detected timestamps
-        ICA_grad = load([resultsdir_root, subj_name, results_subfolder,...
-            'cluster_out_ICA_based_grad.csv']);
-        ICA_mag = load([resultsdir_root, subj_name, results_subfolder,...
-            'cluster_out_ICA_based_mag.csv']);
+        ICA_grad = load([paths.path_cluster_out 'ICA_based_grad.csv']);
+        ICA_mag = load([paths.path_cluster_out 'ICA_based_mag.csv']);
         
         % Load visual timestamps
-        visual = load([resultsdir_root, subj_name, results_subfolder,...
-            'cluster_out_visual_grad.csv']);
+        visual = load([paths.path_cluster_out 'visual_grad.csv']);
         
         % Compute and save all results in the excel file
         ROC(detection_type, ICA_grad, ICA_mag, SPC_grad, SPC_mag, visual, ...

@@ -23,7 +23,7 @@
 load cases_files_190921.mat
 
 
-%% Paths -- all paths
+%% Paths -- subject info
 paths.hdisk = 'D:\';
 paths.subj_name = cases_files.cases{case_n};
 paths.cases_unique_for_anat = cases_files.cases_unique{case_n};
@@ -54,6 +54,15 @@ paths.channels = strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
                             '\@default_study', '\channel_vectorview306_acc1.mat'])
 paths.G3 = strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
                             '\@default_study', '\headmodel_surf_os_meg.mat'])
+
+
+%% Paths for saving
+% Path for sources saving without [spikes_extraction '_' channel_type '.mat']
+paths.sources_saving_path = [resultsdir_root subj_name results_subfolder '\sources_'];
+% Path for clusters saving without [spikes_extraction '_' channel_type '.csv']
+paths.path_cluster_out = [resultsdir_root subj_name results_subfolder '\cluster_out_'];
+% Path for results saving without [spikes_extraction '_' channel_type '.mat']
+paths.results_saving_path = [resultsdir_root subj_name results_subfolder '\results_'];
 
 % ROC saving path
 paths.roc_xlsx_fname = [resultsdir_root 'Aspire_ROC\ROC_COR_TR_' num2str(CORR_THR) '.xlsx'];
@@ -95,8 +104,7 @@ parameters.N_MIN = 3;
 
 parameters.CORR_THR = 0.95;
 
-main_one_subject(detection_type,  ...
-    Data, G3, )
+main_one_subject(Data, G3)
 
 
 
