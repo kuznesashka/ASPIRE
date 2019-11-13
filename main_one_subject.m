@@ -205,33 +205,8 @@ for channel_type_loop = 1:2
         end
         
         %% saving
-        if parameters.draw_and_save_plots2
-            %% scatter
-            figure('Name','Clusters raster plot','visible','off')
-            scatter(cluster_out_results(:,1)/1000,cluster_out_results(:,2),'.')
-            grid minor
-            
-            param.subj_name             = paths.subj_name;
-            param.spikes_detection      = spikes_detection;
-            param.spikes_extraction     = spikes_extraction;
-            param.channel_type          = channel_type;
-            param.Nmin                  = parameters.clustering.N_MIN;
-            param.thr_dist              = parameters.clustering.THR_DIST;
-            param.corr_thresh           = parameters.CORR_THR;
-            %             param.f_low_RAP             = f_low_RAP;
-            %             param.f_high_RAP            = f_high_RAP;
-            param.f_low_vis             = parameters.draw.f_low_vis; % bandpass filter for visualization
-            param.f_high_vis            = parameters.draw.f_high_vis;
-            %             param.time_w                = time_w;
-            %             param.distr                 = distr;
-            
-            save([results_saving_path spikes_extraction '_' channel_type '.mat'] ,'cluster','param')
-            
-            % saveas(fig_cluster,[resultsdir_root, subj_name, results_subfolder, ...
-            %        '\Clusters_' spikes_extraction '_' channel_type '.bmp'])
-            % saveas(fig_cluster,[resultsdir_root, subj_name, results_subfolder, ...
-            %        '\Clusters_' spikes_extraction '_' channel_type '.fig'])
-            
+        if parameters.save_results
+            save([results_saving_path spikes_extraction '_' channel_type '.mat'] ,'cluster','parameters')
         end
         
     end

@@ -7,12 +7,7 @@ function plot_bigpic(subj_name, results_saving_path, ...
 % results_saving_path -
 % bigpic_saving_path
 %
-%
-%
 % OUTPUTS:
-%
-%
-%
 % _______________________________________________________
 %
 %% 1. Export everything from brainstorm
@@ -39,9 +34,9 @@ for spikes_detection = 1:3
             case 2, channel_type = 'grad';row_plot = 2;
         end
         
-        if exist([results_saving_path '\results_'  spikes_extraction '_' channel_type '.mat'],'file')
+        if exist([results_saving_path spikes_extraction '_' channel_type '.mat'],'file')
             
-            load([results_saving_path '\results_'  spikes_extraction '_' channel_type '.mat'],...
+            load([results_saving_path spikes_extraction '_' channel_type '.mat'],...
                 'cluster','param')
             
             what = (spikes_detection-1)*6+(channel_type_loop-1)*3;
