@@ -102,9 +102,9 @@ parameters.computation_clusters  = 1; % compute and save clusters
 parameters.draw_and_save_plots   = 0; % plot clusters
 parameters.draw_and_save_plots2  = 0; % save clustering
 parameters.computation_ROC       = 0; % compute ROC stat
-parameters.plot_big_pic          = 0; %
+parameters.plot_big_pic          = 1; %
 parameters.mute_mode             = 1; % not plot pictures
-parameters.newdataset            = 1; % not plot pictures
+parameters.newdataset            = 0; % not plot pictures
 parameters.propagation_probability = 0; % all to all cluster propagation probability
 
 cortex          = load(paths.cortex);
@@ -113,7 +113,7 @@ Data            = load(paths.Data);
 channels        = load(paths.channels);
 G3              = load(paths.G3);
 
-parameters.detection_type = [2 3]; %1-visual, 2-ICA, 3-SPC
+parameters.detection_type = [1 2 3]; %1-visual, 2-ICA, 3-SPC
 
 %% Parameters for detection
 parameters.detection.ICA.spikes_extraction = 'ICA_based';

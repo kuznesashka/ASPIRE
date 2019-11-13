@@ -104,6 +104,7 @@ for channel_type_loop = 1:2
             end
             
             % corr_thresh = back to quantile(ValMax, 0.95)
+            disp(['Spikes extraction: ' spikes_extraction ' Channels: ' channel_type]);
             [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data, G3, ...
                 channel_type, parameters.rap_music.f_low_RAP, parameters.rap_music.f_high_RAP, ...
                 parameters.rap_music.spikydata, picked_components, ...
@@ -237,6 +238,7 @@ for channel_type_loop = 1:2
     
     %% Plot BIGPIC
     if parameters.plot_big_pic
+        
         plot_bigpic(paths.subj_name, paths.results_saving_path, cortex, paths.bigpic_saving_path)
         
     end
