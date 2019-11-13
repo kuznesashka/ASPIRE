@@ -20,64 +20,72 @@
 
 
 
-load cases_files_190921.mat
-
+%load cases_files_190921.mat
+%when two or more recordings 'B4Z2\Rec_01'
+%paths.subj_name = cases_files.cases{case_n};
+%paths.cases_unique_for_anat = cases_files.cases_unique{case_n};
+%artifacts corrected file name
+%paths.file_name = cases_files.file_names{case_n};
+%short file name
+%paths.file_name_short = cases_files.file_names_short{case_n};
 
 %% Paths -- subject info
-paths.hdisk = 'D:\';
-paths.subj_name = cases_files.cases{case_n};
-paths.cases_unique_for_anat = cases_files.cases_unique{case_n};
-paths.protocol_dir = [hdisk 'Valerii\EPILEPSY\MEG_Tommaso\'];
-paths.file_name = cases_files.file_names{case_n};
-paths.file_name_short = cases_files.file_names_short{case_n};
-paths.resultsdir_root = [hdisk 'Valerii\45_cases\'];
-paths.results_subfolder = '\ASPIRE\';
-mkdir([paths.resultsdir_root paths.subj_name '\' paths.results_subfolder])
+paths.anat = '\Users\valery\MEG\EPILEPSY\MEG_Tommaso\anat\'; % anatomy from Brainstorm
+paths.data = '\Users\valery\MEG\EPILEPSY\MEG_Tommaso\data\'; % data from Brainstorm
+paths.root = '\Users\valery\MEG\Cases\'; %45 cases folder 
 
+paths.subj_name = 'B1C2'; %when two or more recordings 'B4Z2\Rec_01'
+paths.case = 'B1C2';
+paths.fname = 'B1C2_ii_run1_raw_tsss_mc_art_corr'; %artifact corrected file name
+paths.sh_fname = 'B1C2_ii_run1_raw_tsss_mc'; %short file name
+
+mkdir([paths.root paths.subj_name '\ASPIRE' ])
+mkdir([paths.root paths.subj_name '\ASPIRE\detections'])
+mkdir([paths.root paths.subj_name '\ASPIRE\plots'])
+mkdir([paths.root paths.subj_name '\ASPIRE\results'])
+
+paths.datections = [paths.root paths.subj_name '\ASPIRE\detections\'];
+paths.plots = [paths.root paths.subj_name '\ASPIRE\plots\']
+paths.results = [paths.root paths.subj_name '\ASPIRE\results\']
+
+%paths.resultsdir_root = [hdisk 'Valerii\45_cases\'];
+%paths.results_subfolder = '\ASPIRE\';
+%mkdir([paths.root paths.subj_name '\' paths.results_subfolder])
+
+% subj info
+paths.cortex = strcat([paths.anat paths.case '\tess_cortex_pial_low.mat']);
+paths.MRI = strcat([paths.anat paths.case '\subjectimage_T1.mat']);
+paths.Data = strcat([paths.data paths.case '\' paths.fname, ...
+					'\data_block001.mat']);
+paths.channels = strcat([paths.data paths.case '\@default_study', ...
+						'\channel_vectorview306_acc1.mat']);
+paths.G3 = strcat([paths.data paths.case '\@default_study', ...
+						 '\headmodel_surf_os_meg.mat']);
 
 % paths to detections
 % path_vis_detections -- path to the visual detections file (csv)
-paths.path_vis_detections = 
+paths.path_vis_detections = [paths.datections  ]
 % path_ICA_detections -- path to the ICA detections (mat)
 paths.path_ICA_detections = 
 % path_SPC_detections -- path to the Spyking Circus detections (csv)
 paths.path_SPC_detections = 
 
-% subj info
-paths.cortex = strcat([protocol_dir, 'anat\', cases_unique_for_anat, ...
-                            '\tess_cortex_pial_low.mat']);
-paths.MRI = strcat([protocol_dir, 'anat\', cases_unique_for_anat, ...
-                            '\subjectimage_T1.mat']);
-paths.Data = strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
-                            '\', file_name,'\data_block001.mat']);
-paths.channels = strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
-                    '\@default_study', '\channel_vectorview306_acc1.mat']);
-paths.G3 = strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
-                       '\@default_study', '\headmodel_surf_os_meg.mat']);
-
-
 %% Paths for saving
 % Path for sources saving without [spikes_extraction '_' channel_type '.mat']
-paths.sources_saving_path = [resultsdir_root subj_name results_subfolder '\sources_'];
+paths.sources_saving_path = [paths.results '\sources_'];
 % Path for clusters saving without [spikes_extraction '_' channel_type '.csv']
-paths.path_cluster_out = [resultsdir_root subj_name results_subfolder '\cluster_out_'];
+paths.path_cluster_out = [paths.results '\cluster_out_'];
 % Path for results saving without [spikes_extraction '_' channel_type '.mat']
-paths.results_saving_path = [resultsdir_root subj_name results_subfolder '\results_'];
+paths.results_saving_path = [paths.results '\results_'];
 
 % ROC saving path
-paths.roc_xlsx_fname = [resultsdir_root 'Aspire_ROC\ROC_COR_TR_' num2str(CORR_THR) '.xlsx'];
-paths.roc_labels_xlsx_fname  = [resultsdir_root 'Aspire_ROC\Labels_COR_TR_' num2str(CORR_THR) '.xlsx'];
+mkdir([paths.root '\ROC'])
+paths.roc = [paths.root '\ROC\'];
+paths.roc_xlsx_fname = [paths.roc 'ROC.xlsx'];
+paths.roc_labels_xlsx_fname  = [paths.roc 'Labels.xlsx'];
 % Path for saving big picture
-paths.bigpic_saving_path = [resultsdir_root, subj_name, '\ASPIRE\CORR_THR_', ...
-    num2str(CORR_THR), '_', xlsTAB '.bmp'];
+paths.bigpic_saving_path = [paths.plots paths.case '.bmp'];
 
-
-% Path for sources saving without [spikes_extraction '_' channel_type '.mat']
-paths.sources_saving_path = [resultsdir_root subj_name results_subfolder '\sources_'];
-% Path for clusters saving without [spikes_extraction '_' channel_type '.csv']
-paths.path_cluster_out = [resultsdir_root subj_name results_subfolder '\cluster_out_'];
-% Path for results saving without [spikes_extraction '_' channel_type '.mat']
-paths.results_saving_path = [resultsdir_root subj_name results_subfolder '\results_'];
 
 
 %% Parameters main
