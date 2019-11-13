@@ -8,7 +8,7 @@
 %   computation_source    = 1; % compute dipoles
 %   computation_clusters  = 1; % compute clustering
 %   draw_and_save_plots   = 0; % plot clusters
-%   draw_and_save_plots2  = 0; % save 
+%   draw_and_save_plots2  = 0; % save
 %   computation_ROC       = 1; % compute ROC stat
 %
 %
@@ -30,57 +30,63 @@
 %paths.file_name_short = cases_files.file_names_short{case_n};
 
 %% Paths -- subject info
-paths.anat = '\Users\valery\MEG\EPILEPSY\MEG_Tommaso\anat\'; % anatomy from Brainstorm
-paths.data = '\Users\valery\MEG\EPILEPSY\MEG_Tommaso\data\'; % data from Brainstorm
-paths.root = '\Users\valery\MEG\Cases\'; %45 cases folder 
+% !!! File separator for current platform
+paths.anat = ['/Users/valery/MEG/EPILEPSY' filesep, ...
+                'MEG_Tommaso' filesep 'anat' filesep]; % anatomy from Brainstorm
+paths.data = ['/Users/valery/MEG/EPILEPSY' filesep, ...
+                'MEG_Tommaso' filesep 'data' filesep]; % data from Brainstorm
+paths.root = '/Users/valery/MEG/Cases/'; %45 cases folder
 
 paths.subj_name = 'B1C2'; %when two or more recordings 'B4Z2\Rec_01'
 paths.case = 'B1C2';
 paths.fname = 'B1C2_ii_run1_raw_tsss_mc_art_corr'; %artifact corrected file name
 paths.sh_fname = 'B1C2_ii_run1_raw_tsss_mc'; %short file name
 
-mkdir([paths.root paths.subj_name '\ASPIRE' ])
-mkdir([paths.root paths.subj_name '\ASPIRE\detections'])
-mkdir([paths.root paths.subj_name '\ASPIRE\plots'])
-mkdir([paths.root paths.subj_name '\ASPIRE\results'])
+mkdir([paths.root paths.subj_name filesep 'ASPIRE'])
+%mkdir([paths.root paths.subj_name '\ASPIRE\detections'])
+mkdir([paths.root paths.subj_name filesep 'ASPIRE' filesep 'plots'])
+mkdir([paths.root paths.subj_name filesep 'ASPIRE' filesep 'results'])
 
-paths.datections = [paths.root paths.subj_name '\ASPIRE\detections\'];
-paths.plots = [paths.root paths.subj_name '\ASPIRE\plots\']
-paths.results = [paths.root paths.subj_name '\ASPIRE\results\']
+paths.datections = [paths.root paths.subj_name filesep 'ASPIRE', ...
+                    filesep 'detections' filesep];
+paths.plots = [paths.root paths.subj_name filesep 'ASPIRE' filesep, ...
+                    'plots' filesep];
+paths.results = [paths.root paths.subj_name filesep 'ASPIRE' filesep, ...
+                    'results' filesep];
 
 %paths.resultsdir_root = [hdisk 'Valerii\45_cases\'];
 %paths.results_subfolder = '\ASPIRE\';
 %mkdir([paths.root paths.subj_name '\' paths.results_subfolder])
 
 % subj info
-paths.cortex = strcat([paths.anat paths.case '\tess_cortex_pial_low.mat']);
-paths.MRI = strcat([paths.anat paths.case '\subjectimage_T1.mat']);
-paths.Data = strcat([paths.data paths.case '\' paths.fname, ...
-					'\data_block001.mat']);
-paths.channels = strcat([paths.data paths.case '\@default_study', ...
-						'\channel_vectorview306_acc1.mat']);
-paths.G3 = strcat([paths.data paths.case '\@default_study', ...
-						 '\headmodel_surf_os_meg.mat']);
+paths.cortex = strcat([paths.anat paths.case filesep 'tess_cortex_pial_low.mat']);
+paths.MRI = strcat([paths.anat paths.case filesep 'subjectimage_T1.mat']);
+paths.Data = strcat([paths.data paths.case filesep paths.fname, ...
+                    filesep 'data_block001.mat']);
+paths.channels = strcat([paths.data paths.case filesep '@default_study', ...
+                         filesep 'channel_vectorview306_acc1.mat']);
+paths.G3 = strcat([paths.data paths.case filesep '@default_study', ...
+                   filesep 'headmodel_surf_os_meg.mat']);
 
 % paths to detections
 % path_vis_detections -- path to the visual detections file (csv)
-paths.path_vis_detections = [paths.datections  ]
+paths.path_vis_detections = [paths.datections 'Manual_spikes_' paths.sh_fname '.csv'];
 % path_ICA_detections -- path to the ICA detections (mat)
-paths.path_ICA_detections = 
+paths.path_ICA_detections = [paths.datections 'ICA_detections_' paths.sh_fname];
 % path_SPC_detections -- path to the Spyking Circus detections (csv)
-paths.path_SPC_detections = 
+paths.path_SPC_detections = [paths.datections 'Templates_' paths.sh_fname];
 
 %% Paths for saving
 % Path for sources saving without [spikes_extraction '_' channel_type '.mat']
-paths.sources_saving_path = [paths.results '\sources_'];
+paths.sources_saving_path = [paths.results filesep 'sources_'];
 % Path for clusters saving without [spikes_extraction '_' channel_type '.csv']
-paths.path_cluster_out = [paths.results '\cluster_out_'];
+paths.path_cluster_out = [paths.results filesep 'cluster_out_'];
 % Path for results saving without [spikes_extraction '_' channel_type '.mat']
-paths.results_saving_path = [paths.results '\results_'];
+paths.results_saving_path = [paths.results filesep 'results_'];
 
 % ROC saving path
-mkdir([paths.root '\ROC'])
-paths.roc = [paths.root '\ROC\'];
+mkdir([paths.root filesep 'ROC'])
+paths.roc = [paths.root filesep 'ROC' filesep];
 paths.roc_xlsx_fname = [paths.roc 'ROC.xlsx'];
 paths.roc_labels_xlsx_fname  = [paths.roc 'Labels.xlsx'];
 % Path for saving big picture
@@ -94,7 +100,7 @@ parameters.computation_clusters  = 1; % compute clustering
 parameters.draw_and_save_plots   = 0; % plot clusters
 parameters.draw_and_save_plots2  = 0; % save clustering
 parameters.computation_ROC       = 1; % compute ROC stat
-parameters.plot_big_pic      = 1; % 
+parameters.plot_big_pic      = 1; %
 parameters.mute_mode      = 1; % not plot pictures
 parameters.newdataset     = 1; % not plot pictures
 parameters.propagation_probability = 0; % all to all cluster propagation probability
@@ -107,7 +113,7 @@ G3              = load(paths.G3);
 
 parameters.detection_type = [1 2 3];
 
-%% Parameters detection
+%% Parameters for detection
 parameters.detection.ICA.spikes_extraction = 'ICA_based';
 parameters.detection.ICA.decision = 0.9; % the amplitude threshold for decision
 parameters.detection.ICA.f_low = 3; % bandpass filter before the ICA decomposition
@@ -116,14 +122,14 @@ parameters.detection.ICA.f_high = 70;
 parameters.detection.SPC.spikes_extraction = 'SpyCir_based';
 parameters.detection.visual.spikes_extraction = 'visual';
 
-%% Parameters RAP-MUSIC
+%% Parameters for RAP-MUSIC
 parameters.rap_music.f_low_RAP  = 10;
 parameters.rap_music.f_high_RAP = 200;
 parameters.rap_music.spikydata = 0; % spikydata -- indicatior, showing whether you want to fit
 parameters.rap_music.RAP = 'not';
 
 
-%% Parameters clustering
+%% Parameters for clustering
 % THR_DIST - maximal distance from the center of the cluster (radius) in m
 parameters.clustering.THR_DIST =  0.01;
 % N_MIN - minimum number of sources in one cluster
@@ -131,7 +137,7 @@ parameters.clustering.N_MIN = 3;
 parameters.CORR_THR = 0.95;
 
 
-%% Parameters plots
+%% Parameters for plots
 parameters.draw.f_low  = 3;
 parameters.draw.f_high = 50;
 parameters.draw.f_low_vis  = 2;
@@ -139,7 +145,7 @@ parameters.draw.f_high_vis = 50;
 
 
 
-main_one_subject(cortex, Data, G3, paths, parameters)
+%main_one_subject(cortex, Data, G3, paths, parameters)
 
 
 
