@@ -1,10 +1,4 @@
-function main_one_subject(detection_type, path_vis_detections, ...
-    path_ICA_detections, path_SPC_detections, newdataset, ...
-    resultsdir_root, subj_name, results_subfolder, mute_mode, ...
-    computation_source, computation_clusters, draw_and_save_plots,...
-    draw_and_save_plots2, computation_ROC, plot_big_pic, CORR_THR, ...
-    Data, G3, THR_DIST, N_MIN, roc_xlsx_fname, roc_labels_xlsx_fname, ...
-    bigpic_saving_path)
+function main_one_subject(cortex, Data, G3, paths, parameters)
 
 % -------------------------------------------------------------------------
 % All steps, one case
@@ -59,7 +53,7 @@ for channel_type_loop = 1:2
         
         switch spikes_detection
             case 1 % visual markings
-                spikes_extraction = 'visual';
+                spikes_extraction =  parameters.detection.visual.spikes_extraction;
                 manual_data = csvread(paths.path_vis_detections);
                 picked_components = [];
                 picked_comp_top = [];
@@ -69,15 +63,13 @@ for channel_type_loop = 1:2
                 
                 
             case 2 % ICA based
-                spikes_extraction = 'ICA_based';
-                decision = 0.9; % the amplitude threshold for decision
-                f_low = 3; % bandpass filter before the ICA decomposition
-                f_high = 70;
+                spikes_extraction = parameters.detection.ICA.spikes_extraction;
                 ICA_spikes_mat_saving_path = [paths.path_ICA_detections,'_', channel_type, '.mat'];
                 
-                if newdataset
+                if parameters.newdataset
                     [spike_ind, picked_components, picked_comp_top] = ...
-                        ICA_detection(Data, G3, channel_type, decision, f_low, f_high);
+                        ICA_detection(Data, G3, channel_type, parameters.detection.ICA.decision, ...
+                         parameters.detection.ICA.f_low, parameters.detection.ICA.f_high);
                     save(ICA_spikes_mat_saving_path,'spike_ind', 'picked_components', 'picked_comp_top')
                 end
                 
@@ -89,7 +81,7 @@ for channel_type_loop = 1:2
                 
                 
             case 3 % Spiking circus based
-                spikes_extraction = 'SpyCir_based';
+                spikes_extraction = parameters.detection.SPC.spikes_extraction;
                 spcirc_data = csvread([paths.path_SPC_detections,'_', channel_type, '.csv'],1,0);
                 picked_components = [];
                 picked_comp_top = [];
@@ -104,13 +96,7 @@ for channel_type_loop = 1:2
         close all
         
         %% 3. RAP-MUSIC (2) dipole fitting
-        if computation_source
-            f_low_RAP  = 10;
-            f_high_RAP = 200;
-            spikydata = 0;
-            %RAP = 'RAP'; corr_thresh = 0.99;
-            RAP = 'not';
-            
+        if parameters.computation_source            
             if spikes_detection ~= 1
                 corr_thresh = 0.0;
             else
@@ -119,8 +105,9 @@ for channel_type_loop = 1:2
             
             % corr_thresh = back to quantile(ValMax, 0.95)
             [IndMax, ValMax, ~, spikeind] = spike_localization(spike_ind, Data, G3, ...
-                channel_type, f_low_RAP, f_high_RAP, spikydata, picked_components, ...
-                picked_comp_top, corr_thresh, RAP);
+                channel_type, parameters.rap_music.f_low_RAP, parameters.rap_music.f_high_RAP, ...
+                parameters.rap_music.spikydata, picked_components, ...
+                picked_comp_top, corr_thresh, parameters.rap_music.RAP);
             
             save([paths.sources_saving_path spikes_extraction '_' channel_type '.mat'], ...
                 'IndMax','ValMax','ind_m','spikeind')
@@ -137,13 +124,12 @@ for channel_type_loop = 1:2
         %        close(gcf);
         
         %% 4. Clustering
-        if computation_clusters
+        if parameters.computation_clusters
             
             % load dipoles
             load([paths.sources_saving_path spikes_extraction '_' channel_type '.mat'], ...
                 'IndMax','ValMax','ind_m','spikeind')
-            
-            RAP = 'not';
+
             % set  CORR_TRESH
             if spikes_detection ~= 1
                 corr_thresh = prctile(ValMax,85);
@@ -156,9 +142,6 @@ for channel_type_loop = 1:2
             %disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
             %    num2str(length(ind_m))]);
             
-            thr_dist = parameters.THR_DIST; % maximal distance from the center of the cluster (radius) in m
-            Nmin = parameters.N_MIN; % minimum number of sources in one cluster
-            
             clear cluster
             if spikes_detection == 1 % for manual spikes
                 %Nmin = 1;
@@ -169,8 +152,8 @@ for channel_type_loop = 1:2
             else
                 % cluster creation space
                 try
-                    cluster = clustering(spike_ind, G3, Nmin, ValMax, IndMax, ind_m, ...
-                        thr_dist, 1,cortex, RAP, spikeind, spike_clust);
+                    cluster = clustering(spike_ind, G3, parameters.clustering.N_MIN, ValMax, IndMax, ind_m, ...
+                        parameters.clustering.THR_DIST, 1, cortex, parameters.rap_music.RAP, spikeind, spike_clust);
                     
                     if spikes_detection == 3
                         % refine clusters throwing away multiple detection of spikes
@@ -193,29 +176,22 @@ for channel_type_loop = 1:2
         end
         
         %% 5. Activation on sources
-        if draw_and_save_plots
+        if parameters.draw_and_save_plots
             
-            f_low  = 3;
-            f_high = 50;
             [spike_trials, maxamp_spike_av, ~, spike_ts] = ...
                 source_reconstruction(Data, G3, channel_type, cluster, ...
-                f_low, f_high);
+                parameters.draw.f_low, parameters.draw.f_high);
             
             close all
             %% 6. Big plot
-            f_low_vis  = 2; % bandpass filter for visualization
-            f_high_vis = 50;
             
-            %         epi_plot(Data, channel_type, f_low_vis, f_high_vis, cortex, ...
-            %             spike_trials, maxamp_spike_av, spike_ts, cluster, ...
-            %             channels, G3, MRI, corr_thresh)
-            
-            save_param.resultsdir_root    =  paths.resultsdir_root;
+            save_param.resultsdir_root    = paths.resultsdir_root;
             save_param.subj_name          = paths.subj_name;
             save_param.results_subfolder  = [paths.results_subfolder '\clusters'];
             save_param.spikes_extraction  = spikes_extraction;
             
-            plot_clusters_191015(Data, channel_type, f_low_vis, f_high_vis, cortex, ...
+            plot_clusters_191015(Data, channel_type, parameters.draw.f_low_vis, ...
+                parameters.draw.f_high_vis, cortex, ...
                 spike_trials, maxamp_spike_av, spike_ts, cluster, ...
                 channels, G3, MRI, corr_thresh, save_param ) %epi_plot_autoALLCLUSTERS
         end
@@ -228,10 +204,7 @@ for channel_type_loop = 1:2
         end
         
         %% saving
-        if draw_and_save_plots2
-            
-            f_low_vis  = 2; % bandpass filter for visualization
-            f_high_vis = 50;
+        if parameters.draw_and_save_plots2
             %% scatter
             figure('Name','Clusters raster plot','visible','off')
             scatter(cluster_out(:,1)/1000,cluster_out(:,2),'.')
@@ -241,13 +214,13 @@ for channel_type_loop = 1:2
             param.spikes_detection      = spikes_detection;
             param.spikes_extraction     = spikes_extraction;
             param.channel_type          = channel_type;
-            param.Nmin                  = Nmin;
-            param.thr_dist              = thr_dist;
+            param.Nmin                  = parameters.clustering.N_MIN;
+            param.thr_dist              = parameters.clustering.THR_DIST;
             param.corr_thresh           = corr_thresh;
             %             param.f_low_RAP             = f_low_RAP;
             %             param.f_high_RAP            = f_high_RAP;
-            param.f_low_vis             = f_low_vis; % bandpass filter for visualization
-            param.f_high_vis            = f_high_vis;
+            param.f_low_vis             = parameters.draw.f_low_vis; % bandpass filter for visualization
+            param.f_high_vis            = parameters.draw.f_high_vis;
             %             param.time_w                = time_w;
             %             param.distr                 = distr;
             
@@ -263,13 +236,13 @@ for channel_type_loop = 1:2
     end
     
     %% Plot BIGPIC
-    if plot_big_pic
+    if parameters.plot_big_pic
         plot_bigpic(paths.subj_name, paths.results_saving_path, cortex, paths.bigpic_saving_path)
         
     end
     
     %% ROC curves
-    if computation_ROC
+    if parameters.computation_ROC
         
         % Load Spyking Circus detected timestamps
         SPC_grad = load([paths.path_cluster_out 'SpyCir_based_grad.csv']);
@@ -283,8 +256,8 @@ for channel_type_loop = 1:2
         visual = load([paths.path_cluster_out 'visual_grad.csv']);
         
         % Compute and save all results in the excel file
-        ROC(detection_type, ICA_grad, ICA_mag, SPC_grad, SPC_mag, visual, ...
-            cortex, roc_xlsx_fname, roc_labels_xlsx_fname)
+        ROC(parameters.detection_type, ICA_grad, ICA_mag, SPC_grad, SPC_mag, visual, ...
+            cortex, paths.roc_xlsx_fname, paths.roc_labels_xlsx_fname)
         
     end
     

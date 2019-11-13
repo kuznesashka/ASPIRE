@@ -80,7 +80,7 @@ paths.path_cluster_out = [resultsdir_root subj_name results_subfolder '\cluster_
 paths.results_saving_path = [resultsdir_root subj_name results_subfolder '\results_'];
 
 
-%% Parameters
+%% Parameters main
 parameters.computation_source    = 1; % compute dipoles
 parameters.computation_clusters  = 1; % compute clustering
 parameters.draw_and_save_plots   = 0; % plot clusters
@@ -97,14 +97,43 @@ channels        = load(paths.channels);
 G3              = load(paths.G3);
 
 parameters.detection_type = [1 2 3];
+
+%% Parameters detection
+parameters.detection.ICA.spikes_extraction = 'ICA_based';
+parameters.detection.ICA.decision = 0.9; % the amplitude threshold for decision
+parameters.detection.ICA.f_low = 3; % bandpass filter before the ICA decomposition
+parameters.detection.ICA.f_high = 70;
+
+parameters.detection.SPC.spikes_extraction = 'SpyCir_based';
+parameters.detection.visual.spikes_extraction = 'visual';
+
+%% Parameters RAP-MUSIC
+parameters.rap_music.f_low_RAP  = 10;
+parameters.rap_music.f_high_RAP = 200;
+parameters.rap_music.spikydata = 0; % spikydata -- indicatior, showing whether you want to fit
+parameters.rap_music.RAP = 'not';
+
+
+%% Parameters clustering
 % THR_DIST - maximal distance from the center of the cluster (radius) in m
-parameters.THR_DIST =  0.01;
+parameters.clustering.THR_DIST =  0.01;
 % N_MIN - minimum number of sources in one cluster
 parameters.N_MIN = 3;
-
 parameters.CORR_THR = 0.95;
 
-main_one_subject(Data, G3)
+
+%% Parameters plots
+parameters.draw.f_low  = 3;
+parameters.draw.f_high = 50;
+parameters.draw.f_low_vis  = 2;
+parameters.draw.f_high_vis = 50;
+
+
+
+
+
+
+main_one_subject(cortex, Data, G3, paths, parameters)
 
 
 
