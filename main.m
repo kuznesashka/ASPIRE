@@ -29,8 +29,12 @@
 %short file name
 %paths.file_name_short = cases_files.file_names_short{case_n};
 
+%Debugging 
+%dbstop if warning
+
 %Add path and all subfolders 
 addpath(genpath('/Users/valery/MEG/brainstorm3'))
+warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %% Paths -- subject info
 % !!! File separator for current platform
 paths.anat = ['/Users/valery/MEG/EPILEPSY' filesep, ...

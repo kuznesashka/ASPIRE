@@ -104,7 +104,7 @@ for channel_type_loop = 1:2
             end
             
             % corr_thresh = back to quantile(ValMax, 0.95)
-            disp(['Spikes extraction: ' spikes_extraction ' Channels: ' channel_type]);
+            disp(['Spikes extraction: ' spikes_extraction '; Channels: ' channel_type]);
             [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data, G3, ...
                 channel_type, parameters.rap_music.f_low_RAP, parameters.rap_music.f_high_RAP, ...
                 parameters.rap_music.spikydata, picked_components, ...
@@ -139,9 +139,6 @@ for channel_type_loop = 1:2
                 %corr_thresh = CORR_THR;
             end
             ind_m = find((ValMax > corr_thresh));
-            
-            %disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
-            %    num2str(length(ind_m))]);
             
             clear cluster
             if spikes_detection == 1 % for manual spikes
@@ -206,7 +203,7 @@ for channel_type_loop = 1:2
         
         %% saving
         if parameters.save_results
-            save([results_saving_path spikes_extraction '_' channel_type '.mat'] ,'cluster','parameters')
+            save([paths.results_saving_path spikes_extraction '_' channel_type '.mat'] ,'cluster','parameters')
         end
         
     end
