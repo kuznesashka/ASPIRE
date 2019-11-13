@@ -69,7 +69,7 @@ for channel_type_loop = 1:2
                 if parameters.newdataset
                     [spike_ind, picked_components, picked_comp_top] = ...
                         ICA_detection(Data, G3, channel_type, parameters.detection.ICA.decision, ...
-                         parameters.detection.ICA.f_low, parameters.detection.ICA.f_high);
+                                       parameters.detection.ICA.f_low, parameters.detection.ICA.f_high);
                     save(ICA_spikes_mat_saving_path,'spike_ind', 'picked_components', 'picked_comp_top')
                 end
                 

@@ -30,7 +30,7 @@
 %paths.file_name_short = cases_files.file_names_short{case_n};
 
 %Add path and all subfolders 
-addpath(genpath('/Users/valery/MEG/fieldtrip-20191008'))
+addpath(genpath('/Users/valery/MEG/brainstorm3'))
 %% Paths -- subject info
 % !!! File separator for current platform
 paths.anat = ['/Users/valery/MEG/EPILEPSY' filesep, ...
@@ -98,13 +98,13 @@ paths.bigpic_saving_path = [paths.plots paths.case '.bmp'];
 
 %% Parameters main
 parameters.computation_source    = 1; % compute dipoles
-parameters.computation_clusters  = 1; % compute clustering
+parameters.computation_clusters  = 1; % compute and save clusters
 parameters.draw_and_save_plots   = 0; % plot clusters
 parameters.draw_and_save_plots2  = 0; % save clustering
-parameters.computation_ROC       = 1; % compute ROC stat
-parameters.plot_big_pic      = 1; %
-parameters.mute_mode      = 1; % not plot pictures
-parameters.newdataset     = 1; % not plot pictures
+parameters.computation_ROC       = 0; % compute ROC stat
+parameters.plot_big_pic          = 0; %
+parameters.mute_mode             = 1; % not plot pictures
+parameters.newdataset            = 1; % not plot pictures
 parameters.propagation_probability = 0; % all to all cluster propagation probability
 
 cortex          = load(paths.cortex);
@@ -113,7 +113,7 @@ Data            = load(paths.Data);
 channels        = load(paths.channels);
 G3              = load(paths.G3);
 
-parameters.detection_type = [1 2 3];
+parameters.detection_type = [2 3]; %1-visual, 2-ICA, 3-SPC
 
 %% Parameters for detection
 parameters.detection.ICA.spikes_extraction = 'ICA_based';
