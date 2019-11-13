@@ -1,4 +1,4 @@
-function main_one_subject(cortex, Data, G3, paths, parameters)
+function main_one_subject(cortex, Data, G3, channels, paths, parameters)
 
 % -------------------------------------------------------------------------
 % All steps, one case
@@ -104,7 +104,7 @@ for channel_type_loop = 1:2
             end
             
             % corr_thresh = back to quantile(ValMax, 0.95)
-            [IndMax, ValMax, ~, spikeind] = spike_localization(spike_ind, Data, G3, ...
+            [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data, G3, ...
                 channel_type, parameters.rap_music.f_low_RAP, parameters.rap_music.f_high_RAP, ...
                 parameters.rap_music.spikydata, picked_components, ...
                 picked_comp_top, corr_thresh, parameters.rap_music.RAP);
@@ -169,9 +169,9 @@ for channel_type_loop = 1:2
             end
             
             % Write clusters in csv file
-            cluster_out  = cluster_out(cluster, G3);
+            cluster_out_results  = cluster_out(cluster, G3);
             
-            csvwrite([paths.path_cluster_out spikes_extraction '_' channel_type '.csv'], cluster_out);
+            csvwrite([paths.path_cluster_out spikes_extraction '_' channel_type '.csv'], cluster_out_results);
             
         end
         
@@ -207,10 +207,10 @@ for channel_type_loop = 1:2
         if parameters.draw_and_save_plots2
             %% scatter
             figure('Name','Clusters raster plot','visible','off')
-            scatter(cluster_out(:,1)/1000,cluster_out(:,2),'.')
+            scatter(cluster_out_results(:,1)/1000,cluster_out_results(:,2),'.')
             grid minor
             
-            param.subj_name             = subj_name;
+            param.subj_name             = paths.subj_name;
             param.spikes_detection      = spikes_detection;
             param.spikes_extraction     = spikes_extraction;
             param.channel_type          = channel_type;

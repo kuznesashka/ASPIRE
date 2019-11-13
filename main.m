@@ -29,6 +29,8 @@
 %short file name
 %paths.file_name_short = cases_files.file_names_short{case_n};
 
+%Add path and all subfolders 
+addpath(genpath('/Users/valery/MEG/fieldtrip-20191008'))
 %% Paths -- subject info
 % !!! File separator for current platform
 paths.anat = ['/Users/valery/MEG/EPILEPSY' filesep, ...
@@ -47,7 +49,7 @@ mkdir([paths.root paths.subj_name filesep 'ASPIRE'])
 mkdir([paths.root paths.subj_name filesep 'ASPIRE' filesep 'plots'])
 mkdir([paths.root paths.subj_name filesep 'ASPIRE' filesep 'results'])
 
-paths.datections = [paths.root paths.subj_name filesep 'ASPIRE', ...
+paths.detections = [paths.root paths.subj_name filesep 'ASPIRE', ...
                     filesep 'detections' filesep];
 paths.plots = [paths.root paths.subj_name filesep 'ASPIRE' filesep, ...
                     'plots' filesep];
@@ -70,23 +72,23 @@ paths.G3 = strcat([paths.data paths.case filesep '@default_study', ...
 
 % paths to detections
 % path_vis_detections -- path to the visual detections file (csv)
-paths.path_vis_detections = [paths.datections 'Manual_spikes_' paths.sh_fname '.csv'];
+paths.path_vis_detections = [paths.detections 'Manual_spikes_' paths.sh_fname '.csv'];
 % path_ICA_detections -- path to the ICA detections (mat)
-paths.path_ICA_detections = [paths.datections 'ICA_detections_' paths.sh_fname];
+paths.path_ICA_detections = [paths.detections 'ICA_detections_' paths.sh_fname];
 % path_SPC_detections -- path to the Spyking Circus detections (csv)
-paths.path_SPC_detections = [paths.datections 'Templates_' paths.sh_fname];
+paths.path_SPC_detections = [paths.detections 'Templates_' paths.sh_fname];
 
 %% Paths for saving
 % Path for sources saving without [spikes_extraction '_' channel_type '.mat']
-paths.sources_saving_path = [paths.results filesep 'sources_'];
+paths.sources_saving_path = [paths.results 'sources_'];
 % Path for clusters saving without [spikes_extraction '_' channel_type '.csv']
-paths.path_cluster_out = [paths.results filesep 'cluster_out_'];
+paths.path_cluster_out = [paths.results 'cluster_out_'];
 % Path for results saving without [spikes_extraction '_' channel_type '.mat']
-paths.results_saving_path = [paths.results filesep 'results_'];
+paths.results_saving_path = [paths.results 'results_'];
 
 % ROC saving path
-mkdir([paths.root filesep 'ROC'])
-paths.roc = [paths.root filesep 'ROC' filesep];
+mkdir([paths.root 'ROC'])
+paths.roc = [paths.root 'ROC' filesep];
 paths.roc_xlsx_fname = [paths.roc 'ROC.xlsx'];
 paths.roc_labels_xlsx_fname  = [paths.roc 'Labels.xlsx'];
 % Path for saving big picture
@@ -145,20 +147,5 @@ parameters.draw.f_high_vis = 50;
 
 
 
-%main_one_subject(cortex, Data, G3, paths, parameters)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+main_one_subject(cortex, Data, G3, channels, paths, parameters)
 
