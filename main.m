@@ -22,45 +22,90 @@
 
 load cases_files_190921.mat
 
-hdisk = 'D:\';
-subj_name = cases_files.cases{case_n};
-cases_unique_for_anat = cases_files.cases_unique{case_n};
-protocol_dir = [hdisk 'Valerii\EPILEPSY\MEG_Tommaso\'];
-file_name = cases_files.file_names{case_n};
-file_name_short = cases_files.file_names_short{case_n};
-resultsdir_root = [hdisk 'Valerii\45_cases\'];
-results_subfolder = '\ASPIRE\';
-mkdir([resultsdir_root subj_name '\' results_subfolder])
+
+%% Paths -- all paths
+paths.hdisk = 'D:\';
+paths.subj_name = cases_files.cases{case_n};
+paths.cases_unique_for_anat = cases_files.cases_unique{case_n};
+paths.protocol_dir = [hdisk 'Valerii\EPILEPSY\MEG_Tommaso\'];
+paths.file_name = cases_files.file_names{case_n};
+paths.file_name_short = cases_files.file_names_short{case_n};
+paths.resultsdir_root = [hdisk 'Valerii\45_cases\'];
+paths.results_subfolder = '\ASPIRE\';
+mkdir([paths.resultsdir_root paths.subj_name '\' paths.results_subfolder])
 
 
-computation_source    = 1; % compute dipoles
-computation_clusters  = 1; % compute clustering
-draw_and_save_plots   = 0; % plot clusters
-draw_and_save_plots2  = 0; % save clustering
-computation_ROC       = 1; % compute ROC stat
+% paths to detections
+% path_vis_detections -- path to the visual detections file (csv)
+paths.path_vis_detections = 
+% path_ICA_detections -- path to the ICA detections (mat)
+paths.path_ICA_detections = 
+% path_SPC_detections -- path to the Spyking Circus detections (csv)
+paths.path_SPC_detections = 
 
 % subj info
-cortex          = load(strcat([protocol_dir, 'anat\', cases_unique_for_anat, ...
-                            '\tess_cortex_pial_low.mat']));
-MRI             = load(strcat([protocol_dir, 'anat\', cases_unique_for_anat, ...
-                            '\subjectimage_T1.mat']));
-Data            = load(strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
-                            '\', file_name,'\data_block001.mat']));
-channels        = load(strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
-                            '\@default_study', '\channel_vectorview306_acc1.mat']));
-G3              = load(strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
-                            '\@default_study', '\headmodel_surf_os_meg.mat']));
-
-detection_type = [1 2 3];
+paths.cortex = strcat([protocol_dir, 'anat\', cases_unique_for_anat, ...
+                            '\tess_cortex_pial_low.mat'])
+paths.MRI = strcat([protocol_dir, 'anat\', cases_unique_for_anat, ...
+                            '\subjectimage_T1.mat'])
+paths.Data = strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
+                            '\', file_name,'\data_block001.mat'])
+paths.channels = strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
+                            '\@default_study', '\channel_vectorview306_acc1.mat'])
+paths.G3 = strcat([protocol_dir, 'data\', cases_unique_for_anat, ...
+                            '\@default_study', '\headmodel_surf_os_meg.mat'])
 
 % ROC saving path
-roc_xlsx_fname = [resultsdir_root 'Aspire_ROC\ROC_COR_TR_' num2str(CORR_THR) '.xlsx'];
-roc_labels_xlsx_fname = [resultsdir_root 'Aspire_ROC\Labels_COR_TR_' num2str(CORR_THR) '.xlsx'];
+paths.roc_xlsx_fname = [resultsdir_root 'Aspire_ROC\ROC_COR_TR_' num2str(CORR_THR) '.xlsx'];
+paths.roc_labels_xlsx_fname  = [resultsdir_root 'Aspire_ROC\Labels_COR_TR_' num2str(CORR_THR) '.xlsx'];
 % Path for saving big picture
-bigpic_saving_path = [resultsdir_root, subj_name, '\ASPIRE\CORR_THR_', ...
-    num2str(CORR_THR), '_', xlsTAB '.bmp']
+paths.bigpic_saving_path = [resultsdir_root, subj_name, '\ASPIRE\CORR_THR_', ...
+    num2str(CORR_THR), '_', xlsTAB '.bmp'] 
 
-main_one_subject()
+
+% Path for sources saving without [spikes_extraction '_' channel_type '.mat']
+paths.sources_saving_path = [resultsdir_root subj_name results_subfolder '\sources_'];
+% Path for clusters saving without [spikes_extraction '_' channel_type '.csv']
+paths.path_cluster_out = [resultsdir_root subj_name results_subfolder '\cluster_out_'];
+% Path for results saving without [spikes_extraction '_' channel_type '.mat']
+paths.results_saving_path = [resultsdir_root subj_name results_subfolder '\results_'];
+
+
+%% Parameters
+parameters.computation_source    = 1; % compute dipoles
+parameters.computation_clusters  = 1; % compute clustering
+parameters.draw_and_save_plots   = 0; % plot clusters
+parameters.draw_and_save_plots2  = 0; % save clustering
+parameters.computation_ROC       = 1; % compute ROC stat
+parameters.plot_big_pic      = 1; % 
+parameters.mute_mode      = 1; % not plot pictures
+parameters.newdataset     = 1; % not plot pictures
+
+cortex          = load(paths.cortex);
+MRI             = load(paths.MRI);
+Data            = load(paths.Data);
+channels        = load(paths.channels);
+G3              = load(paths.G3);
+
+parameters.detection_type = [1 2 3];
+% THR_DIST - maximal distance from the center of the cluster (radius) in m
+parameters.THR_DIST =  0.01;
+% N_MIN - minimum number of sources in one cluster
+parameters.N_MIN = 3;
+
+parameters.CORR_THR = 0.95;
+
+main_one_subject(detection_type,  ...
+    Data, G3, )
+
+
+
+
+
+
+
+
+
 
 
 
