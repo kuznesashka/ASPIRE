@@ -163,7 +163,7 @@ for channel_type_loop = 1:2
         end
         
         %% 5. Activation on sources
-        if parameters.draw_and_save_plots
+        if parameters.draw_and_save_plots && (spikes_detection>1)
             
             [spike_trials, maxamp_spike_av, ~, spike_ts] = ...
                 source_reconstruction(Data, G3, channel_type, cluster, ...

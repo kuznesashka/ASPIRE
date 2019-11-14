@@ -50,6 +50,7 @@ if mute
 else
     h = figure('visible','on');
 end
+
 % top brain view
 subplot(3,4,[5:6,9:10])
 cortex_lr = cortex;
@@ -78,16 +79,19 @@ end
 
 % bars for clicking
 subplot(3,4,7)
-        %scatter(1*ones(size(cluster,2),1),[1:size(cluster,2)],50,c,'filled')
-        %text(1+0.1, 1, '1');
-        %text(1+0.1, size(cluster,2), num2str(size(cluster,2)));
+%scatter(1*ones(size(cluster,2),1),[1:size(cluster,2)],50,c,'filled')
+%text(1+0.1, 1, '1');
+%text(1+0.1, size(cluster,2), num2str(size(cluster,2)));
 set(groot,'defaultAxesColorOrder',c) %colormap(c);
 x = ones(2, size(cluster,2));
 ff = area(x);
 axis off
 grid off
 ylim([1, size(cluster,2)])
-set(ff,'ButtonDownFcn', @cluststatistics, 'HitTest','on')
+
+if ~mute
+    set(ff,'ButtonDownFcn', @cluststatistics, 'HitTest','on')
+end
 
 % plots for statistics
 h1 = subplot(3,4,1);
@@ -122,7 +126,9 @@ h7 = subplot(3,4,12);
 axis equal
 grid off
 
-
+if ~mute
+    uiwait(gcf);
+end
 % button = uicontrol('Style', 'pushbutton',...
 %     'String', 'Show timeseries',...
 %     'Position', [300 15 310 30],...
@@ -133,7 +139,7 @@ grid off
         
         loc = event.IntersectionPoint;
         clust_num = ceil(loc(2));
-
+        
         % Distribution of subcorrs inside the cluster
         cla(h1)
         h1 = subplot(3,4,1);
@@ -214,10 +220,7 @@ grid off
         axis equal
         grid off
         axis off
-        
-        
     end
-
 
 
 if save_clust

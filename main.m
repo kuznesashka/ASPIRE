@@ -119,7 +119,7 @@ Data            = load(paths.Data);
 channels        = load(paths.channels);
 G3              = load(paths.G3);
 
-parameters.detection_type = [1 2 3]; %1-visual, 2-ICA, 3-SPC
+parameters.detection_type = [2 3]; %1-visual, 2-ICA, 3-SPC
 
 %% Parameters for detection
 parameters.detection.ICA.spikes_extraction = 'ICA_based';
