@@ -133,7 +133,7 @@ parameters.rap_music.f_low_RAP  = 10;
 parameters.rap_music.f_high_RAP = 200;
 parameters.rap_music.spikydata = 0; % spikydata -- indicatior, showing whether you want to fit
 parameters.rap_music.RAP = 'not';
-parameters.prctile = 0.85; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
+parameters.prctile = 85; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
 parameters.corr_thresh = 0.95; % threshold for visual detections
 
 %% Parameters for clustering
