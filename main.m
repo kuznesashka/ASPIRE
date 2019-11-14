@@ -109,7 +109,7 @@ parameters.draw_and_save_plots   = 1; % plot clusters
 parameters.save_results			 = 0; % save results in file
 parameters.computation_ROC       = 0; % compute ROC stat
 parameters.plot_big_pic          = 0; %
-parameters.mute_mode             = 1; % not plot pictures
+parameters.mute_mode             = 0; % not plot pictures
 parameters.newdataset            = 0; % not plot pictures
 parameters.propagation_probability = 0; % all to all cluster propagation probability
 
@@ -144,13 +144,12 @@ parameters.clustering.THR_DIST =  0.01;
 % N_MIN - minimum number of sources in one cluster
 parameters.clustering.N_MIN = 3;
 
-
-
 %% Parameters for plots
 parameters.draw.f_low  = 3;
 parameters.draw.f_high = 50;
 parameters.draw.f_low_vis  = 2;
 parameters.draw.f_high_vis = 50;
+parameters.draw.save_clusters = 0;
 
 
 
