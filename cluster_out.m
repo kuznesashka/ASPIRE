@@ -11,7 +11,6 @@ L = length(cluster);
         gof        = cluster{1,pre}(3,:)';
         pos        = G3.GridLoc(cluster{1,pre}(1,:),:);
         vertex     = cluster{1,pre}(1,:)';
-        cluster_out = [cluster_out;
-            stamps_pre ones(size(stamps_pre))*pre gof pos vertex];
+        cluster_out = [cluster_out; stamps_pre ones(size(stamps_pre))*pre gof pos vertex];
      end
      

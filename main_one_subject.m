@@ -97,10 +97,10 @@ for channel_type_loop = 1:2
         
         %% 3. RAP-MUSIC (2) dipole fitting
         if parameters.computation_source
-
+            
             % corr_thresh = prctile(ValMax,85);
             disp(['Spikes extraction: ' spikes_extraction '; Channels: ' channel_type]);
-
+            
             [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data, G3, ...
                 channel_type, parameters.rap_music.f_low_RAP, parameters.rap_music.f_high_RAP, ...
                 parameters.rap_music.spikydata, picked_components, picked_comp_top, ...
@@ -142,7 +142,7 @@ for channel_type_loop = 1:2
                     if spikes_detection == 3
                         % refine clusters throwing away multiple detection of spikes, only for Spyking Circus
                         cluster = spykingcircus_cleaner_aftecluster(cluster);
-                    end  
+                    end
                 catch
                     if size(IndMax) ~= size(spike_ind)
                         spike_ind  = spike_ind';
@@ -152,9 +152,11 @@ for channel_type_loop = 1:2
             end
             
             % Write clusters in csv file
-            cluster_out_results  = cluster_out(cluster, G3);
+            cluster_out_results = cluster_out(cluster, G3);
             csvwrite([paths.path_cluster_out spikes_extraction '_' channel_type '.csv'], cluster_out_results);
-            
+            % save only timestamps
+            cluster_out_time_only = cluster_out_results(:,1);
+            save([paths.path_cluster_out '_time_only_' spikes_extraction '_' channel_type '.mat'], cluster_out_time_only);
         end
         
         %% 5. Activation on sources
@@ -172,7 +174,7 @@ for channel_type_loop = 1:2
             save_param.results_subfolder  = [paths.results_subfolder '\clusters'];
             save_param.spikes_extraction  = spikes_extraction;
             
-            plot_clusters_191015(Data, channel_type, parameters.draw.f_low_vis, ...
+            plot_clusters(Data, channel_type, parameters.draw.f_low_vis, ...
                 parameters.draw.f_high_vis, cortex, ...
                 spike_trials, maxamp_spike_av, spike_ts, cluster, ...
                 channels, G3, MRI, corr_thresh, save_param ) %epi_plot_autoALLCLUSTERS
@@ -185,18 +187,13 @@ for channel_type_loop = 1:2
             distr = all2all_prop(cluster,time_w);
         end
         
-        %% saving
+        %% saving results and parameters
         if parameters.save_results
             save([paths.results_saving_path spikes_extraction '_' channel_type '.mat'],'cluster','parameters')
         end
         
     end
-    
-    
-    
-    
 end
-
 
 %% Plot BIGPIC
 if parameters.plot_big_pic
