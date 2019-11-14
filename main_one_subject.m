@@ -97,18 +97,14 @@ for channel_type_loop = 1:2
         
         %% 3. RAP-MUSIC (2) dipole fitting
         if parameters.computation_source
-            if spikes_detection ~= 1
-                corr_thresh = 0.0;
-            else
-                corr_thresh = parameters.CORR_THR; %0.95
-            end
-            
-            % corr_thresh = back to quantile(ValMax, 0.95)
+
+            % corr_thresh = prctile(ValMax,85);
             disp(['Spikes extraction: ' spikes_extraction '; Channels: ' channel_type]);
+
             [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data, G3, ...
                 channel_type, parameters.rap_music.f_low_RAP, parameters.rap_music.f_high_RAP, ...
-                parameters.rap_music.spikydata, picked_components, ...
-                picked_comp_top, corr_thresh, parameters.rap_music.RAP);
+                parameters.rap_music.spikydata, picked_components, picked_comp_top, ...
+                spikes_detection, parameters.prctile, parameters.corr_thresh, parameters.rap_music.RAP);
             
             save([paths.sources_saving_path spikes_extraction '_' channel_type '.mat'], ...
                 'IndMax','ValMax','ind_m','spikeind')
@@ -126,19 +122,9 @@ for channel_type_loop = 1:2
         
         %% 4. Clustering
         if parameters.computation_clusters
-            
             % load dipoles
             load([paths.sources_saving_path spikes_extraction '_' channel_type '.mat'], ...
                 'IndMax','ValMax','ind_m','spikeind')
-            
-            % set  CORR_TRESH
-            if spikes_detection ~= 1
-                corr_thresh = prctile(ValMax,85);
-            else
-                corr_thresh = parameters.CORR_THR; %0.95
-                %corr_thresh = CORR_THR;
-            end
-            ind_m = find((ValMax > corr_thresh));
             
             clear cluster
             if spikes_detection == 1 % for manual spikes
@@ -154,10 +140,9 @@ for channel_type_loop = 1:2
                         parameters.clustering.THR_DIST, 1, cortex, parameters.rap_music.RAP, spikeind, spike_clust);
                     
                     if spikes_detection == 3
-                        % refine clusters throwing away multiple detection of spikes
+                        % refine clusters throwing away multiple detection of spikes, only for Spyking Circus
                         cluster = spykingcircus_cleaner_aftecluster(cluster);
-                    end
-                    
+                    end  
                 catch
                     if size(IndMax) ~= size(spike_ind)
                         spike_ind  = spike_ind';
@@ -168,7 +153,6 @@ for channel_type_loop = 1:2
             
             % Write clusters in csv file
             cluster_out_results  = cluster_out(cluster, G3);
-            
             csvwrite([paths.path_cluster_out spikes_extraction '_' channel_type '.csv'], cluster_out_results);
             
         end
@@ -198,12 +182,12 @@ for channel_type_loop = 1:2
         %% 7. all to all cluster propagation probability
         if parameters.propagation_probability
             time_w  = .1; % window of interest is  [-time_w time_w] in seconds
-            distr = all2all_prop(cluster,time_w)
+            distr = all2all_prop(cluster,time_w);
         end
         
         %% saving
         if parameters.save_results
-            save([paths.results_saving_path spikes_extraction '_' channel_type '.mat'] ,'cluster','parameters')
+            save([paths.results_saving_path spikes_extraction '_' channel_type '.mat'],'cluster','parameters')
         end
         
     end

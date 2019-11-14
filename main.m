@@ -133,14 +133,15 @@ parameters.rap_music.f_low_RAP  = 10;
 parameters.rap_music.f_high_RAP = 200;
 parameters.rap_music.spikydata = 0; % spikydata -- indicatior, showing whether you want to fit
 parameters.rap_music.RAP = 'not';
-
+parameters.prctile = 0.85; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
+parameters.corr_thresh = 0.95; % threshold for visual detections
 
 %% Parameters for clustering
 % THR_DIST - maximal distance from the center of the cluster (radius) in m
 parameters.clustering.THR_DIST =  0.01;
 % N_MIN - minimum number of sources in one cluster
 parameters.clustering.N_MIN = 3;
-parameters.CORR_THR = 0.95;
+
 
 
 %% Parameters for plots

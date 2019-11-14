@@ -1,6 +1,6 @@
 function [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data, G3, ...
-    channel_type, f_low, f_high, spikydata, picked_components, ...
-    picked_comp_top, corr_thresh, RAP)
+    channel_type, f_low, f_high, spikydata, picked_components, picked_comp_top, ...
+    spikes_detection, corr_thresh_prctile, corr_thresh, RAP)
 
 % -------------------------------------------------------------------------
 % Spike localization with RAP-MUSIC
@@ -17,7 +17,9 @@ function [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data,
 %                           timeseries
 %   picked_comp_top -- if spikydata == 1, the picked ICA components
 %                           topographies
-%   corr_thresh -- subcorr threshold level
+%   spikes_detection -- 1-visual, 2-ICA, 3-Spyking Circus
+%   corr_thresh_prctile -- percentile for threshold (only for ICA and SPC)
+%   corr_thresh -- subcorr threshold level for visual detections
 %   RAP -- 'RAP' to run RAP-MUSIC and something else for fast one-round
 %       MUSIC
 %   
@@ -118,10 +120,10 @@ end
 %figure
 %histogram(ValMax)
 
-if corr_thresh  ~= 0.0
-    corr_thresh = 0.95;
-else
-  corr_thresh = prctile(ValMax,85); %quantile(ValMax, quant);
+% visual detection - corr_thresh
+% ICA and SPC detection - prctile(ValMax,corr_thresh_prctile);
+if spikes_detection ~= 1
+    corr_thresh = prctile(ValMax,corr_thresh_prctile); %quantile(ValMax, quant);
 end
 
 ind_m = find((ValMax > corr_thresh));
@@ -129,3 +131,7 @@ disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', .
     num2str(length(ind_m))]);
 
 end
+
+
+
+
