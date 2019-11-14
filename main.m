@@ -35,6 +35,7 @@
 %Add path and all subfolders 
 addpath(genpath('/Users/valery/MEG/brainstorm3'))
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
+
 %% Paths -- subject info
 % !!! File separator for current platform
 paths.anat = ['/Users/valery/MEG/EPILEPSY' filesep, ...
@@ -59,10 +60,6 @@ paths.plots = [paths.root paths.subj_name filesep 'ASPIRE' filesep, ...
                     'plots' filesep];
 paths.results = [paths.root paths.subj_name filesep 'ASPIRE' filesep, ...
                     'results' filesep];
-
-%paths.resultsdir_root = [hdisk 'Valerii\45_cases\'];
-%paths.results_subfolder = '\ASPIRE\';
-%mkdir([paths.root paths.subj_name '\' paths.results_subfolder])
 
 % subj info
 paths.cortex = strcat([paths.anat paths.case filesep 'tess_cortex_pial_low.mat']);
@@ -90,23 +87,28 @@ paths.path_cluster_out = [paths.results 'cluster_out_'];
 % Path for results saving without [spikes_extraction '_' channel_type '.mat']
 paths.results_saving_path = [paths.results 'results_'];
 
+% Save clusters plots
+mkdir([paths.root paths.subj_name filesep 'ASPIRE' filesep 'plots' filesep 'clusters'])
+paths.save_cluster_plots = [paths.plots filesep 'clusters' filesep ];
+
 % ROC saving path
 mkdir([paths.root 'ROC'])
 paths.roc = [paths.root 'ROC' filesep];
 paths.roc_xlsx_fname = [paths.roc 'ROC.xlsx'];
 paths.roc_labels_xlsx_fname  = [paths.roc 'Labels.xlsx'];
+
 % Path for saving big picture
 paths.bigpic_saving_path = [paths.plots paths.case '.bmp'];
 
 
 
 %% Parameters main
-parameters.computation_source    = 1; % compute dipoles
+parameters.computation_source    = 0; % compute dipoles
 parameters.computation_clusters  = 1; % compute and save clusters
-parameters.draw_and_save_plots   = 0; % plot clusters
-parameters.save_results			 = 1; % save results in file
-parameters.computation_ROC       = 1; % compute ROC stat
-parameters.plot_big_pic          = 1; %
+parameters.draw_and_save_plots   = 1; % plot clusters
+parameters.save_results			 = 0; % save results in file
+parameters.computation_ROC       = 0; % compute ROC stat
+parameters.plot_big_pic          = 0; %
 parameters.mute_mode             = 1; % not plot pictures
 parameters.newdataset            = 0; % not plot pictures
 parameters.propagation_probability = 0; % all to all cluster propagation probability
@@ -117,7 +119,7 @@ Data            = load(paths.Data);
 channels        = load(paths.channels);
 G3              = load(paths.G3);
 
-parameters.detection_type = [1 2 3]; %1-visual, 2-ICA, 3-SPC
+parameters.detection_type = [2 3]; %1-visual, 2-ICA, 3-SPC
 
 %% Parameters for detection
 parameters.detection.ICA.spikes_extraction = 'ICA_based';
@@ -152,7 +154,7 @@ parameters.draw.f_high_vis = 50;
 
 
 
-main_one_subject(cortex, Data, G3, channels, paths, parameters)
+main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters)
 
 
 

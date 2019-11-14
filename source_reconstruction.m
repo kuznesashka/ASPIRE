@@ -46,8 +46,10 @@ function [spike_trials, maxamp_spike_av, channels_maxamp, spike_ts] = ...
     clear spike_trials
     for i = 1:length(cluster)
         for j = 1:size(cluster{1,i}, 2) % number of spikes in the cluster
+             
             indtime = cluster{1,i}(2,j); % spike timesamples
-            spike_trials{i}(:,:,j) = Ff(:,(indtime-40):(indtime+80)); % spikes from recordings
+             spike_trials{i}(:,:,j) = Ff(:,(indtime-40):(indtime+80)); % spikes from recordings
+             
         end
         spike_av{i} = mean(spike_trials{i}, 3);
         spike_std{i} = std(spike_trials{i},[], 3);
@@ -81,11 +83,10 @@ function [spike_trials, maxamp_spike_av, channels_maxamp, spike_ts] = ...
 %     end
     
     for i = 1:size(cluster, 2)
-        for j = 1:length(cluster{1,i})
+        for j = 1:size(cluster{1,i},2)
             dip_ind = cluster{1,i}(1,j);
             sp_ind = cluster{1,i}(2,j);
-            
-            spike = Ff(:, (sp_ind-40):(sp_ind+80));
+             spike = Ff(:, (sp_ind-40):(sp_ind+80));
             
 %             figure
 %             plot(spike')
@@ -100,7 +101,7 @@ function [spike_trials, maxamp_spike_av, channels_maxamp, spike_ts] = ...
             if spike_ts{i}(j,40) > 0
                 spike_ts{i}(j,:) = -spike_ts{i}(j,:);
             end
-                            
+                          
 %             figure
 %             plot(spike_ts{i}(j,:))
         end

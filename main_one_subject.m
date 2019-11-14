@@ -1,4 +1,4 @@
-function main_one_subject(cortex, Data, G3, channels, paths, parameters)
+function main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters)
 
 % -------------------------------------------------------------------------
 % All steps, one case
@@ -55,11 +55,12 @@ for channel_type_loop = 1:2
             case 1 % visual markings
                 spikes_extraction =  parameters.detection.visual.spikes_extraction;
                 manual_data = csvread(paths.path_vis_detections);
-                picked_components = [];
-                picked_comp_top = [];
+                picked_components = []; % ICA relevant
+                picked_comp_top = []; % ICA relevant
+                spcirc_clust = []; % SPC relevant (maybe delete)
                 spike_ind = manual_data(:,1);
                 spike_ind = spike_ind(spike_ind<600-30)*1000;
-                spcirc_clust = [];
+
                 
                 
             case 2 % ICA based
@@ -74,7 +75,7 @@ for channel_type_loop = 1:2
                 end
                 
                 load(ICA_spikes_mat_saving_path,'spike_ind', 'picked_components', 'picked_comp_top')
-                spcirc_clust = [];
+                spcirc_clust = []; % SPC relevant (maybe delete)
                 spike_clust = zeros(size(spike_ind))';
                 spike_clust = spike_clust(spike_ind<600000-30 & spike_ind>41);
                 spike_ind = spike_ind(spike_ind<600000-30 & spike_ind>41);
@@ -83,8 +84,8 @@ for channel_type_loop = 1:2
             case 3 % Spiking circus based
                 spikes_extraction = parameters.detection.SPC.spikes_extraction;
                 spcirc_data = csvread([paths.path_SPC_detections,'_', channel_type, '.csv'],1,0);
-                picked_components = [];
-                picked_comp_top = [];
+                picked_components = []; % ICA relevant
+                picked_comp_top = []; % ICA relevant
                 spike_ind = spcirc_data(:,1);
                 spike_clust = spcirc_data(:,3);
                 spike_clust = spike_clust(spike_ind<600000-30 & spike_ind>41);
@@ -153,10 +154,12 @@ for channel_type_loop = 1:2
             
             % Write clusters in csv file
             cluster_out_results = cluster_out(cluster, G3);
-            csvwrite([paths.path_cluster_out spikes_extraction '_' channel_type '.csv'], cluster_out_results);
+            csvwrite([paths.path_cluster_out spikes_extraction '_' channel_type '.csv'], ...
+                       cluster_out_results);
             % save only timestamps
             cluster_out_time_only = cluster_out_results(:,1);
-            save([paths.path_cluster_out '_time_only_' spikes_extraction '_' channel_type '.mat'], cluster_out_time_only);
+            save([paths.path_cluster_out 'time_only_' spikes_extraction '_' channel_type '.mat'], ...
+                    'cluster_out_time_only');
         end
         
         %% 5. Activation on sources
@@ -169,15 +172,11 @@ for channel_type_loop = 1:2
             close all
             %% 6. Big plot
             
-            save_param.resultsdir_root    = paths.resultsdir_root;
-            save_param.subj_name          = paths.subj_name;
-            save_param.results_subfolder  = [paths.results_subfolder '\clusters'];
-            save_param.spikes_extraction  = spikes_extraction;
-            
-            plot_clusters(Data, channel_type, parameters.draw.f_low_vis, ...
+            plot_clusters(Data, channel_type, spikes_extraction, parameters.draw.f_low_vis, ...
                 parameters.draw.f_high_vis, cortex, ...
                 spike_trials, maxamp_spike_av, spike_ts, cluster, ...
-                channels, G3, MRI, corr_thresh, save_param ) %epi_plot_autoALLCLUSTERS
+                channels, G3, MRI, prctile(ValMax,corr_thresh_prctile), ...
+                paths.save_cluster_plots) %epi_plot_autoALLCLUSTERS
         end
         
         

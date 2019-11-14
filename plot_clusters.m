@@ -1,6 +1,6 @@
-function epi_plotautoALLCLUSTERS(Data, channel_type, f_low, f_high, cortex, ...
-    spike_trials, maxamp_spike_av, spike_ts, cluster, ...
-    channels, G3, MRI, corr_thresh, save_param)
+function plot_clusters(Data, channel_type, spikes_extraction, ...
+    f_low, f_high, cortex, spike_trials, maxamp_spike_av, spike_ts, cluster, ...
+    channels, G3, MRI, corr_thresh, save_path)
 % 
 %  spike_ind, picked_components, picked_comp_top, spike_sources, ...
 %     bf_ts, corr_thresh, hemi)
@@ -214,7 +214,7 @@ for     clust_num = 1:length(cluster)%ceil(loc(2));
     axis off
     
     set(gcf, 'Position', get(0, 'Screensize'));
-    saveas(gcf,[save_param.resultsdir_root, save_param.subj_name, save_param.results_subfolder '\Clusters_' save_param.spikes_extraction '_' channel_type '_' num2str(clust_num)  '.bmp'])
+    saveas(gcf,[save_path 'Cluster_' spikes_extraction '_' channel_type '_' num2str(clust_num) '.bmp'])
  
      
 end
