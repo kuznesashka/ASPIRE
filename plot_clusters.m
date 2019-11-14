@@ -46,7 +46,7 @@ Ff = filtfilt(b, a, Data.F(channel_idx,:)')';
 
 % MAIN FIGURE
 if mute
-h = figure('visible','off');
+    h = figure('visible','off');
 else
     h = figure('visible','on');
 end
@@ -78,16 +78,16 @@ end
 
 % bars for clicking
 subplot(3,4,7)
-scatter(1*ones(size(cluster,2),1),[1:size(cluster,2)],50,c,'filled')
-text(1+0.1, 1, '1');
-text(1+0.1, size(cluster,2), num2str(size(cluster,2)));
-% x = ones(2, length(cluster));
-% ff = area(x);
-% colormap(c)
-% axis off
-% grid off
-% ylim([0, length(cluster)])
-% set(ff,'ButtonDownFcn', @cluststatistics, 'HitTest','on')
+        %scatter(1*ones(size(cluster,2),1),[1:size(cluster,2)],50,c,'filled')
+        %text(1+0.1, 1, '1');
+        %text(1+0.1, size(cluster,2), num2str(size(cluster,2)));
+set(groot,'defaultAxesColorOrder',c) %colormap(c);
+x = ones(2, size(cluster,2));
+ff = area(x);
+axis off
+grid off
+ylim([1, size(cluster,2)])
+set(ff,'ButtonDownFcn', @cluststatistics, 'HitTest','on')
 
 % plots for statistics
 h1 = subplot(3,4,1);
@@ -124,14 +124,102 @@ grid off
 
 
 % button = uicontrol('Style', 'pushbutton',...
-%    'String', 'Show timeseries',...
-%    'Position', [300 15 310 30],...
-%    'Callback', @(source,event)plotMEG(h),...
-%    'FontSize', 14);
+%     'String', 'Show timeseries',...
+%     'Position', [300 15 310 30],...
+%     'Callback', @(source,event)plotMEG(h),...
+%     'FontSize', 14);
 
-% function cluststatistics(source, event)
-%
-%     loc = event.IntersectionPoint;
+    function cluststatistics(source, event)
+        
+        loc = event.IntersectionPoint;
+        clust_num = ceil(loc(2));
+
+        % Distribution of subcorrs inside the cluster
+        cla(h1)
+        h1 = subplot(3,4,1);
+        histogram(cluster{1,clust_num}(3,:), 'EdgeColor', 'k', 'FaceColor', ...
+            c(clust_num,:), 'BinWidth', 0.001)
+        xlim([corr_thresh-0.01 1])
+        title('Distribution of subcorrs')
+        set(gca,'fontsize', 14)
+        
+        % Distribution of this cluster events in time
+        cla(h2)
+        h2 = subplot(3,4,2);
+        stem(cluster{1,clust_num}(2,:), ones(1, length(cluster{1,clust_num}(2,:))), ...
+            'MarkerEdgeColor', 'k', 'MarkerFaceColor', c(clust_num,:))
+        title('Distribution of events in time')
+        xlim([0 size(Ff, 2)])
+        set(gca,'fontsize', 14)
+        
+        % Average spike on sensors
+        cla(h3)
+        h3 = subplot(3,4,3);
+        plot(-40:80, maxamp_spike_av{clust_num}', 'Color', c(clust_num,:), 'LineWidth', 2)
+        hold on
+        xlim([-40 80])
+        title('Average spike on 5 top amplitude sensors')
+        set(gca,'fontsize', 14)
+        
+        % Source activations timeseries
+        cla(h4)
+        h4 = subplot(3,4,4);
+        plot(-40:80, mean(spike_ts{clust_num}, 1), 'Color', c(clust_num, :), 'LineWidth', 2)
+        title('Events timeseries (sources)')
+        xlim([-40 80])
+        setappdata(h, 'cluster', clust_num)
+        set(gca,'fontsize', 14)
+        
+        
+        coord_scs = R(cluster{clust_num}(1,:),:);
+        coord_mri = cs_convert(MRI, 'scs', 'voxel', coord_scs);
+        mnslice = round(mean(coord_mri, 1));
+        coord_mri = round(coord_mri);
+        
+        cla(h5)
+        h5 = subplot(3,4,8);
+        mri = flipud(MRI.Cube(:,:,mnslice(3))');
+        imagesc(mri)
+        colormap('gray')
+        axis equal
+        grid off
+        axis off
+        hold on
+        idx = coord_mri(:,1:2);
+        scatter(idx(:,1), 257-idx(:,2),  50, 'filled', 'MarkerFaceColor', ...
+            c(clust_num,:), 'MarkerEdgeColor', 'k');
+        
+        cla(h6)
+        h6 = subplot(3,4,11);
+        mri = flipud(squeeze(MRI.Cube(:,mnslice(2),:))');
+        imagesc(mri)
+        colormap('gray')
+        axis equal
+        grid off
+        axis off
+        hold on
+        idx = coord_mri(:,[1,3]);
+        scatter(idx(:,1), 257-idx(:,2), 50, 'filled', 'MarkerFaceColor', ...
+            c(clust_num,:), 'MarkerEdgeColor', 'k');
+        
+        cla(h7)
+        h7 = subplot(3,4,12);
+        mri = flipud(fliplr(squeeze(MRI.Cube(mnslice(1),:,:))'));
+        imagesc(mri)
+        colormap('gray')
+        hold on
+        idx = coord_mri(:,[2,3]);
+        scatter(257-idx(:,1), 257-idx(:,2), 50, 'filled', 'MarkerFaceColor', ...
+            c(clust_num,:), 'MarkerEdgeColor', 'k');
+        axis equal
+        grid off
+        axis off
+        
+        
+    end
+
+
+
 if save_clust
     for     clust_num = 1:length(cluster)%ceil(loc(2));
         
@@ -221,6 +309,6 @@ if save_clust
         
         
     end
-end    
-    
+end
+
 end
