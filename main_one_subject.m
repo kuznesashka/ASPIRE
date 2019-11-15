@@ -194,7 +194,13 @@ end
 %% Overlap between detections
 if parameters.compute_overlap
     ICA_and_SPC_spikes(paths.path_cluster_out)
-    
+ 
+    aspire_and_spc_clusters([paths.path_cluster_out 'overlap_mag.mat'], ...
+        paths.overlap_saving_path, 'mag', parameters.draw.f_low_vis, ...
+        parameters.draw.f_high_vis, Data, channels, 3)
+    aspire_and_spc_clusters([paths.path_cluster_out 'overlap_grad.mat'], ...
+        paths.overlap_saving_path, 'grad', parameters.draw.f_low_vis, ...
+        parameters.draw.f_high_vis, Data, channels, 5)
 end
 end
 

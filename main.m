@@ -33,7 +33,8 @@
 %dbstop if warning
 
 %Add path and all subfolders 
-addpath(genpath('/Users/valery/MEG/brainstorm3'))
+addpath(genpath('/Users/valery/MEG/brainstorm3'));
+addpath /Users/valery/MEG/fieldtrip-20191008
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 
 %% Paths -- subject info
@@ -99,7 +100,7 @@ paths.roc_labels_xlsx_fname  = [paths.roc 'Labels.xlsx'];
 
 % Path for saving big picture
 paths.bigpic_saving_path = [paths.plots paths.case '.bmp'];
-
+paths.overlap_saving_path = [paths.plots 'overlap_'];
 
 
 %% Parameters main

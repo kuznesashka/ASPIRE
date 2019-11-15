@@ -39,7 +39,7 @@ for i = 1:length(SPC_grad)
 end
 
 csvwrite([path_cluster_out 'overlap_grad.csv'], overlap);
-save([path_cluster_out 'overlap_grad.csv'], 'overlap');
+save([path_cluster_out 'overlap_grad.mat'], 'overlap');
 
 overlap = [];
 for i = 1:length(SPC_mag)
@@ -49,7 +49,7 @@ for i = 1:length(SPC_mag)
 	end
 end
 csvwrite([path_cluster_out 'overlap_mag.csv'], overlap);
-save([path_cluster_out 'overlap_mag.csv'], 'overlap');
+save([path_cluster_out 'overlap_mag.mat'], 'overlap');
 
 end
 
