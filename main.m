@@ -103,13 +103,13 @@ paths.bigpic_saving_path = [paths.plots paths.case '.bmp'];
 
 
 %% Parameters main
-parameters.computation_source    = 0; % compute dipoles
+parameters.computation_source    = 1; % compute dipoles
 parameters.computation_clusters  = 1; % compute and save clusters
 parameters.draw_and_save_plots   = 1; % plot clusters
-parameters.save_results			 = 0; % save results in file
-parameters.computation_ROC       = 0; % compute ROC stat
+parameters.save_results			 = 1; % save results in file
+parameters.computation_ROC       = 1; % compute ROC stat
 parameters.plot_big_pic          = 0; % Plot all detections on the big plot
-parameters.mute_mode             = 0; % if 0 - plot clickable clusters plot 
+parameters.mute_mode             = 1; % if 0 - plot clickable clusters plot 
 % in the not mute mode program will pause until a figure close
 parameters.newdataset            = 0; % not plot pictures
 parameters.propagation_probability = 0; % all to all cluster propagation probability
@@ -120,7 +120,7 @@ Data            = load(paths.Data);
 channels        = load(paths.channels);
 G3              = load(paths.G3);
 
-parameters.detection_type = [2 3]; %1-visual, 2-ICA, 3-SPC
+parameters.detection_type = [1 2 3]; %1-visual, 2-ICA, 3-SPC
 
 %% Parameters for detection
 parameters.detection.ICA.spikes_extraction = 'ICA_based';

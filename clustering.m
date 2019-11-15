@@ -17,9 +17,9 @@ function [cluster] = clustering(spike_ind, G3, Nmin, ValMax, IndMax, ...
 %   spikeind -- timeindices from RAP-MUSIC procedure
 % 
 % OUTPUTS:
-%   cluster -- structure [length(ind_m)x4], 
-% first column -- source location, 
-% second column -- spike timestamp, 
+%   cluster -- structure [length(ind_m)x5], 
+% first -- source location, 
+% second -- spike timestamp, 
 % third -- the subcorr value, 
 % fourth -- index of the spike from the whole set (spike_ind)
 % fifth -- spike_clust from Spyking Circus (number of template)

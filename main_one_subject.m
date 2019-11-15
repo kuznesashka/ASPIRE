@@ -4,32 +4,12 @@ function main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters)
 % All steps, one case
 % -------------------------------------------------------------------------
 % INPUTS:
-% detection_type -- 1:visual, 2:ICA-based, 3:Spyking Circus
 %
 % PATHS
 %
-% path_vis_detections -- path to the visual detections file (csv)
-% path_ICA_detections -- path to the ICA detections (mat)
-% path_SPC_detections -- path to the Spyking Circus detections (csv)
-% resultsdir_root
-% subj_name
-% results_subfolder
 %
 % PARAMETERS
 %
-% mute_mode -- not show plots
-% computation_source
-% computation_clusters
-% draw_and_save_plots
-% draw_and_save_plots2
-% computation_ROC
-% plot_big_pic
-% Data
-% G3
-% THR_DIST - maximal distance from the center of the cluster (radius) in m
-% N_MIN - minimum number of sources in one cluster
-% roc_xlsx_fname - path to the main ROC saving file
-% roc_labels_xlsx_fname - path to the labels ROC saving file
 %
 % OUTPUTS:
 %
@@ -60,8 +40,6 @@ for channel_type_loop = 1:2
                 spcirc_clust = []; % SPC relevant (maybe delete)
                 spike_ind = manual_data(:,1);
                 spike_ind = spike_ind(spike_ind<600-30)*1000;
-
-                
                 
             case 2 % ICA based
                 spikes_extraction = parameters.detection.ICA.spikes_extraction;
@@ -157,7 +135,7 @@ for channel_type_loop = 1:2
             csvwrite([paths.path_cluster_out spikes_extraction '_' channel_type '.csv'], ...
                        cluster_out_results);
             % save only timestamps
-            cluster_out_time_only = cluster_out_results(:,1);
+            cluster_out_time_only = cluster_out_results(:,1); % should be in seconds, add first sample, Data.Time(1)
             save([paths.path_cluster_out 'time_only_' spikes_extraction '_' channel_type '.mat'], ...
                     'cluster_out_time_only');
         end
@@ -199,7 +177,7 @@ end
 if parameters.plot_big_pic
     
     plot_bigpic(paths.subj_name, paths.results_saving_path, cortex, paths.bigpic_saving_path)
-    
+      
 end
 
 %% ROC curves
