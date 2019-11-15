@@ -111,7 +111,7 @@ for channel_type_loop = 1:2
                 if size(IndMax) ~= size(spike_ind)
                     spike_ind  = spike_ind';
                 end
-                cluster{1,1} = [IndMax ; spike_ind  ; ValMax ; 1:length(IndMax)];
+                cluster{1,1} = [IndMax ; spike_ind  ; ValMax ; 1:length(IndMax); zeros(size(spike_ind))];
             else
                 % cluster creation space
                 try
@@ -128,16 +128,18 @@ for channel_type_loop = 1:2
                     end
                     cluster{1,1} = [IndMax ; spike_ind  ; ValMax ; 1:length(IndMax)];
                 end
+                
             end
             
             % Write clusters in csv file
             cluster_out_results = cluster_out(cluster, G3);
             csvwrite([paths.path_cluster_out spikes_extraction '_' channel_type '.csv'], ...
-                       cluster_out_results);
+                cluster_out_results);
+            
             % save only timestamps
-            cluster_out_time_only = cluster_out_results(:,1); % should be in seconds, add first sample, Data.Time(1)
+            cluster_out_time_only = cluster_out_results(:,1); % !!!should be in seconds, add first sample, Data.Time(1)
             save([paths.path_cluster_out 'time_only_' spikes_extraction '_' channel_type '.mat'], ...
-                    'cluster_out_time_only');
+                'cluster_out_time_only');
         end
         
         %% 5. Activation on sources
@@ -177,7 +179,7 @@ end
 if parameters.plot_big_pic
     
     plot_bigpic(paths.subj_name, paths.results_saving_path, cortex, paths.bigpic_saving_path)
-      
+    
 end
 
 %% ROC curves
