@@ -108,8 +108,9 @@ parameters.computation_clusters  = 1; % compute and save clusters
 parameters.draw_and_save_plots   = 1; % plot clusters
 parameters.save_results			 = 0; % save results in file
 parameters.computation_ROC       = 0; % compute ROC stat
-parameters.plot_big_pic          = 0; %
+parameters.plot_big_pic          = 0; % Plot all detections on the big plot
 parameters.mute_mode             = 0; % if 0 - plot clickable clusters plot 
+% in the not mute mode program will pause until a figure close
 parameters.newdataset            = 0; % not plot pictures
 parameters.propagation_probability = 0; % all to all cluster propagation probability
 
