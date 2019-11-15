@@ -113,6 +113,7 @@ parameters.mute_mode             = 1; % if 0 - plot clickable clusters plot
 % in the not mute mode program will pause until a figure close
 parameters.newdataset            = 0; % not plot pictures
 parameters.propagation_probability = 0; % all to all cluster propagation probability
+parameters.compute_overlap       = 1; % Overlap between detections
 
 cortex          = load(paths.cortex);
 MRI             = load(paths.MRI);

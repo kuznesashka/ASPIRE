@@ -190,5 +190,11 @@ if parameters.computation_ROC
         cortex, paths.roc_xlsx_fname, paths.roc_labels_xlsx_fname)
     
 end
+
+%% Overlap between detections
+if parameters.compute_overlap
+    ICA_and_SPC_spikes(paths.path_cluster_out)
+    
+end
 end
 
