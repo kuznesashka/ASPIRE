@@ -61,7 +61,7 @@ while fl == 1
     end
 end
 
-if draw == 0
+if draw == 1
     cortex_lr = cortex;
     cortex_hr = cortex;
     c = [lines(7); 0.15, 0.15, 0.15; ...
