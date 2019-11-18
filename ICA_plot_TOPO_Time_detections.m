@@ -9,7 +9,7 @@ for comp= 1:Ncomp
 end
 
 subplot(Ncomp,3,sort([(1:Ncomp)*3-1 (1:Ncomp)*3]))
-for j = 1:8
+for j = 1:Ncomp
     plot(Data.Time, picked_components(j,:)-50*j,'k')
     hold on
     sp = round(spike_ind(find(component_indicatior(:,j))));

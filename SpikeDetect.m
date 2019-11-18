@@ -3,22 +3,22 @@ function [spike_ind, picked_components, picked_comp_top, component_indicatior] =
     bad_idx, num_event);
 
 
-% INPUT
-Data, ...
-    channel_idx, 
-G2, 
-f_low, f_high, 
-ncomp, 
-check, 
-decision,...
-    bad_idx, 
-num_event
-
-% OUPUT
-spike_ind, 
-picked_components, 
-picked_comp_top, 
-component_indicatior
+% % INPUT
+% Data, ...
+%     channel_idx, 
+% G2, 
+% f_low, f_high, 
+% ncomp, 
+% check, 
+% decision,...
+%     bad_idx, 
+% num_event
+% 
+% % OUPUT
+% spike_ind, 
+% picked_components, 
+% picked_comp_top, 
+% component_indicatior
 
 
 

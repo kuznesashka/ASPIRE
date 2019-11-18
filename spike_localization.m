@@ -135,7 +135,7 @@ ind_m = find((ValMax > corr_thresh));
 % channel_type_loop
 disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
     num2str(length(ind_m))]);
-spikeind = spike_ind(ind_m)
+spikeind = spike_ind(ind_m);
 
 end
 
