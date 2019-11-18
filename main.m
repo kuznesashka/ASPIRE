@@ -2,15 +2,6 @@
 % Main with parameters
 % -------------------------------------------------------------------------
 % INPUTS:
-%   cases_files_190921.mat -- all cases with path, subject name etc.
-%   param_matrix190809.mat -- parametrs for iteration
-%   newdataset            = 0;
-%   computation_source    = 1; % compute dipoles
-%   computation_clusters  = 1; % compute clustering
-%   draw_and_save_plots   = 0; % plot clusters
-%   draw_and_save_plots2  = 0; % save
-%   computation_ROC       = 1; % compute ROC stat
-%
 %
 % OUTPUTS:
 %
@@ -32,13 +23,15 @@
 %Debugging 
 %dbstop if warning
 
-%Add path and all subfolders 
+%% Add libraries  
 addpath(genpath('/Users/valery/MEG/brainstorm3'));
 addpath /Users/valery/MEG/fieldtrip-20191008
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 
+% -------------------------------------------------------------------------
 %% Paths -- subject info
-% !!! File separator for current platform
+% -------------------------------------------------------------------------
+% !!! File separator for the current platform
 paths.anat = ['/Users/valery/MEG/EPILEPSY' filesep, ...
                 'MEG_Tommaso' filesep 'anat' filesep]; % anatomy from Brainstorm
 paths.data = ['/Users/valery/MEG/EPILEPSY' filesep, ...
@@ -51,7 +44,6 @@ paths.fname = 'B1C2_ii_run1_raw_tsss_mc_art_corr'; %artifact corrected file name
 paths.sh_fname = 'B1C2_ii_run1_raw_tsss_mc'; %short file name
 
 mkdir([paths.root paths.subj_name filesep 'ASPIRE'])
-%mkdir([paths.root paths.subj_name '\ASPIRE\detections'])
 mkdir([paths.root paths.subj_name filesep 'ASPIRE' filesep 'plots'])
 mkdir([paths.root paths.subj_name filesep 'ASPIRE' filesep 'results'])
 
@@ -80,7 +72,9 @@ paths.path_ICA_detections = [paths.detections 'ICA_detections_' paths.sh_fname];
 % path_SPC_detections -- path to the Spyking Circus detections (csv)
 paths.path_SPC_detections = [paths.detections 'Templates_' paths.sh_fname];
 
+% -------------------------------------------------------------------------
 %% Paths for saving
+% -------------------------------------------------------------------------
 % Path for sources saving without [spikes_extraction '_' channel_type '.mat']
 paths.sources_saving_path = [paths.results 'sources_'];
 % Path for clusters saving without [spikes_extraction '_' channel_type '.csv']
@@ -102,8 +96,9 @@ paths.roc_labels_xlsx_fname  = [paths.roc 'Labels.xlsx'];
 paths.bigpic_saving_path = [paths.plots paths.case '.bmp'];
 paths.overlap_saving_path = [paths.plots 'overlap_'];
 
-
+% -------------------------------------------------------------------------
 %% Parameters main
+% -------------------------------------------------------------------------
 parameters.computation_source    = 1; % compute dipoles
 parameters.computation_clusters  = 1; % compute and save clusters
 parameters.draw_and_save_plots   = 1; % plot clusters
@@ -116,15 +111,12 @@ parameters.newdataset            = 0; % not plot pictures
 parameters.propagation_probability = 0; % all to all cluster propagation probability
 parameters.compute_overlap       = 1; % Overlap between detections
 
-cortex          = load(paths.cortex);
-MRI             = load(paths.MRI);
-Data            = load(paths.Data);
-channels        = load(paths.channels);
-G3              = load(paths.G3);
 
 parameters.detection_type = [1 2 3]; %1-visual, 2-ICA, 3-SPC
 
+% -------------------------------------------------------------------------
 %% Parameters for detection
+% -------------------------------------------------------------------------
 parameters.detection.ICA.spikes_extraction = 'ICA_based';
 parameters.detection.ICA.decision = 0.9; % the amplitude threshold for decision
 parameters.detection.ICA.f_low = 3; % bandpass filter before the ICA decomposition
@@ -133,7 +125,9 @@ parameters.detection.ICA.f_high = 70;
 parameters.detection.SPC.spikes_extraction = 'SpyCir_based';
 parameters.detection.visual.spikes_extraction = 'visual';
 
+% -------------------------------------------------------------------------
 %% Parameters for RAP-MUSIC
+% -------------------------------------------------------------------------
 parameters.rap_music.f_low_RAP  = 10;
 parameters.rap_music.f_high_RAP = 200;
 parameters.rap_music.spikydata = 0; % spikydata -- indicatior, showing whether you want to fit
@@ -141,7 +135,9 @@ parameters.rap_music.RAP = 'not';
 parameters.prctile = 85; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
 parameters.corr_thresh = 0.95; % threshold for visual detections
 
+% -------------------------------------------------------------------------
 %% Parameters for clustering
+% -------------------------------------------------------------------------
 % THR_DIST - maximal distance from the center of the cluster (radius) in m
 parameters.clustering.THR_DIST =  0.01;
 % N_MIN - minimum number of sources in one cluster
@@ -155,6 +151,11 @@ parameters.draw.f_high_vis = 50;
 parameters.draw.save_clusters = 0; %save all cluster as separate files
 
 
+cortex          = load(paths.cortex);
+MRI             = load(paths.MRI);
+Data            = load(paths.Data);
+channels        = load(paths.channels);
+G3              = load(paths.G3);
 
 main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters)
 
