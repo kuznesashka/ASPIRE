@@ -11,7 +11,7 @@ addpath(genpath(brainstorm_path))
 
 fieldtrip_path = [hdisk '\_USZserver\Matlab Toolbox\FIELDTRIP\fieldtrip-20191028'];
 addpath( (fieldtrip_path))
-ft_defaults
+ 
 
 addpath(genpath([ 'E:\_USZserver\hfEEG\hfEEG software analysis\hfEEGAquistionRoutines']));
 

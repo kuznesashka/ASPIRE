@@ -104,8 +104,8 @@ labels = labels(channel_idx) ;
         end
         % Plot and save ValMax
         %        fig_gof_name = [spikes_extraction, '_', channel_type];
-        %        figure('Name','fig_gof_name','visible','off')
-        %        histogram(ValMax)
+               figure('Name','fig_gof_name','visible','on')
+               histogram(ValMax)
         %        saveas(gcf,[resultsdir_root, subj_name, results_subfolder,...
         %            'GOF_hist_',spikes_extraction, '_', channel_type, '.bmp']);
         %        close(gcf);
