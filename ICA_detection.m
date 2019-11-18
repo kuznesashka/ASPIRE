@@ -1,4 +1,4 @@
-function [spike_ind, picked_components, picked_comp_top] = ...
+function [spike_ind, picked_components, picked_comp_top,component_indicatior] = ...
     ICA_detection(Data, G3, channel_type, decision, f_low, f_high)
 
 % -------------------------------------------------------------------------
@@ -58,7 +58,7 @@ else
     bad_idx = [];
 end
 
-[spike_ind, picked_components, picked_comp_top] = SpikeDetect(Data, channel_idx, G2, f_low, f_high, ncomp, check, decision,...
+[spike_ind, picked_components, picked_comp_top, component_indicatior] = SpikeDetect(Data, channel_idx, G2, f_low, f_high, ncomp, check, decision,...
     bad_idx, num_event);
 
 end

@@ -38,6 +38,8 @@ paths.data = ['/Users/valery/MEG/EPILEPSY' filesep, ...
                 'MEG_Tommaso' filesep 'data' filesep]; % data from Brainstorm
 paths.root = '/Users/valery/MEG/Cases/'; %45 cases folder
 
+settings_tommaso
+
 paths.subj_name = 'B1C2'; %when two or more recordings 'B4Z2\Rec_01'
 paths.case = 'B1C2';
 paths.fname = 'B1C2_ii_run1_raw_tsss_mc_art_corr'; %artifact corrected file name
@@ -110,7 +112,8 @@ parameters.mute_mode             = 1; % if 0 - plot clickable clusters plot
 parameters.newdataset            = 0; % not plot pictures
 parameters.propagation_probability = 0; % all to all cluster propagation probability
 parameters.compute_overlap       = 1; % Overlap between detections
-
+parameters.save_ICA_fig             = 1; % save .fig from ICA output
+parameters.plot_single_spikes    = 1; % save single spike plot in a separate folder for each cluster
 
 parameters.detection_type = [1 2 3]; %1-visual, 2-ICA, 3-SPC
 

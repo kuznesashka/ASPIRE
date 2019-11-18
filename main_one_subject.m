@@ -4,27 +4,37 @@ function main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters)
 % All steps, one case
 % -------------------------------------------------------------------------
 % INPUTS:
-% G3 -- brainstorm structure with forward operator
-% cortex -- cortical structure from brainstorm
-% Data -- brainstorm structure with artifact corrected maxfiltered MEG data
+%
+% PATHS
+%
 %
 % PARAMETERS
 %
 %
 % OUTPUTS:
 %
+% sources - .mat file with sources
+% clusters - .csv file with clusters
+% results - .mat
+% roc - .xlsx file with ROC curves
+%
 % _______________________________________________________
 %
 
+offset_time = Data.Time(1); % data time - to create BS markers
 
-for channel_type_loop = 1:2
+for channel_type_loop = 2
     switch channel_type_loop % channels you want to analyse ('grad' or 'mag')
-        case 1, channel_type = 'mag';
-        case 2, channel_type = 'grad';
+    case 1, channel_type = 'mag';  
+                channel_idx     = 3:3:306;
+    case 2, channel_type = 'grad'; 
+                channel_idx     = setdiff(1:306, 3:3:306);
     end
+labels  = extractfield(channels.Channel,'Name'); labels = labels(1:306)';
+labels = labels(channel_idx) ;
     
     %% 2. Spike detection
-    for spikes_detection = parameters.detection_type % 1 - visual; 2 - ICA; 3 - SPC
+    for spikes_detection = parameters.detection_type
         
         switch spikes_detection
             case 1 % visual markings
@@ -41,17 +51,24 @@ for channel_type_loop = 1:2
                 ICA_spikes_mat_saving_path = [paths.path_ICA_detections,'_', channel_type, '.mat'];
                 
                 if parameters.newdataset
-                    [spike_ind, picked_components, picked_comp_top] = ...
+                    [spike_ind, picked_components, picked_comp_top,component_indicatior] = ...
                         ICA_detection(Data, G3, channel_type, parameters.detection.ICA.decision, ...
                         parameters.detection.ICA.f_low, parameters.detection.ICA.f_high);
-                    save(ICA_spikes_mat_saving_path,'spike_ind', 'picked_components', 'picked_comp_top')
+                    save(ICA_spikes_mat_saving_path,'spike_ind', 'picked_components', 'picked_comp_top','component_indicatior')
                 end
                 
-                load(ICA_spikes_mat_saving_path,'spike_ind', 'picked_components', 'picked_comp_top')
+                load(ICA_spikes_mat_saving_path,'spike_ind', 'picked_components', 'picked_comp_top','component_indicatior')
                 spcirc_clust = []; % SPC relevant (maybe delete)
                 spike_clust = zeros(size(spike_ind))';
                 spike_clust = spike_clust(spike_ind<600000-30 & spike_ind>41);
                 spike_ind = spike_ind(spike_ind<600000-30 & spike_ind>41);
+                
+                ica_topo_time_detections_file = [paths.path_ICA_detections '_' channel_type '.fig'];
+                ICA_plot_TOPO_Time_detections
+                if parameters.save_ICA_fig
+                    saveas(gcf,ica_topo_time_detections_file)
+                    close all
+                end
                 
                 
             case 3 % Spiking circus based
@@ -63,11 +80,10 @@ for channel_type_loop = 1:2
                 spike_clust = spcirc_data(:,3);
                 spike_clust = spike_clust(spike_ind<600000-30 & spike_ind>41);
                 spike_ind = spike_ind(spike_ind<600000-30 & spike_ind>41);
-                [spike_ind,spike_clust] = spykingcircus_cleaner(spike_ind,spike_clust);
-                
-                
+                [spike_ind,spike_clust] = spykingcircus_cleaner(spike_ind,spike_clust);                                
         end
-        close all
+        
+        
         
         %% 3. RAP-MUSIC (2) dipole fitting
         if parameters.computation_source
@@ -145,7 +161,7 @@ for channel_type_loop = 1:2
                 parameters.draw.f_low, parameters.draw.f_high);
             
             close all
-            %% 6. Big plot
+            %% 6. Plot for each cluster
             
             plot_clusters(Data, channel_type, spikes_extraction, parameters.draw.f_low_vis, ...
                 parameters.draw.f_high_vis, cortex, ...
@@ -153,6 +169,29 @@ for channel_type_loop = 1:2
                 channels, G3, MRI, prctile(ValMax,parameters.prctile), ...
                 parameters.draw.save_clusters, paths.save_cluster_plots, ...
                 parameters.mute_mode) %epi_plot_autoALLCLUSTERS
+        end
+        
+        
+        %% plot spikes of same cluster
+        
+        if parameters.plot_single_spikes
+            for cl = 1:length(cluster)
+                %                       [record time in s for brainstorm   idx detecton sample     subspace corr                leadfield_orig_index       cluster]
+                spikes_fitted = [cluster_out_results(:,1)               cluster_out_results(:,1) cluster_out_results(:,3) cluster_out_results(:,7)  cluster_out_results(:,2)];
+                spikes_fitted = sort(spikes_fitted,1);
+                spikes_fitted(:,1) = spikes_fitted(:,1)/1000+offset_time;
+                
+                spikes_fitted = spikes_fitted(find(spikes_fitted(:,end) == cl),:);
+                
+               f_low =  parameters.rap_music.f_low_RAP;
+               f_high = parameters.rap_music.f_high_RAP;
+               mkdir([paths.plots 'cluster' num2str(cl)])
+               TOPO = plot_spikes_ER_TOPO(spikes_fitted, ([paths.plots 'cluster' num2str(cl) filesep]), Data, channel_type, f_low, f_high,  G3,  channels)
+                
+                events = spikes_fitted(:,1)
+                save ([paths.plots 'EVENTScluster' num2str(cl) ],'events')
+                
+            end
         end
         
         

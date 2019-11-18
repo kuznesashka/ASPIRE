@@ -1,6 +1,26 @@
-function [spike_ind, picked_components, picked_comp_top] = SpikeDetect(Data, ...
+function [spike_ind, picked_components, picked_comp_top, component_indicatior] = SpikeDetect(Data, ...
     channel_idx, G2, f_low, f_high, ncomp, check, decision,...
     bad_idx, num_event);
+
+
+% INPUT
+Data, ...
+    channel_idx, 
+G2, 
+f_low, f_high, 
+ncomp, 
+check, 
+decision,...
+    bad_idx, 
+num_event
+
+% OUPUT
+spike_ind, 
+picked_components, 
+picked_comp_top, 
+component_indicatior
+
+
 
 Fs = 1/(Data.Time(2)-Data.Time(1));
 

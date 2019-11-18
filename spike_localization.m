@@ -1,6 +1,6 @@
 function [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data, G3, ...
-    channel_type, f_low, f_high, spikydata, picked_components, picked_comp_top, ...
-    spikes_detection, corr_thresh_prctile, corr_thresh, RAP)
+    channel_type, f_low, f_high, spikydata, picked_components, ...
+    picked_comp_top, corr_thresh, RAP)
 
 % -------------------------------------------------------------------------
 % Spike localization with RAP-MUSIC
@@ -17,9 +17,7 @@ function [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data,
 %                           timeseries
 %   picked_comp_top -- if spikydata == 1, the picked ICA components
 %                           topographies
-%   spikes_detection -- 1-visual, 2-ICA, 3-Spyking Circus
-%   corr_thresh_prctile -- percentile for threshold (only for ICA and SPC)
-%   corr_thresh -- subcorr threshold level for visual detections
+%   corr_thresh -- subcorr threshold level
 %   RAP -- 'RAP' to run RAP-MUSIC and something else for fast one-round
 %       MUSIC
 %   
@@ -90,7 +88,7 @@ if strcmp(RAP, 'RAP') == 0
         corr = MUSIC_scan(G2, U(:,1:n(1)));
 
         [ValMax(j), IndMax(j)] = max(corr);
-        %j
+        [j length(spike_ind)]
     end
 else
     ValMax = [];
@@ -117,21 +115,31 @@ else
     end
 end
 
-%figure
-%histogram(ValMax)
+figure
+histogram(ValMax)
 
-% visual detection - corr_thresh
-% ICA and SPC detection - prctile(ValMax,corr_thresh_prctile);
-if spikes_detection ~= 1
-    corr_thresh = prctile(ValMax,corr_thresh_prctile); %quantile(ValMax, quant);
+%corr_thresh = quantile(ValMax, 0.95);
+% if size(ValMax,2)<300
+%     quant = 0.0;
+% else
+%     quant = 1 - 300/size(ValMax,2);
+% end
+if corr_thresh ~= 0.0
+%     quant = 0.95;
+    quant = corr_thresh;
+else
+    quant = 0.0;
 end
-
+corr_thresh = quantile(ValMax, quant);
 ind_m = find((ValMax > corr_thresh));
+% channel_type_loop
 disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
     num2str(length(ind_m))]);
+spikeind = spike_ind(ind_m)
 
 end
 
-
-
-
+% 
+% events = spikeind'/1000
+% 
+% save EventsSolo events

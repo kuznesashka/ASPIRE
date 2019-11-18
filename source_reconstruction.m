@@ -39,7 +39,7 @@ function [spike_trials, maxamp_spike_av, channels_maxamp, spike_ts] = ...
     
     % Filtering before source reconstruction
     Fs = 1/(Data.Time(2)-Data.Time(1));
-    [b,a] = butter(4, [f_low f_high]/(Fs/2)); % butterworth filter before ICA
+    [b,a] = butter(4, [f_low f_high]/(Fs/2));  
     Ff = filtfilt(b, a, Data.F(channel_idx,:)')';
 
     % Average spike on the channels with maximal amplitude
@@ -62,7 +62,7 @@ function [spike_trials, maxamp_spike_av, channels_maxamp, spike_ts] = ...
         [val ind] = sort(abs(spike_av{i}(:,20+indmax)), 'descend'); % sort by peak amplitude
         channels_maxamp{i} = ind(1:20);
         maxamp_spike_av{i} = spike_av{i}(ind(1:5,:),:); % ten channels with the highest amplitude
-        for j = 1:5
+        for j = 1:5 % peak must point down
             if maxamp_spike_av{i}(j,20+indmax) > 0
                 maxamp_spike_av{i}(j,:) = -maxamp_spike_av{i}(j,:);
             end
@@ -82,22 +82,22 @@ function [spike_trials, maxamp_spike_av, channels_maxamp, spike_ts] = ...
 %         plot(spike_trials{2}(channels_maxamp{2}(1:5),:,i)')
 %     end
     
-    for i = 1:size(cluster, 2)
-        for j = 1:size(cluster{1,i},2)
-            dip_ind = cluster{1,i}(1,j);
-            sp_ind = cluster{1,i}(2,j);
-             spike = Ff(:, (sp_ind-40):(sp_ind+80));
+    for i = 1:size(cluster, 2) % # cluster
+        for j = 1:size(cluster{1,i},2) % # soikes in cluster
+            dip_ind = cluster{1,i}(1,j); % location
+            sp_ind = cluster{1,i}(2,j);  % sample
+             spike = Ff(:, (sp_ind-40):(sp_ind+80)); % 120 ms around the detection point
             
 %             figure
 %             plot(spike')
             
-            g = G2(:,(dip_ind*2-1):dip_ind*2);
-            [U S ~] = svd(spike);
+            g = G2(:,(dip_ind*2-1):dip_ind*2); %[sensors x spikes_locationx2]
+            [U S ~] = svd(spike); % U:[204 x 204], S:[204xtime]
             h = cumsum(diag(S)/sum(diag(S)));
             n = min(find(h>=0.95));
-            [u s v] = svd(U(:,1:n)'*g);
-            g_fixed = g*v(1,:)';
-            spike_ts{i}(j,:) = spike'*g_fixed;
+            [u s v] = svd(U(:,1:n)'*g); % project only main components, SVD them again: V is the oreintation of the source
+            g_fixed = g*v(1,:)'; % fixed orientation forward model
+            spike_ts{i}(j,:) = spike'*g_fixed; % estimated source signal for each spike
             if spike_ts{i}(j,40) > 0
                 spike_ts{i}(j,:) = -spike_ts{i}(j,:);
             end
