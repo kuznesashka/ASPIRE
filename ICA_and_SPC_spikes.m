@@ -51,7 +51,7 @@ end
 csvwrite([path_cluster_out 'overlap_mag.csv'], overlap);
 save([path_cluster_out 'overlap_mag.mat'], 'overlap');
 
-end
+
 
 function [nearest, index] = find_nearest(stamps, value)
     [~,I] = min(abs(stamps-value));

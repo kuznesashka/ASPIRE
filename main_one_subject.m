@@ -4,19 +4,14 @@ function main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters)
 % All steps, one case
 % -------------------------------------------------------------------------
 % INPUTS:
-%
-% PATHS
-%
+% G3 -- brainstorm structure with forward operator
+% cortex -- cortical structure from brainstorm
+% Data -- brainstorm structure with artifact corrected maxfiltered MEG data
 %
 % PARAMETERS
 %
 %
 % OUTPUTS:
-%
-% sources - .mat file with sources
-% clusters - .csv file with clusters
-% results - .mat
-% roc - .xlsx file with ROC curves
 %
 % _______________________________________________________
 %
@@ -29,7 +24,7 @@ for channel_type_loop = 1:2
     end
     
     %% 2. Spike detection
-    for spikes_detection = parameters.detection_type
+    for spikes_detection = parameters.detection_type % 1 - visual; 2 - ICA; 3 - SPC
         
         switch spikes_detection
             case 1 % visual markings
