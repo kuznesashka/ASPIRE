@@ -25,13 +25,14 @@ layout_cmb = 'neuromag306cmb.lay';
 layout_mag = 'neuromag306mag.lay';
 
 
-%  switch channel_type
-%     case 'grad', layout        = 'neuromag306all.lay'
-%         channel_idx      = setdiff(1:306, 3:3:306);
-%     case 'mag', layout        = 'neuromag306mag.lay'
-%         channel_idx    = 3:3:306;
-%  end
-
+ 
+ switch channel_type
+    case 'grad', layout        = 'neuromag306mag.lay'
+        channel_idx      = setdiff(1:306, 3:3:306);
+    case 'mag', layout        = 'neuromag306mag.lay'
+        channel_idx    = 3:3:306;
+ end
+ 
  
 
 if size(vector,1) == 1, % must be a column

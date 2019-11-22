@@ -115,31 +115,28 @@ else
     end
 end
 
-figure
-histogram(ValMax)
+% figure
+% histogram(ValMax)
 
-%corr_thresh = quantile(ValMax, 0.95);
-% if size(ValMax,2)<300
-%     quant = 0.0;
-% else
-%     quant = 1 - 300/size(ValMax,2);
-% end
+
 if corr_thresh ~= 0.0
 %     quant = 0.95;
     quant = corr_thresh;
 else
     quant = 0.0;
 end
+
+% visual detection - corr_thresh
+% ICA and SPC detection - prctile(ValMax,corr_thresh_prctile);
 corr_thresh = quantile(ValMax, quant);
 ind_m = find((ValMax > corr_thresh));
 % channel_type_loop
 disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
     num2str(length(ind_m))]);
+
+%timestamps of the fitted spikes
 spikeind = spike_ind(ind_m);
 
 end
 
-% 
-% events = spikeind'/1000
-% 
-% save EventsSolo events
+

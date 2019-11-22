@@ -22,6 +22,7 @@ function [spike_ind, picked_components, picked_comp_top, component_indicatior] =
 
 
 
+
 Fs = 1/(Data.Time(2)-Data.Time(1));
 
 [b,a] = butter(4, [f_low f_high]/(Fs/2)); % butterworth filter before ICA

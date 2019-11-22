@@ -56,6 +56,7 @@ end
 % filtering
 Fs = 1/(Data.Time(2)-Data.Time(1));
 [b,a] = butter(4, [f_low f_high]/(Fs/2)); % butterworth filter before ICA
+
 if 1 %for debug mode  == 0
     Ff = filtfilt(b, a, Data.F(channel_idx,:)')';
 else
@@ -160,9 +161,10 @@ similarity_neg = find(similarity<0);
 TOPO(:,similarity_neg)  = -TOPO(:,similarity_neg);
 
 figure('visible','off');
+
 plot_topography(mean(TOPO,2), channel_type, data.label)
 
-set(gcf, 'Position', [3         779        2876        1634],'PaperOrientation','portrait');
+set(gcf, 'Position', [3         779        2876        1634],'PaperOrientation','portrait'); % screen resolution
 saveas(gcf,[path 'average pattern spike.png']);
 
 

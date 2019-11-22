@@ -45,6 +45,8 @@ paths.case = 'B1C2';
 paths.fname = 'B1C2_ii_run1_raw_tsss_mc_art_corr'; %artifact corrected file name
 paths.sh_fname = 'B1C2_ii_run1_raw_tsss_mc'; %short file name
 
+settings_Tom
+
 mkdir([paths.root paths.subj_name filesep 'ASPIRE'])
 mkdir([paths.root paths.subj_name filesep 'ASPIRE' filesep 'plots'])
 mkdir([paths.root paths.subj_name filesep 'ASPIRE' filesep 'results'])
@@ -76,7 +78,8 @@ paths.path_SPC_detections = [paths.detections 'Templates_' paths.sh_fname];
 
 % -------------------------------------------------------------------------
 %% Paths for saving
-% -------------------------------------------------------------------------
+
+
 % Path for sources saving without [spikes_extraction '_' channel_type '.mat']
 paths.sources_saving_path = [paths.results 'sources_'];
 % Path for clusters saving without [spikes_extraction '_' channel_type '.csv']
@@ -115,7 +118,15 @@ parameters.compute_overlap       = 1; % Overlap between detections
 parameters.save_ICA_fig             = 1; % save .fig from ICA output
 parameters.plot_single_spikes    = 1; % save single spike plot in a separate folder for each cluster
 
+
+cortex          = load(paths.cortex);
+MRI             = load(paths.MRI);
+Data            = load(paths.Data);
+channels     = load(paths.channels);
+G3              = load(paths.G3);
+
 parameters.detection_type = [1 2 3]; %1-visual, 2-ICA, 3-SPC
+parameters.detection_type = [2]; %1-visual, 2-ICA, 3-SPC
 
 % -------------------------------------------------------------------------
 %% Parameters for detection
@@ -133,10 +144,10 @@ parameters.detection.visual.spikes_extraction = 'visual';
 % -------------------------------------------------------------------------
 parameters.rap_music.f_low_RAP  = 10;
 parameters.rap_music.f_high_RAP = 200;
-parameters.rap_music.spikydata = 0; % spikydata -- indicatior, showing whether you want to fit
-parameters.rap_music.RAP = 'not';
-parameters.prctile = 85; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
-parameters.corr_thresh = 0.95; % threshold for visual detections
+parameters.rap_music.spikydata      = 0; % spikydata -- indicatior, showing whether you want to fit
+parameters.rap_music.RAP              = 'not';
+parameters.prctile                              = 85; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
+parameters.corr_thresh                     = 0.95; % threshold for visual detections
 
 % -------------------------------------------------------------------------
 %% Parameters for clustering
@@ -151,7 +162,7 @@ parameters.draw.f_low  = 3;
 parameters.draw.f_high = 50;
 parameters.draw.f_low_vis  = 2;
 parameters.draw.f_high_vis = 50;
-parameters.draw.save_clusters = 0; %save all cluster as separate files
+parameters.draw.save_clusters = 1; %save all cluster as separate files
 
 
 cortex          = load(paths.cortex);
