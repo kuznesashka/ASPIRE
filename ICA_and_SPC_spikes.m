@@ -1,7 +1,7 @@
 function ICA_and_SPC_spikes(path_cluster_out)
 %
 % -------------------------------------------------------------------------
-% Computation and saving overlap between detections
+% Compute and save overlap between detections
 % -------------------------------------------------------------------------
 % ICA_grad
 % ICA_mag
@@ -51,7 +51,7 @@ end
 csvwrite([path_cluster_out 'overlap_mag.csv'], overlap);
 save([path_cluster_out 'overlap_mag.mat'], 'overlap');
 
-
+end
 
 function [nearest, index] = find_nearest(stamps, value)
     [~,I] = min(abs(stamps-value));

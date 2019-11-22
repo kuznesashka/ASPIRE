@@ -24,8 +24,12 @@
 %dbstop if warning
 
 %% Add libraries  
-addpath(genpath('/Users/valery/MEG/brainstorm3'));
-addpath /Users/valery/MEG/fieldtrip-20191008
+paths.brainstorm = '/Users/valery/MEG/brainstorm3';
+paths.fieldtrip = '/Users/valery/MEG/fieldtrip-20191008';
+addpath(genpath(paths.brainstorm));
+addpath((paths.fieldtrip))
+addpath(([paths.fieldtrip filesep 'plotting']));
+addpath(([paths.fieldtrip filesep 'utilities' filesep 'private']));
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 
 % -------------------------------------------------------------------------
@@ -38,7 +42,7 @@ paths.data = ['/Users/valery/MEG/EPILEPSY' filesep, ...
                 'MEG_Tommaso' filesep 'data' filesep]; % data from Brainstorm
 paths.root = '/Users/valery/MEG/Cases/'; %45 cases folder
 
-settings_tommaso
+%settings_tommaso
 
 paths.subj_name = 'B1C2'; %when two or more recordings 'B4Z2\Rec_01'
 paths.case = 'B1C2';
@@ -115,8 +119,8 @@ parameters.mute_mode             = 1; % if 0 - plot clickable clusters plot
 parameters.newdataset            = 0; % not plot pictures
 parameters.propagation_probability = 0; % all to all cluster propagation probability
 parameters.compute_overlap       = 1; % Overlap between detections
-parameters.save_ICA_fig             = 1; % save .fig from ICA output
-parameters.plot_single_spikes    = 1; % save single spike plot in a separate folder for each cluster
+parameters.save_ICA_fig             = 0; % save .fig from ICA output
+parameters.plot_single_spikes    = 0; % save single spike plot in a separate folder for each cluster
 
 
 cortex          = load(paths.cortex);
@@ -126,7 +130,8 @@ channels     = load(paths.channels);
 G3              = load(paths.G3);
 
 parameters.detection_type = [1 2 3]; %1-visual, 2-ICA, 3-SPC
-parameters.detection_type = [2]; %1-visual, 2-ICA, 3-SPC
+
+parameters.channel_types = [1 2]; %1 - 'mag', 2 - 'grad'
 
 % -------------------------------------------------------------------------
 %% Parameters for detection
@@ -171,6 +176,7 @@ Data            = load(paths.Data);
 channels        = load(paths.channels);
 G3              = load(paths.G3);
 
+%% run the main function
 main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters)
 
 

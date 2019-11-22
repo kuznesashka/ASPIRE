@@ -23,7 +23,7 @@ function main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters)
 
 offset_time = Data.Time(1); % data time - to create BS markers
 
-for channel_type_loop = 2
+for channel_type_loop = parameters.channel_types
     switch channel_type_loop % channels you want to analyse ('grad' or 'mag')
     case 1, channel_type = 'mag';  
                 channel_idx     = 3:3:306;
@@ -31,7 +31,7 @@ for channel_type_loop = 2
                 channel_idx     = setdiff(1:306, 3:3:306);
     end
 labels  = extractfield(channels.Channel,'Name'); labels = labels(1:306)';
-labels = labels(channel_idx) ;
+labels = labels(channel_idx);
     
     %% 2. Spike detection
     for spikes_detection = parameters.detection_type
@@ -63,6 +63,9 @@ labels = labels(channel_idx) ;
                 if parameters.save_ICA_fig
                     ica_topo_time_detections_file = [paths.path_ICA_detections '_' channel_type '.fig'];
                     ICA_plot_TOPO_Time_detections                    
+                    % component_indicatior, picked_comp_top, Data, picked_components ...
+                    % BUG Index exceeds array bounds.  ICA_plot_TOPO_Time_detections (line 15)
+                    ICA_plot_TOPO_Time_detections
                     saveas(gcf,ica_topo_time_detections_file)
                     close all
                 end
@@ -151,8 +154,10 @@ labels = labels(channel_idx) ;
                 cluster_out_results);
             
             % save only timestamps
-            cluster_out_time_only = cluster_out_results(:,1); % !!!should be in seconds, add first sample, Data.Time(1)
-            save([paths.path_cluster_out paths.fname '_' 'time_only_' spikes_extraction '_' channel_type '.mat'], ...
+
+            % !!!should be in seconds, add first sample, Data.Time(1)
+            cluster_out_time_only = cluster_out_results(:,1)/1000 + offset_time; 
+            save([paths.path_cluster_out 'time_only_' spikes_extraction '_' channel_type '.mat'], ...
                 'cluster_out_time_only');
         end
         
@@ -237,7 +242,7 @@ if parameters.compute_overlap
  
     aspire_and_spc_clusters([paths.path_cluster_out 'overlap_mag.mat'], ...
         paths.overlap_saving_path, 'mag', parameters.draw.f_low_vis, ...
-        parameters.draw.f_high_vis, Data, channels, 3)
+        parameters.draw.f_high_vis, Data, channels, 5)
     aspire_and_spc_clusters([paths.path_cluster_out 'overlap_grad.mat'], ...
         paths.overlap_saving_path, 'grad', parameters.draw.f_low_vis, ...
         parameters.draw.f_high_vis, Data, channels, 5)
