@@ -152,8 +152,14 @@ for i = 1:length(spike_time)
     close(gcf);
 end
 
+%flip topography if it is too far from best fitting dipole
+[~,ind_max_gof] = max(gof);
+TOPOtemp = TOPO(:,ind_max_gof);
+similarity    = dot(repmat(TOPOtemp,1,size(TOPO,2)),TOPO)
+similarity_neg = find(similarity<0);
+TOPO(:,similarity_neg)  = -TOPO(:,similarity_neg);
 
-figure,
+figure('visible','off');
 plot_topography(mean(TOPO,2), channel_type, data.label)
 
 set(gcf, 'Position', [3         779        2876        1634],'PaperOrientation','portrait');

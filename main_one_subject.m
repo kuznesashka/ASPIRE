@@ -59,16 +59,19 @@ labels = labels(channel_idx) ;
                 
                 load(ICA_spikes_mat_saving_path,'spike_ind', 'picked_components', 'picked_comp_top','component_indicatior')
                 spcirc_clust = []; % SPC relevant (maybe delete)
-                spike_clust = zeros(size(spike_ind))';
-                spike_clust = spike_clust(spike_ind<600000-30 & spike_ind>41);
-                spike_ind = spike_ind(spike_ind<600000-30 & spike_ind>41);
+               
                 
+                if parameters.save_ICA_fig
                 ica_topo_time_detections_file = [paths.path_ICA_detections '_' channel_type '.fig'];
                 ICA_plot_TOPO_Time_detections
-                if parameters.save_ICA_fig
+                
                     saveas(gcf,ica_topo_time_detections_file)
                     close all
                 end
+                
+                 spike_clust = zeros(size(spike_ind))';
+                spike_clust = spike_clust(spike_ind<600000-30 & spike_ind>41);
+                spike_ind = spike_ind(spike_ind<600000-30 & spike_ind>41);
                 
                 
             case 3 % Spiking circus based
@@ -181,17 +184,20 @@ labels = labels(channel_idx) ;
             for cl = 1:length(cluster)
                 %                       [record time in s for brainstorm   idx detecton sample     subspace corr                leadfield_orig_index       cluster]
                 spikes_fitted = [cluster_out_results(:,1)               cluster_out_results(:,1) cluster_out_results(:,3) cluster_out_results(:,7)  cluster_out_results(:,2)];
-                spikes_fitted = sort(spikes_fitted,1);
-                spikes_fitted(:,1) = spikes_fitted(:,1)/1000+offset_time;
+                [~,spike_time_ord] = sort(spikes_fitted(:,1));
+                spikes_fitted = spikes_fitted(spike_time_ord,:);
+                 spikes_fitted(:,1) = spikes_fitted(:,1)/1000+offset_time;
                 
                 spikes_fitted = spikes_fitted(find(spikes_fitted(:,end) == cl),:);
                 
-               f_low =  parameters.rap_music.f_low_RAP;
-               f_high = parameters.rap_music.f_high_RAP;
-               mkdir([paths.plots 'cluster' num2str(cl)])
-               TOPO = plot_spikes_ER_TOPO(spikes_fitted, ([paths.plots 'cluster' num2str(cl) filesep]), Data, channel_type, f_low, f_high,  G3,  channels)
+%                f_low =  parameters.rap_music.f_low_RAP;
+%                f_high = parameterse.rap_music.f_high_RAP;
+%                mkdir([paths.plots 'cluster' num2str(cl)])
+               
+               % very time consuming
+%                TOPO = plot_spikes_ER_TOPO(spikes_fitted, ([paths.plots 'cluster' num2str(cl) filesep]), Data, channel_type, f_low, f_high,  G3,  channels)
                 
-                events = spikes_fitted(:,1)
+                events = spikes_fitted(:,1);
                 save ([paths.plots 'EVENTScluster' num2str(cl) ],'events')
                 
             end
