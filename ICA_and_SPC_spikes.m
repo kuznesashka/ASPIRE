@@ -28,7 +28,7 @@ ICA_mag = load([path_cluster_out 'ICA_based_mag.csv']);
 
 overlap = [];
 
-win = 20; % window around the detection (ms)
+win = 50; % window around the detection (ms)
 
 
 for i = 1:length(SPC_grad)

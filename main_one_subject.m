@@ -157,7 +157,7 @@ labels = labels(channel_idx);
 
             % !!!should be in seconds, add first sample, Data.Time(1)
             cluster_out_time_only = cluster_out_results(:,1)/1000 + offset_time; 
-            save([paths.path_cluster_out 'time_only_' spikes_extraction '_' channel_type '.mat'], ...
+            save([paths.path_cluster_out paths.fname 'time_only_' spikes_extraction '_' channel_type '.mat'], ...
                 'cluster_out_time_only');
         end
         
