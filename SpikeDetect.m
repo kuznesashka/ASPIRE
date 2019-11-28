@@ -119,6 +119,25 @@ icadip_ind = find(icadip>(quantile(icadip, 0.7)));
 % 
 % ind_match = find(max(match_corr)> quantile(max(match_corr), 0.75));
 
+% Detect heartbeat components
+hb_ind = [];
+for i =1:size(ica_ts_sort,1)
+    z = ica_ts_sort(i,:);
+    zs = sort(z,'descend');
+    th = mean(zs(1:fix(0.05*length(z))));
+    zl = [z(2:end) 0];
+    zr = [0 z(1:end-1)];
+    ind = find(z>zl & z>zr &z>th);
+    dt = diff(ind);
+    mdt = mean(dt);
+    sdt = std(dt);
+    ndt = length(dt);
+    nsec = length(z)/1000;
+    if(abs(ndt-nsec)<0.2*nsec & abs(mdt - 1000)/1000<0.2 & sdt/1000<0.2) 
+        hb_ind = [hb_ind i];
+    end;
+end
+
 % Final decision
 ind_spikecomp = unique([maxamp_ind, icadip_ind]);
 
