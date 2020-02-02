@@ -1,4 +1,6 @@
-% -------------------------------------------------------------------------
+function [IndMax, ValMax, ind_m, spikeind, cluster, Voxels, affine] = main()
+
+%% -------------------------------------------------------------------------
 % Main with parameters
 % -------------------------------------------------------------------------
 % INPUTS:
@@ -43,7 +45,7 @@ paths.data = ['/Users/valery/MEG/EPILEPSY' filesep, ...
 paths.root = '/Users/valery/MEG/Cases/'; %45 cases folder
 
 %settings_tommaso
-paths.data_block = 'data_block002';
+paths.data_block = 'data_block001';
 paths.subj_name = 'B1C2'; %when two or more recordings 'B4Z2\Rec_01'
 paths.case = 'B1C2';
 paths.fname = ['B1C2_ii_run1_raw_tsss_mc_art_corr_' paths.data_block]; %artifact corrected file name
@@ -110,22 +112,22 @@ paths.overlap_saving_path = [paths.plots 'overlap_'];
 % -------------------------------------------------------------------------
 parameters.computation_source    = 1; % compute dipoles
 parameters.computation_clusters  = 1; % compute and save clusters
-parameters.draw_and_save_plots   = 1; % plot clusters
-parameters.save_results			 = 1; % save results in file
-parameters.computation_ROC       = 1; % compute ROC stat
-parameters.plot_big_pic          = 1; % Plot all detections on the big plot
-parameters.mute_mode             = 1; % if 0 - plot clickable clusters plot 
+parameters.draw_and_save_plots   = 0; % plot clusters
+parameters.save_results			 = 0; % save results in file
+parameters.computation_ROC       = 0; % compute ROC stat
+parameters.plot_big_pic          = 0; % Plot all detections on the big plot
+parameters.mute_mode             = 0; % if 0 - plot clickable clusters plot 
 % in the not mute mode program will pause until a figure close
 parameters.newdataset            = 0; % not plot pictures
 parameters.propagation_probability = 0; % all to all cluster propagation probability
-parameters.compute_overlap       = 1; % Overlap between detections
-parameters.save_ICA_fig          = 1; % save .fig from ICA output
-parameters.plot_single_spikes    = 1; % save single spike plot in a separate folder for each cluster
+parameters.compute_overlap       = 0; % Overlap between detections
+parameters.save_ICA_fig          = 0; % save .fig from ICA output
+parameters.plot_single_spikes    = 0; % save single spike plot in a separate folder for each cluster
 
 
-parameters.detection_type = [1 2 3]; %1-visual, 2-ICA, 3-SPC
+parameters.detection_type = [3]; %1-visual, 2-ICA, 3-SPC
 
-parameters.channel_types = [1 2]; %1 - 'mag', 2 - 'grad'
+parameters.channel_types = [2]; %1 - 'mag', 2 - 'grad'
 
 % -------------------------------------------------------------------------
 %% Parameters for detection
@@ -170,9 +172,12 @@ Data            = load(paths.Data);
 channels        = load(paths.channels);
 G3              = load(paths.G3);
 
+%%
+Voxels = cs_convert(MRI, 'scs', 'voxel', cortex.Vertices);
+affine = MRI.InitTransf{2};
 %% run the main function
-main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters)
+[IndMax, ValMax, ind_m, spikeind, cluster] = main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters);
 
 
-
+end
 

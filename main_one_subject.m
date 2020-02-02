@@ -1,4 +1,4 @@
-function main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters)
+function [IndMax, ValMax, ind_m, spikeind, cluster] = main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters)
 
 % -------------------------------------------------------------------------
 % All steps, one case
@@ -97,7 +97,7 @@ labels = labels(channel_idx);
             [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data, G3, ...
                 channel_type, parameters.rap_music.f_low_RAP, parameters.rap_music.f_high_RAP, ...
                 parameters.rap_music.spikydata, picked_components, picked_comp_top, ...
-            parameters.corr_thresh, parameters.rap_music.RAP);
+            parameters.corr_thresh, parameters.rap_music.RAP, paths, spikes_extraction);
 %                 spikes_detection, parameters.prctile, 
 %             parameters.corr_thresh, parameters.rap_music.RAP);
             
@@ -133,7 +133,7 @@ labels = labels(channel_idx);
                 % cluster creation space
                 try
                     cluster = clustering(spike_ind, G3, parameters.clustering.N_MIN, ValMax, IndMax, ind_m, ...
-                        parameters.clustering.THR_DIST, 1, cortex, parameters.rap_music.RAP, spikeind, spike_clust);
+                        parameters.clustering.THR_DIST, 0, cortex, parameters.rap_music.RAP, spikeind, spike_clust);
                     
                     if spikes_detection == 3
                         % refine clusters throwing away multiple detection of spikes, only for Spyking Circus
@@ -148,17 +148,17 @@ labels = labels(channel_idx);
                 
             end
             
-            % Write clusters in csv file
-            cluster_out_results = cluster_out(cluster, G3);
-            csvwrite([paths.path_cluster_out paths.fname '_' spikes_extraction '_' channel_type '.csv'], ...
-                cluster_out_results);
-            
-            % save only timestamps
+           % Write clusters in csv file
+           cluster_out_results = cluster_out(cluster, G3);
+           csvwrite([paths.path_cluster_out paths.fname '_' spikes_extraction '_' channel_type '.csv'], ...
+               cluster_out_results);
+           
+           % save only timestamps
+           % !!!should be in seconds, add first sample, Data.Time(1)
+           cluster_out_time_only = cluster_out_results(:,1)/1000 + offset_time; 
+           save([paths.path_cluster_out paths.fname 'time_only_' spikes_extraction '_' channel_type '.mat'], ...
+               'cluster_out_time_only');
 
-            % !!!should be in seconds, add first sample, Data.Time(1)
-            cluster_out_time_only = cluster_out_results(:,1)/1000 + offset_time; 
-            save([paths.path_cluster_out paths.fname 'time_only_' spikes_extraction '_' channel_type '.mat'], ...
-                'cluster_out_time_only');
         end
         
         %% 5. Activation on sources

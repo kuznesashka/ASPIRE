@@ -1,6 +1,6 @@
 function [IndMax, ValMax, ind_m, spikeind] = spike_localization(spike_ind, Data, G3, ...
     channel_type, f_low, f_high, spikydata, picked_components, ...
-    picked_comp_top, corr_thresh, RAP)
+    picked_comp_top, corr_thresh, RAP, paths, spikes_extraction)
 
 % -------------------------------------------------------------------------
 % Spike localization with RAP-MUSIC
@@ -134,6 +134,8 @@ ind_m = find((ValMax > corr_thresh));
 disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
     num2str(length(ind_m))]);
 
+save([paths.sources_saving_path '_befor_thershold_' paths.fname '_'  spikes_extraction '_' channel_type '.mat'], ...
+                'IndMax','ValMax','ind_m','spike_ind')
 %timestamps of the fitted spikes
 spikeind = spike_ind(ind_m);
 
