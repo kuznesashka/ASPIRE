@@ -1,4 +1,4 @@
-function main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters)
+function [IndMax, ValMax, ind_m, spikeind, cluster] = main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters)
 
 % -------------------------------------------------------------------------
 % All steps, one case

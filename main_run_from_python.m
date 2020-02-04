@@ -1,3 +1,5 @@
+function [IndMax, ValMax, ind_m, spikeind, cluster, Voxels, affine] = main()
+
 %% -------------------------------------------------------------------------
 % Main with parameters
 % -------------------------------------------------------------------------
@@ -170,8 +172,11 @@ Data            = load(paths.Data);
 channels        = load(paths.channels);
 G3              = load(paths.G3);
 
+%%
+Voxels = cs_convert(MRI, 'scs', 'voxel', cortex.Vertices);
+affine = MRI.InitTransf{2};
 %% run the main function
-main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters);
+[IndMax, ValMax, ind_m, spikeind, cluster] = main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters);
 
 
 end
