@@ -134,8 +134,6 @@ ind_m = find((ValMax > corr_thresh));
 disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
     num2str(length(ind_m))]);
 
-save([paths.sources_saving_path '_befor_thershold_' paths.fname '_'  spikes_extraction '_' channel_type '.mat'], ...
-                'IndMax','ValMax','ind_m','spike_ind')
 %timestamps of the fitted spikes
 spikeind = spike_ind(ind_m);
 

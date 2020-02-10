@@ -1,4 +1,4 @@
-function [IndMax, ValMax, ind_m, spikeind, cluster, Voxels, affine] = main()
+function main()
 
 %% -------------------------------------------------------------------------
 % Main with parameters
@@ -26,8 +26,8 @@ function [IndMax, ValMax, ind_m, spikeind, cluster, Voxels, affine] = main()
 %dbstop if warning
 
 %% Add libraries  
-paths.brainstorm = '/Users/valery/MEG/brainstorm3';
-paths.fieldtrip = '/Users/valery/MEG/fieldtrip-20191008';
+paths.brainstorm = ;
+paths.fieldtrip  = ;
 addpath(genpath(paths.brainstorm));
 addpath((paths.fieldtrip))
 addpath(([paths.fieldtrip filesep 'plotting']));
@@ -38,115 +38,63 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 %% Paths -- subject info
 % -------------------------------------------------------------------------
 % !!! File separator for the current platform
-paths.anat = ['/Users/valery/MEG/EPILEPSY' filesep, ...
-                'MEG_Tommaso' filesep 'anat' filesep]; % anatomy from Brainstorm
-paths.data = ['/Users/valery/MEG/EPILEPSY' filesep, ...
-                'MEG_Tommaso' filesep 'data' filesep]; % data from Brainstorm
-paths.root = '/Users/valery/MEG/Cases/'; %45 cases folder
+paths.anat 		 = ;
+paths.data 		 = ;
+paths.root 		 = ;
 
 %settings_tommaso
-paths.data_block = 'data_block001';
-paths.subj_name = 'B1C2'; %when two or more recordings 'B4Z2\Rec_01'
-paths.case = 'B1C2';
-paths.fname = ['B1C2_ii_run1_raw_tsss_mc_art_corr_' paths.data_block]; %artifact corrected file name
-paths.sh_fname = 'B1C2_ii_run1_raw_tsss_mc'; %short file name
+paths.data_block =  ;
+paths.subj_name  =  ;
+paths.case 		 =  ;
+paths.fname 	 =  ;
+paths.sh_fname   =  ;
 
-%settings_Tom
-
-mkdir([paths.root paths.subj_name filesep 'ASPIRE'])
-mkdir([paths.root paths.subj_name filesep 'ASPIRE' filesep 'plots'])
-mkdir([paths.root paths.subj_name filesep 'ASPIRE' filesep 'results'])
-
-paths.detections = [paths.root paths.subj_name filesep 'ASPIRE', ...
-                    filesep 'detections' filesep];
-paths.plots = [paths.root paths.subj_name filesep 'ASPIRE' filesep, ...
-                    'plots' filesep];
-paths.results = [paths.root paths.subj_name filesep 'ASPIRE' filesep, ...
-                    'results' filesep];
 
 % subj info
-paths.cortex = strcat([paths.anat paths.case filesep 'tess_cortex_pial_low.mat']);
-paths.MRI = strcat([paths.anat paths.case filesep 'subjectimage_T1.mat']);
-paths.Data = strcat([paths.data paths.case filesep 'B1C2_ii_run1_raw_tsss_mc_art_corr', ...
-                    filesep paths.data_block '.mat']);
-paths.channels = strcat([paths.data paths.case filesep '@default_study', ...
-                         filesep 'channel_vectorview306_acc1.mat']);
-paths.G3 = strcat([paths.data paths.case filesep '@default_study', ...
-                   filesep 'headmodel_surf_os_meg.mat']);
+paths.cortex 	 =  ;
+paths.MRI 		 =  ;
+paths.Data 		 =  ;
+paths.channels   =  ;
+paths.G3 		 =  ;
 
 % paths to detections
-% path_vis_detections -- path to the visual detections file (csv)
-paths.path_vis_detections = [paths.detections 'Manual_spikes_' paths.sh_fname '.csv'];
-% path_ICA_detections -- path to the ICA detections (mat)
-paths.path_ICA_detections = [paths.detections 'ICA_detections_' paths.sh_fname paths.data_block];
-% path_SPC_detections -- path to the Spyking Circus detections (csv)
-paths.path_SPC_detections = [paths.detections 'Templates_' paths.sh_fname];
+paths.detections = ;
 
 % -------------------------------------------------------------------------
 %% Paths for saving
 
 
-% Path for sources saving without [spikes_extraction '_' channel_type '.mat']
-paths.sources_saving_path = [paths.results 'sources_'];
-% Path for clusters saving without [spikes_extraction '_' channel_type '.csv']
-paths.path_cluster_out = [paths.results 'cluster_out_'];
-% Path for results saving without [spikes_extraction '_' channel_type '.mat']
-paths.results_saving_path = [paths.results 'results_'];
-
-% Save clusters plots
-mkdir([paths.root paths.subj_name filesep 'ASPIRE' filesep 'plots' filesep 'clusters'])
-paths.save_cluster_plots = [paths.plots filesep 'clusters' filesep ];
-
-% ROC saving path
-mkdir([paths.root 'ROC'])
-paths.roc = [paths.root 'ROC' filesep];
-paths.roc_xlsx_fname = [paths.roc 'ROC.xlsx'];
-paths.roc_labels_xlsx_fname  = [paths.roc 'Labels.xlsx'];
-
-% Path for saving big picture
-paths.bigpic_saving_path = [paths.plots paths.case '.bmp'];
-paths.overlap_saving_path = [paths.plots 'overlap_'];
+paths.sources_saving_path  =  ;
+paths.clusters_saving_path =  ;
+paths.results_saving_path  =  ;
+paths.voxels_saving_path   =  ;
+paths.affine_saving_path   =  ;
 
 % -------------------------------------------------------------------------
 %% Parameters main
 % -------------------------------------------------------------------------
 parameters.computation_source    = 1; % compute dipoles
 parameters.computation_clusters  = 1; % compute and save clusters
-parameters.draw_and_save_plots   = 0; % plot clusters
-parameters.save_results			 = 0; % save results in file
-parameters.computation_ROC       = 0; % compute ROC stat
-parameters.plot_big_pic          = 0; % Plot all detections on the big plot
-parameters.mute_mode             = 0; % if 0 - plot clickable clusters plot 
-% in the not mute mode program will pause until a figure close
-parameters.newdataset            = 0; % not plot pictures
-parameters.propagation_probability = 0; % all to all cluster propagation probability
-parameters.compute_overlap       = 0; % Overlap between detections
-parameters.save_ICA_fig          = 0; % save .fig from ICA output
-parameters.plot_single_spikes    = 0; % save single spike plot in a separate folder for each cluster
+parameters.run_ica               = 0; % not plot pictures
 
 
 parameters.detection_type = [3]; %1-visual, 2-ICA, 3-SPC
-
 parameters.channel_types = [2]; %1 - 'mag', 2 - 'grad'
 
 % -------------------------------------------------------------------------
 %% Parameters for detection
 % -------------------------------------------------------------------------
-parameters.detection.ICA.spikes_extraction = 'ICA_based';
 parameters.detection.ICA.decision = 0.9; % the amplitude threshold for decision
-parameters.detection.ICA.f_low = 3; % bandpass filter before the ICA decomposition
-parameters.detection.ICA.f_high = 70;
-
-parameters.detection.SPC.spikes_extraction = 'SpyCir_based';
-parameters.detection.visual.spikes_extraction = 'visual';
+parameters.detection.ICA.f_low 	  = 3; % bandpass filter before the ICA decomposition
+parameters.detection.ICA.f_high   = 70;
 
 % -------------------------------------------------------------------------
 %% Parameters for RAP-MUSIC
 % -------------------------------------------------------------------------
 parameters.rap_music.f_low_RAP  = 10;
 parameters.rap_music.f_high_RAP = 200;
-parameters.rap_music.spikydata      = 0; % spikydata -- indicatior, showing whether you want to fit
-parameters.rap_music.RAP              = 'not';
+parameters.rap_music.spikydata  = 0; % spikydata -- indicatior, showing whether you want to fit
+parameters.rap_music.RAP        = 'not';
 parameters.prctile              = 85; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
 parameters.corr_thresh          = 0.95; % threshold for visual detections
 
@@ -154,17 +102,9 @@ parameters.corr_thresh          = 0.95; % threshold for visual detections
 %% Parameters for clustering
 % -------------------------------------------------------------------------
 % THR_DIST - maximal distance from the center of the cluster (radius) in m
-parameters.clustering.THR_DIST =  0.01;
+parameters.clustering.THR_DIST = 0.01;
 % N_MIN - minimum number of sources in one cluster
-parameters.clustering.N_MIN = 3;
-
-%% Parameters for plots
-parameters.draw.f_low  = 3;
-parameters.draw.f_high = 50;
-parameters.draw.f_low_vis  = 2;
-parameters.draw.f_high_vis = 50;
-parameters.draw.save_clusters = 1; %save all cluster as separate files
-
+parameters.clustering.N_MIN    = 3;
 
 cortex          = load(paths.cortex);
 MRI             = load(paths.MRI);
@@ -175,9 +115,11 @@ G3              = load(paths.G3);
 %%
 Voxels = cs_convert(MRI, 'scs', 'voxel', cortex.Vertices);
 affine = MRI.InitTransf{2};
-%% run the main function
-[IndMax, ValMax, ind_m, spikeind, cluster] = main_one_subject(cortex, Data, G3, MRI, channels, paths, parameters);
 
+save(paths.voxels_saving_path, 'Voxels')
+save(paths.affine_saving_path, 'affine')
+%% run the main function
+main_one_subject_run_from_python(cortex, Data, G3, MRI, channels, paths, parameters, channel_type, spikes_detection);
 
 end
 
