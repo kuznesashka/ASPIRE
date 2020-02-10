@@ -1,4 +1,4 @@
-function main_one_subject(cortex,  Data, G3, MRI, channels, paths, parameters, channel_type, spikes_detection)
+function main_one_subject(cortex,  Data, G3, MRI, channels, paths, parameters)
 
 % -------------------------------------------------------------------------
 % All steps, one case
@@ -21,18 +21,15 @@ function main_one_subject(cortex,  Data, G3, MRI, channels, paths, parameters, c
 % _______________________________________________________
 %
 
-switch channel_type % channels you want to analyse ('grad' or 'mag')
+switch parameters.channel_type % channels you want to analyse ('grad' or 'mag')
 case 1, channel_type = 'mag';  
             channel_idx     = 3:3:306;
 case 2, channel_type = 'grad'; 
             channel_idx     = setdiff(1:306, 3:3:306);
 end
-
-labels  = extractfield(channels.Channel,'Name'); labels = labels(1:306)';
-labels = labels(channel_idx);
     
 %% 2. Spike detection
-switch spikes_detection
+switch parameters.spikes_detection
     case 1 % visual markings
         %manual_data = csvread(paths.path_vis_detections);
         manual_data       = load(paths.detections)
@@ -53,7 +50,7 @@ switch spikes_detection
                               parameters.detection.ICA.f_high);
             save(paths.detections,'spike_ind', 'picked_components', 'picked_comp_top','component_indicatior')
         end
-        load(ICA_spikes_mat_saving_path,'spike_ind', 'picked_components', 'picked_comp_top','component_indicatior')
+        load(paths.detections,'spike_ind', 'picked_components', 'picked_comp_top','component_indicatior')
         spcirc_clust       = [];
         spike_clust        = zeros(size(spike_ind))';
         spike_clust        = spike_clust(spike_ind<600000-30 & spike_ind>41);

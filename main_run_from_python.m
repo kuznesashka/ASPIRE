@@ -1,4 +1,4 @@
-function main()
+function main(paths_params)
 
 %% -------------------------------------------------------------------------
 % Main with parameters
@@ -24,10 +24,11 @@ function main()
 
 %Debugging 
 %dbstop if warning
+load(paths_params)
 
 %% Add libraries  
-paths.brainstorm = ;
-paths.fieldtrip  = ;
+paths.brainstorm = paths_params.brainstorm;
+paths.fieldtrip  = paths_params.fieldtrip;
 addpath(genpath(paths.brainstorm));
 addpath((paths.fieldtrip))
 addpath(([paths.fieldtrip filesep 'plotting']));
@@ -37,38 +38,26 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 % -------------------------------------------------------------------------
 %% Paths -- subject info
 % -------------------------------------------------------------------------
-% !!! File separator for the current platform
-paths.anat 		 = ;
-paths.data 		 = ;
-paths.root 		 = ;
-
-%settings_tommaso
-paths.data_block =  ;
-paths.subj_name  =  ;
-paths.case 		 =  ;
-paths.fname 	 =  ;
-paths.sh_fname   =  ;
-
 
 % subj info
-paths.cortex 	 =  ;
-paths.MRI 		 =  ;
-paths.Data 		 =  ;
-paths.channels   =  ;
-paths.G3 		 =  ;
+paths.cortex 	 =  paths_params.cortex;
+paths.MRI 		 =  paths_params.MRI;
+paths.Data 		 =  paths_params.Data;
+paths.channels   =  paths_params.channels;
+paths.G3 		 =  paths_params.G3;
 
 % paths to detections
-paths.detections = ;
+paths.detections = paths_params.detections;
 
 % -------------------------------------------------------------------------
 %% Paths for saving
 
 
-paths.sources_saving_path  =  ;
-paths.clusters_saving_path =  ;
-paths.results_saving_path  =  ;
-paths.voxels_saving_path   =  ;
-paths.affine_saving_path   =  ;
+paths.sources_saving_path  =  paths_params.sources_saving_path;
+paths.clusters_saving_path =  paths_params.clusters_saving_path;
+paths.results_saving_path  =  paths_params.parameters_saving_path;
+paths.voxels_saving_path   =  paths_params.voxels_saving_path;
+paths.affine_saving_path   =  paths_params.affine_saving_path;
 
 % -------------------------------------------------------------------------
 %% Parameters main
@@ -78,8 +67,8 @@ parameters.computation_clusters  = 1; % compute and save clusters
 parameters.run_ica               = 0; % not plot pictures
 
 
-parameters.detection_type = [3]; %1-visual, 2-ICA, 3-SPC
-parameters.channel_types = [2]; %1 - 'mag', 2 - 'grad'
+parameters.spikes_detection = [paths_params.detection_type]; %1-visual, 2-ICA, 3-SPC, 4-alphaCSC
+parameters.channel_type  = [paths_params.channel_types]; %1 - 'mag', 2 - 'grad'
 
 % -------------------------------------------------------------------------
 %% Parameters for detection
@@ -119,7 +108,7 @@ affine = MRI.InitTransf{2};
 save(paths.voxels_saving_path, 'Voxels')
 save(paths.affine_saving_path, 'affine')
 %% run the main function
-main_one_subject_run_from_python(cortex, Data, G3, MRI, channels, paths, parameters, channel_type, spikes_detection);
+main_one_subject_run_from_python(cortex, Data, G3, MRI, channels, paths, parameters);
 
 end
 
