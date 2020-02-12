@@ -90,7 +90,7 @@ save(paths.sources_saving_path, 'IndMax','ValMax','ind_m','spikeind')
 
 %% 4. Clustering
 clear cluster
-if spikes_detection == 1 % for manual spikes
+if parameters.spikes_detection == 1 % for manual spikes
     %Nmin = 1;
     if size(IndMax) ~= size(spike_ind)
         spike_ind  = spike_ind';
@@ -112,7 +112,7 @@ else
                              spikeind, ... 
                              spike_clust);
         
-        if spikes_detection == 3
+        if sparameters.spikes_detection == 3
             % refine clusters throwing away multiple detection of spikes, only for Spyking Circus
             cluster = spykingcircus_cleaner_aftecluster(cluster);
         end
