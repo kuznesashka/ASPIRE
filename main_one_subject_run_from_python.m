@@ -22,10 +22,11 @@ function main_one_subject(cortex,  Data, G3, MRI, channels, paths, parameters)
 %
 
 switch parameters.channel_type % channels you want to analyse ('grad' or 'mag')
-case 1, channel_type = 'mag';  
-            channel_idx     = 3:3:306;
-case 2, channel_type = 'grad'; 
+case 1, channel_type = 'grad'; 
             channel_idx     = setdiff(1:306, 3:3:306);
+case 2, channel_type = 'mag';  
+            channel_idx     = 3:3:306;
+
 end
     
 %% 2. Spike detection
