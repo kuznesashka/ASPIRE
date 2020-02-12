@@ -55,7 +55,7 @@ paths.detections = paths_params.detections;
 
 paths.sources_saving_path  =  paths_params.sources_saving_path;
 paths.clusters_saving_path =  paths_params.clusters_saving_path;
-paths.results_saving_path  =  paths_params.parameters_saving_path;
+paths.parameters_saving_path  =  paths_params.parameters_saving_path;
 paths.voxels_saving_path   =  paths_params.voxels_saving_path;
 paths.affine_saving_path   =  paths_params.affine_saving_path;
 
