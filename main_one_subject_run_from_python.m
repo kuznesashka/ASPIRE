@@ -98,7 +98,7 @@ if parameters.spikes_detection == 1 % for manual spikes
     cluster{1,1} = [IndMax ; spike_ind  ; ValMax ; 1:length(IndMax); zeros(size(spike_ind))];
 else
     % cluster creation space
-    try
+    %try
         cluster = clustering(spike_ind, ... 
                              G3, ...
                              parameters.clustering.N_MIN, ... 
@@ -116,12 +116,12 @@ else
             % refine clusters throwing away multiple detection of spikes, only for Spyking Circus
             cluster = spykingcircus_cleaner_aftecluster(cluster);
         end
-    catch
-        if size(IndMax) ~= size(spike_ind)
-            spike_ind  = spike_ind';
-        end
-        cluster{1,1} = [IndMax ; spike_ind  ; ValMax ; 1:length(IndMax)];
-    end
+    %catch
+    %    if size(IndMax) ~= size(spike_ind)
+    %        spike_ind  = spike_ind';
+    %    end
+    %    cluster{1,1} = [IndMax ; spike_ind  ; ValMax ; 1:length(IndMax)];
+    %end
     
 end
 
