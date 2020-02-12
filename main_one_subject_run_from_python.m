@@ -112,7 +112,7 @@ else
                              spikeind, ... 
                              spike_clust);
         
-        if sparameters.spikes_detection == 3
+        if parameters.spikes_detection == 3
             % refine clusters throwing away multiple detection of spikes, only for Spyking Circus
             cluster = spykingcircus_cleaner_aftecluster(cluster);
         end
