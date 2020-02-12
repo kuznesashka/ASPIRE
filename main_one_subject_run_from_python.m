@@ -59,11 +59,11 @@ switch parameters.spikes_detection
         
     case 3 % Spiking circus based
         %spcirc_data = csvread([paths.path_SPC_detections,'_', channel_type, '.csv'],1,0);
-        spcirc_data       = load(paths.detections)
+        spc_data       = load(paths.detections)
         picked_components = []; % ICA relevant
         picked_comp_top   = []; % ICA relevant
-        spike_ind         = spcirc_data(:,1);
-        spike_clust       = spcirc_data(:,3);
+        spike_ind         = spc_data.spikes.ind;
+        spike_clust       = spc_data.spikes.clusters;
         spike_clust       = spike_clust(spike_ind<600000-30 & spike_ind>41);
         spike_ind         = spike_ind(spike_ind<600000-30 & spike_ind>41);
         [spike_ind,spike_clust] = spykingcircus_cleaner(spike_ind,spike_clust);                                
