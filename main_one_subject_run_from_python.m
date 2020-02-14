@@ -1,4 +1,4 @@
-function main_one_subject_run_from_python(cortex,  Data, G3, MRI, channels, paths, parameters)
+function main_one_subject_run_from_python(cortex, G3, MRI, channels, paths, parameters)
 
 % -------------------------------------------------------------------------
 % All steps, one case
@@ -35,6 +35,7 @@ ind_m = [];
 spikeind = [];
 spike_clust = [];
 spike_ind = [];
+
 for data_n = 1:paths_params.N_data
     switch data_n
         case 1, Data = load(paths_params.Data_0);

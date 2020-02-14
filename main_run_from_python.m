@@ -42,7 +42,6 @@ warning('off', 'MATLAB:MKDIR:DirectoryExists');
 % subj info
 paths.cortex 	 =  paths_params.cortex;
 paths.MRI 		 =  paths_params.MRI;
-paths.Data 		 =  paths_params.Data;
 paths.channels   =  paths_params.channels;
 paths.G3 		 =  paths_params.G3;
 
@@ -97,7 +96,6 @@ parameters.clustering.N_MIN    = 3;
 
 cortex          = load(paths.cortex);
 MRI             = load(paths.MRI);
-Data            = load(paths.Data);
 channels        = load(paths.channels);
 G3              = load(paths.G3);
 
@@ -108,7 +106,7 @@ affine = MRI.InitTransf{2};
 save(paths.voxels_saving_path, 'Voxels')
 save(paths.affine_saving_path, 'affine')
 %% run the main function
-main_one_subject_run_from_python(cortex, Data, G3, MRI, channels, paths, parameters);
+main_one_subject_run_from_python(cortex, G3, MRI, channels, paths, parameters);
 
 end
 
