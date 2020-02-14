@@ -152,11 +152,11 @@ picked_components = ica_ts_sort(ind_spikecomp,:);
 
 % size(spike_ind)
 clear spike_ind_red
-diff = [10, spike_ind(2:length(spike_ind))-spike_ind(1:(length(spike_ind)-1))];
+diff_new = [10, spike_ind(2:length(spike_ind))-spike_ind(1:(length(spike_ind)-1))];
 amp = 0;
 k = 1;
-for i = 1:length(diff)
-    if (diff(i)<20)
+for i = 1:length(diff_new)
+    if (diff_new(i)<20)
         if (d(spike_ind(i)) > amp)
             amp = d(spike_ind(i));
             spike_ind_red(k) = spike_ind(i);
