@@ -74,7 +74,7 @@ if check == 1
     time = 1/Fs:1/Fs:(size(ica_ts,2)/Fs);
     events = zeros(1, size(time, 2));
     events(spikes) = 1;
-    scrolling_plot(time, ica_ts_sort, num_val, events, 2, val_kurt)
+    % scrolling_plot(time, ica_ts_sort, num_val, events, 2, val_kurt)
 end
 
 
