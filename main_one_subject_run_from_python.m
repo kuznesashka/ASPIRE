@@ -89,12 +89,11 @@ for data_n = 1:parameters.N_data
             spc_data          = load(paths.detections);
             picked_components = []; % ICA relevant
             picked_comp_top   = []; % ICA relevant
-            spike_ind_n         = spc_data.spikes.ind';
+            spike_ind_n         = int64(spc_data.spikes.ind');
             spike_clust_n     = spc_data.spikes.clusters';
 
             spike_clust_n       = spike_clust_n(spike_ind_n>block_begin & spike_ind_n<block_end);
-            spike_ind_n         = spike_ind_n(spike_ind_n>block_begin & spike_ind_n<block_end) - block_size*(data_n-1);
-            [spike_ind_n, spike_clust_n] = spykingcircus_cleaner(spike_ind_n,spike_clust_n);                            
+            spike_ind_n         = spike_ind_n(spike_ind_n>block_begin & spike_ind_n<block_end) - block_size*(data_n-1);                    
     end
 
     %%--------------------- Two main values from the detection part: spike_ind, spike_clust + picked_components, picked_comp_top
