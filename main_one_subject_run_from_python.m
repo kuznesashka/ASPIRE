@@ -34,7 +34,7 @@ ValMax = [];
 ind_m = [];
 spikeind = [];
 spike_clust = [];
-
+spike_ind = [];
 for data_n = 1:paths_params.N_data
     switch data_n
         case 1, Data = load(paths_params.Data_0);
@@ -76,19 +76,19 @@ for data_n = 1:paths_params.N_data
             spc_data          = load(paths.detections);
             picked_components = []; % ICA relevant
             picked_comp_top   = []; % ICA relevant
-            spike_ind         = spc_data.spikes.ind';
+            spike_ind_n         = spc_data.spikes.ind';
             spike_clust_n     = spc_data.spikes.clusters';
 
-            spike_clust_n       = spike_clust_n(spike_ind>block_begin & spike_ind<block_end);
-            spike_ind         = spike_ind(spike_ind>block_begin & spike_ind<block_end) - block_size*(data_n-1);
-            [spike_ind,spike_clust_n] = spykingcircus_cleaner(spike_ind,spike_clust_n);                                
+            spike_clust_n       = spike_clust_n(spike_ind_n>block_begin & spike_ind_n<block_end);
+            spike_ind_n         = spike_ind_n(spike_ind_n>block_begin & spike_ind_n<block_end) - block_size*(data_n-1);
+            [spike_ind_n, spike_clust_n] = spykingcircus_cleaner(spike_ind_n,spike_clust_n);                                
     end
 
     %%--------------------- Two main values from the detection part: spike_ind, spike_clust + picked_components, picked_comp_top
     %% 3. RAP-MUSIC (2) dipole fitting
 
     [IndMax_n, ValMax_n, ind_m_n, spikeind_n] = ...
-     spike_localization(spike_ind, ...
+     spike_localization(spike_ind_n, ...
                         Data, ...
                         G3, ...
                         channel_type, ...
@@ -106,6 +106,7 @@ for data_n = 1:paths_params.N_data
     spikeind = [spikeind; spikeind_n + block_size*(data_n-1)];
     ind_m    = [ind_m  ind_m_n  + l(2)];
     spike_clust = [spike_clust; spike_clust_n];
+    spike_ind = [spike_ind; spike_ind_n];
 end
 save(paths.sources_saving_path, 'IndMax','ValMax','ind_m','spikeind')
 %% 4. Clustering
