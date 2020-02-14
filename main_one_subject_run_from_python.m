@@ -36,7 +36,7 @@ spikeind = [];
 spike_clust = [];
 spike_ind = [];
 
-for data_n = 1:
+for data_n = 1:parameters.N_data
     switch data_n
         case 1, Data = load(parameters.Data_0);
         case 2, Data = load(parameters.Data_1);
