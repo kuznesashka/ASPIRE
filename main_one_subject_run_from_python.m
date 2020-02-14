@@ -33,6 +33,8 @@ IndMax = [];
 ValMax = [];
 ind_m = [];
 spikeind = [];
+spike_clust = [];
+
 for data_n = 1:paths_params.N_data
     switch data_n
         case 1, Data = load(paths_params.Data_0);
@@ -75,11 +77,11 @@ for data_n = 1:paths_params.N_data
             picked_components = []; % ICA relevant
             picked_comp_top   = []; % ICA relevant
             spike_ind         = spc_data.spikes.ind';
-            spike_clust       = spc_data.spikes.clusters';
+            spike_clust_n     = spc_data.spikes.clusters';
 
-            spike_clust       = spike_clust(spike_ind>block_begin & spike_ind<block_end);
+            spike_clust_n       = spike_clust_n(spike_ind>block_begin & spike_ind<block_end);
             spike_ind         = spike_ind(spike_ind>block_begin & spike_ind<block_end) - block_size*(data_n-1);
-            [spike_ind,spike_clust] = spykingcircus_cleaner(spike_ind,spike_clust);                                
+            [spike_ind,spike_clust_n] = spykingcircus_cleaner(spike_ind,spike_clust_n);                                
     end
 
     %%--------------------- Two main values from the detection part: spike_ind, spike_clust + picked_components, picked_comp_top
@@ -103,6 +105,7 @@ for data_n = 1:paths_params.N_data
     ValMax   = [ValMax ValMax_n +block_size*(data_n-1)];
     spikeind = [spikeind; spikeind_n + block_size*(data_n-1)];
     ind_m    = [ind_m  ind_m_n  + l(2)];
+    spike_clust = [spike_clust; spike_clust_n];
 end
 save(paths.sources_saving_path, 'IndMax','ValMax','ind_m','spikeind')
 %% 4. Clustering
