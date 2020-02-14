@@ -61,6 +61,15 @@ paths.affine_saving_path   =  paths_params.affine_saving_path;
 % -------------------------------------------------------------------------
 %% Parameters main
 % -------------------------------------------------------------------------
+parameters.N_data 				 = paths_params.N_data;
+for data_n = 1:parameters.N_data
+    switch data_n
+        case 1, parameters.Data_0 = paths_params.Data_0;
+        case 2, parameters.Data_1 = paths_params.Data_1;
+        case 3, parameters.Data_2 = paths_params.Data_2;
+    end
+end
+
 parameters.computation_source    = 1; % compute dipoles
 parameters.computation_clusters  = 1; % compute and save clusters
 parameters.run_ica               = 0; % not plot pictures

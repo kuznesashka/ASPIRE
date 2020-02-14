@@ -36,11 +36,11 @@ spikeind = [];
 spike_clust = [];
 spike_ind = [];
 
-for data_n = 1:paths_params.N_data
+for data_n = 1:
     switch data_n
-        case 1, Data = load(paths_params.Data_0);
-        case 2, Data = load(paths_params.Data_1);
-        case 3, Data = load(paths_params.Data_2);
+        case 1, Data = load(parameters.Data_0);
+        case 2, Data = load(parameters.Data_1);
+        case 3, Data = load(parameters.Data_2);
     end
     block_begin = 41+block_size*(data_n-1);
     block_end   = block_size*(data_n)-30;
