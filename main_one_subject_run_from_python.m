@@ -68,7 +68,7 @@ for data_n = 1:parameters.N_data
             spcirc_clust       = [];
             spike_clust_n      = zeros(size(spike_ind_n))';
             spike_clust_n      = spike_clust_n(spike_ind_n>41 & spike_ind_n<block_size-30);
-            spike_ind_n        = spike_ind_n(spike_ind_n>41 & spike_ind_n<block_size-30);
+            spike_ind_n        = int64(spike_ind_n(spike_ind_n>41 & spike_ind_n<block_size-30));
 
         case 3 % Spiking circus based
             %spcirc_data = csvread([paths.path_SPC_detections,'_', channel_type, '.csv'],1,0);
