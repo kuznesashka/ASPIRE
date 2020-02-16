@@ -117,10 +117,10 @@ for data_n = 1:parameters.N_data
     ValMax   = [ValMax ValMax_n +block_size*(data_n-1)];
     if parameters.spikes_detection == 2
         spikeind = [spikeind spikeind_n + block_size*(data_n-1)];
-        spike_ind = [spike_ind spike_ind_n];
+        spike_ind = [spike_ind spike_ind_n + block_size*(data_n-1)];
     else
         spikeind = [spikeind; spikeind_n + block_size*(data_n-1)];
-        spike_ind = [spike_ind; spike_ind_n];
+        spike_ind = [spike_ind; spike_ind_n + block_size*(data_n-1)];
     end
     ind_m    = [ind_m  ind_m_n  + l(2)];
     spike_clust = [spike_clust; spike_clust_n];
