@@ -112,19 +112,20 @@ for data_n = 1:parameters.N_data
                             parameters.corr_thresh, ...
                             parameters.rap_music.RAP, ...
                             '','');
+
+        l = size(IndMax);
+        IndMax   = [IndMax IndMax_n +block_size*(data_n-1)];
+        ValMax   = [ValMax ValMax_n +block_size*(data_n-1)];
+        if parameters.spikes_detection == 2
+            spikeind = [spikeind spikeind_n + block_size*(data_n-1)];
+            spike_ind = [spike_ind spike_ind_n + block_size*(data_n-1)];
+        else
+            spikeind = [spikeind; spikeind_n + block_size*(data_n-1)];
+            spike_ind = [spike_ind; spike_ind_n + block_size*(data_n-1)];
+        end
+        ind_m    = [ind_m  ind_m_n  + l(2)];
+        spike_clust = [spike_clust; spike_clust_n];
     end
-    l = size(IndMax);
-    IndMax   = [IndMax IndMax_n +block_size*(data_n-1)];
-    ValMax   = [ValMax ValMax_n +block_size*(data_n-1)];
-    if parameters.spikes_detection == 2
-        spikeind = [spikeind spikeind_n + block_size*(data_n-1)];
-        spike_ind = [spike_ind spike_ind_n + block_size*(data_n-1)];
-    else
-        spikeind = [spikeind; spikeind_n + block_size*(data_n-1)];
-        spike_ind = [spike_ind; spike_ind_n + block_size*(data_n-1)];
-    end
-    ind_m    = [ind_m  ind_m_n  + l(2)];
-    spike_clust = [spike_clust; spike_clust_n];
 end
 save(paths.sources_saving_path, 'IndMax','ValMax','ind_m','spikeind')
 %% 4. Clustering
