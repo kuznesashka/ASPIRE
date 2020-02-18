@@ -113,9 +113,9 @@ for data_n = 1:parameters.N_data
                             parameters.rap_music.RAP, ...
                             '','');
 
-        l = size(IndMax);
-        IndMax   = [IndMax IndMax_n +block_size*(data_n-1)];
-        ValMax   = [ValMax ValMax_n +block_size*(data_n-1)];
+        l = size(spikeind);
+        IndMax   = [IndMax IndMax_n];
+        ValMax   = [ValMax ValMax_n];
         if parameters.spikes_detection == 2
             spikeind = [spikeind spikeind_n + block_size*(data_n-1)];
             spike_ind = [spike_ind spike_ind_n + block_size*(data_n-1)];
