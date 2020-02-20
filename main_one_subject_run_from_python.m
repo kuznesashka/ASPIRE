@@ -113,17 +113,17 @@ for data_n = 1:parameters.N_data
                             parameters.rap_music.RAP, ...
                             '','');
 
-        l = size(spikeind);
+        l = length(spikeind);
         IndMax   = [IndMax IndMax_n];
         ValMax   = [ValMax ValMax_n];
         if parameters.spikes_detection == 2
-            spikeind = [spikeind spikeind_n + block_size*(data_n-1)];
+            spikeind = [spikeind spikeind_n    + block_size*(data_n-1)];
             spike_ind = [spike_ind spike_ind_n + block_size*(data_n-1)];
         else
-            spikeind = [spikeind; spikeind_n + block_size*(data_n-1)];
+            spikeind = [spikeind; spikeind_n    + block_size*(data_n-1)];
             spike_ind = [spike_ind; spike_ind_n + block_size*(data_n-1)];
         end
-        ind_m    = [ind_m  ind_m_n  + l(2)];
+        ind_m    = [ind_m  ind_m_n  + l(1)];
         spike_clust = [spike_clust; spike_clust_n];
     end
 end
