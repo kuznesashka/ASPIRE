@@ -99,7 +99,11 @@ parameters.corr_thresh          = 0.95; % threshold for visual detections
 %% Parameters for clustering
 % -------------------------------------------------------------------------
 % THR_DIST - maximal distance from the center of the cluster (radius) in m
-parameters.clustering.THR_DIST = 0.01;
+if paths_params.propagation ~= 1
+	parameters.clustering.THR_DIST = 0.01;
+else
+	parameters.clustering.THR_DIST = 0.02;
+end
 % N_MIN - minimum number of sources in one cluster
 parameters.clustering.N_MIN    = 3;
 
@@ -115,7 +119,13 @@ affine = MRI.InitTransf{2};
 save(paths.voxels_saving_path, 'Voxels')
 save(paths.affine_saving_path, 'affine')
 %% run the main function
-main_one_subject_run_from_python(cortex, G3, MRI, channels, paths, parameters);
-
+if paths_params.propagation ~= 1
+	main_one_subject_run_from_python(cortex, G3, MRI, channels, paths, parameters);
+else
+	parameters.t1 = paths_params.t1
+	parameters.t2 = paths_params.t2
+	parameters.t3 = paths_params.t3
+	main_one_subject_propagation_run_from_python(cortex, G3, MRI, channels, paths, parameters);
+end
 end
 

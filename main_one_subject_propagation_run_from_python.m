@@ -1,4 +1,4 @@
-function main_one_subject_run_from_python(cortex, G3, MRI, channels, paths, parameters)
+function main_one_subject_propagation_run_from_python(cortex, G3, MRI, channels, paths, parameters)
 
 % -------------------------------------------------------------------------
 % All steps, one case
@@ -126,13 +126,14 @@ function [IndMax, ValMax, spikeind, spike_ind, ind_m, spike_clust] = ...
     dip_fit_one_block(IndMax, ValMax, spikeind, spike_ind, ind_m, spike_clust, ...
      block_size, block_begin, block_end)
 
-    spc_data          = load(paths.detections);
+    spc_data            = load(paths.detections);
     spike_ind_n         = int64(spc_data.spikes.ind');
-    spike_clust_n     = spc_data.spikes.clusters';
+    spike_clust_n       = spc_data.spikes.clusters';
     spike_clust_n       = spike_clust_n(spike_ind_n>block_begin & spike_ind_n<block_end);
-    spike_ind_n         = spike_ind_n(spike_ind_n>block_begin & spike_ind_n<block_end) - block_size*(data_n-1);                    
+    spike_ind_n         = spike_ind_n(spike_ind_n>block_begin & spike_ind_n<block_end) - block_size*(data_n-1);
+
     if isempty(spike_ind_n) ~= 1    
-        [IndMax_n, ValMax_n, ind_m_n, spikeind_n] = spike_localization(spike_ind_n, Data, G3, channel_type);
+        [IndMax_n, ValMax_n, ind_m_n, spikeind_n] = dip_fit(spike_ind_n, Data, G3, channel_type);
 
         l = length(spikeind);
         IndMax   = [IndMax IndMax_n];
