@@ -1,53 +1,22 @@
-% https://natmeg.se/MEEG_course2018/dipole_fitting.html
+function [IndMax, ValMax, ind_m, spikeind] = dip_fit(spike_ind, Data, G3, channels, channel_idx, t1, t2, t3, MRI, cortex)
 
-paths.brainstorm = '/Users/valery/MEG/brainstorm3';
-paths.fieldtrip = '/Users/valery/MEG/fieldtrip-20191008';
-addpath(genpath(paths.brainstorm));
-addpath((paths.fieldtrip))
-addpath(([paths.fieldtrip filesep 'plotting']));
-addpath(([paths.fieldtrip filesep 'utilities' filesep 'private']));
-warning('off', 'MATLAB:MKDIR:DirectoryExists');
-
-
-%DataFile = sInput.FileName;
-%DataMat = in_bst_data(DataFile);
-Data = load('/Users/valery/MEG/brainstorm_db/MEG_Tommaso/data/B1C2/B1C2_ii_run1_raw_tsss_mc_art_corr/data_block001.mat');
-
-% Load channel file
-% ChannelMat = in_bst_channel(sInput.ChannelFile);
-channels = load('/Users/valery/MEG/brainstorm_db/MEG_Tommaso/data/B1C2/B1C2_ii_run1_raw_tsss_mc_art_corr/channel_vectorview306_acc1.mat');
-% Get selected sensors
-% iChannels = channel_find(ChannelMat.Channel, SensorTypes);
-channel_type = 'grad';
-if strcmp(channel_type, 'grad') == 1
-    grad_idx = setdiff(1:306, 3:3:306);
-    channel_idx = grad_idx(Data.ChannelFlag(grad_idx)~=-1);
-elseif strcmp(channel_type, 'mag') == 1
-    magn_idx = 3:3:306;
-    channel_idx = magn_idx(Data.ChannelFlag(magn_idx)~=-1);
-end
-
-% Load head model
-% HeadModelMat = in_bst_headmodel(sHeadModel.FileName);
-G3 = load('/Users/valery/MEG/brainstorm_db/MEG_Tommaso/data/B1C2/B1C2_ii_run1_raw_tsss_mc_art_corr/headmodel_surf_os_meg.mat');
-
+Voxels = cs_convert(MRI, 'scs', 'voxel', cortex.Vertices);
+IndMax      = zeros(spike_ind)
+ValMax      = zeros(spike_ind)
+ind_m       = []
+spikeind    = zeros(spike_ind)
 % Convert head model
 ftHeadmodel = out_fieldtrip_headmodel(G3, channels, channel_idx);
 
 % Convert data file
 ftData = out_fieldtrip_data(Data, channels, channel_idx, 0);
-% Generate rough grid for first estimation
-%? GridOptions = bst_get('GridOptions_dipfit');
-%? GridLoc = bst_sourcegrid(GridOptions, G3.SurfaceFile);
-timelockeds.time   = 1:1000;
-timelockeds.avg    = ftData.trial{1}(:,1:1000);
-timelockeds.label  = ftData.label;
-timelockeds.dimord = 'chan_time';
-timelockeds        = copyfields(ftData, timelockeds, {'grad', 'elec', 'opto', 'cfg', 'trialinfo', 'topo', 'topodimord', 'topolabel', 'unmixing', 'unmixingdimord'});
 
-DipoleModel = 'regional';
+% Generate rough grid for first estimation
+% ??? GridOptions = bst_get('GridOptions_dipfit');
+% ??? GridLoc = bst_sourcegrid(GridOptions, G3.SurfaceFile);
+DipoleModel = 'moving';
 NumDipoles = 1;
-TimeWindow = [45 65]; % samples (ms)
+TimeWindow = [1]; % samples (ms)
 SymmetryConstraint = [];
 % Prepare FieldTrip cfg structure
 cfg = [];
@@ -72,23 +41,50 @@ if exist('fminunc', 'file')
 else 
         cfg.dipfit.optimfun = 'fminsearch';
 end
-ftDipole = ft_dipolefitting(cfg, timelockeds);
-% dipoles_mag_early{event_index} = ft_dipolefitting(cfg, timelockeds{event_index});
-nTime = length(ftDipole.time);
-switch (DipoleModel)
-case 'moving'
-            dipPos = cat(1, ftDipole.dip.pos)';
-            dipMom = reshape(cat(2, ftDipole.dip.mom), 3, []);
-            dipRv  = cat(2, ftDipole.dip.rv);
-case 'regional'
-            dipPos = repmat(ftDipole.dip.pos, nTime, 1)';
-            dipMom = reshape(ftDipole.dip.mom, 3, []);
-            dipRv  = ftDipole.dip.rv;
-end
-Goodness  = 1 - dipRv;
-MRI = load('/Users/valery/MEG/brainstorm_db/MEG_Tommaso/anat/B1C2/subjectimage_T1.mat');
-Voxels = cs_convert(MRI, 'scs', 'voxel', dipPos);
-% voxinds = round(ft_warp_apply(pinv(mri.transform), mnipos));
+
+for i = 1:length(spike_ind)
+    t = spike_ind(i)
+
+    if t1 == 0
+        timelockeds.time   = [1];
+        timelockeds.avg    = ftData.trial{1}(:, t);
+    else
+        avr1 = t - (t3-t1);
+        avr2 = t - (t3-t2);
+        timelockeds.time   = [1];
+        timelockeds.avg    = mean(ftData.trial{1}(:, avr1:avr2),2);
+    end
+
+    timelockeds.label  = ftData.label;
+    timelockeds.dimord = 'chan_time';
+    timelockeds        = copyfields(ftData, timelockeds, {'grad', 'elec', 'opto', 'cfg', 'trialinfo', 'topo', 'topodimord', 'topolabel', 'unmixing', 'unmixingdimord'});
+        
+
+    ftDipole = ft_dipolefitting(cfg, timelockeds);
+    nTime = length(ftDipole.time);
+    switch (DipoleModel)
+    case 'moving'
+                dipPos = cat(1, ftDipole.dip.pos)';
+                dipMom = reshape(cat(2, ftDipole.dip.mom), 3, []);
+                dipRv  = cat(2, ftDipole.dip.rv);
+    case 'regional'
+                dipPos = repmat(ftDipole.dip.pos, nTime, 1)';
+                dipMom = reshape(ftDipole.dip.mom, 3, []);
+                dipRv  = ftDipole.dip.rv;
+    end
+    Goodness  = 1 - dipRv;
+    mri_cord = cs_convert(MRI, 'scs', 'voxel', dipPos);
+    %compute Euclidean distances:
+    distances =  sum((Voxels - mri_cord) .^ 2, 2);
+    %find the smallest distance:
+    IndMax(i)   = % find(distances == min(distances));
+    ValMax(i)   = Goodness
+    spikeind(i) = mean([avr1 avr2])
+ 
+end 
+
+
+
 %% make leadfields eeg and meg
 
 % timelockeds = data
