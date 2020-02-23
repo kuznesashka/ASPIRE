@@ -83,16 +83,9 @@ for i = 1:length(spike_ind)
  
 end 
 
-if corr_thresh ~= 0.0
-%     quant = 0.95;
-    quant = corr_thresh;
-else
-    quant = 0.0;
-end
-
 % visual detection - corr_thresh
 % ICA and SPC detection - prctile(ValMax,corr_thresh_prctile);
-corr_thresh = quantile(ValMax, quant);
+corr_thresh = quantile(ValMax, corr_thresh);
 ind_m = find((ValMax > corr_thresh));
 % channel_type_loop
 disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...

@@ -55,10 +55,10 @@ for data_n = 1:parameters.N_data
 
     [t1_IndMax, t1_ValMax, t1_spikeind, t1_spike_ind, t1_ind_m, t1_spike_clust] = ...
         dip_fit_one_block(t1_IndMax, t1_ValMax, t1_spikeind, t1_spike_ind, t1_ind_m, t1_spike_clust, ...
-            block_size, block_begin, block_end)
+            block_size, block_begin, block_end, Data, G3, channels, channel_idx, t1, t2, t3, MRI, cortex)
     [t3_IndMax, t3_ValMax, t3_spikeind, t3_spike_ind, t3_ind_m, t3_spike_clust] = ...
         dip_fit_one_block(t3_IndMax, t3_ValMax, t3_spikeind, t3_spike_ind, t3_ind_m, t3_spike_clust, ...
-            block_size, block_begin, block_end)
+            block_size, block_begin, block_end, Data, G3, channels, channel_idx, t1, t2, t3, MRI, cortex)
 
 end
 
@@ -124,7 +124,7 @@ end
 
 function [IndMax, ValMax, spikeind, spike_ind, ind_m, spike_clust] = ...
     dip_fit_one_block(IndMax, ValMax, spikeind, spike_ind, ind_m, spike_clust, ...
-     block_size, block_begin, block_end)
+     block_size, block_begin, block_end, Data, G3, channels, channel_idx, t1, t2, t3, MRI, cortex)
 
     spc_data            = load(paths.detections);
     spike_ind_n         = int64(spc_data.spikes.ind');
@@ -133,7 +133,8 @@ function [IndMax, ValMax, spikeind, spike_ind, ind_m, spike_clust] = ...
     spike_ind_n         = spike_ind_n(spike_ind_n>block_begin & spike_ind_n<block_end) - block_size*(data_n-1);
 
     if isempty(spike_ind_n) ~= 1    
-        [IndMax_n, ValMax_n, ind_m_n, spikeind_n] = dip_fit(spike_ind_n, Data, G3, channel_type);
+        [IndMax_n, ValMax_n, ind_m_n, spikeind_n] = dip_fit(spike_ind_n, Data, ...
+            G3, channels, channel_idx, t1, t2, t3, MRI, cortex);
 
         l = length(spikeind);
         IndMax   = [IndMax IndMax_n];
