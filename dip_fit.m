@@ -77,89 +77,25 @@ for i = 1:length(spike_ind)
     %compute Euclidean distances:
     distances =  sum((Voxels - mri_cord) .^ 2, 2);
     %find the smallest distance:
-    IndMax(i)   = % find(distances == min(distances));
+    IndMax(i)   = find(distances == min(distances));
     ValMax(i)   = Goodness
-    spikeind(i) = mean([avr1 avr2])
+    spikeind(i) = int64(mean([avr1 avr2]))
  
 end 
 
-
-
-%% make leadfields eeg and meg
-
-% timelockeds = data
-
-cfg = [];
-cfg.elec = timelockeds{1}.elec;
-cfg.grid.resolution = 1;
-cfg.grid.unit = 'cm';
-cfg.senstype = 'meg';
-cfg.grad = timelockeds{1}.grad;
-cfg.headmodel = headmodel_meg;
-cfg.channel = 'megmag';
-
-leadfield_mag = ft_prepare_leadfield(cfg, timelockeds{1});
-
-cfg.channel = 'meggrad';
-
-leadfield_grad = ft_prepare_leadfield(cfg, timelockeds{1});
-
-
-%% dipole fits
-
-n_events = length(events); % the events to be looped through
-
-% the six cell arrays below are preparation for the fits
-
-dipoles_mag_early =  cell(1, n_events);
-dipoles_grad_early = cell(1, n_events);
-dipoles_eeg_early =  cell(1, n_events);
-
-dipoles_mag_late =  cell(1, n_events);
-dipoles_grad_late = cell(1, n_events);
-dipoles_eeg_late =  cell(1, n_events);
-
-early_latency = [0.045 0.065]; % s
-late_latency = [0.115 0.155]; % s
-
-for event_index = 1:n_events
-
-    cfg = [];
-    cfg.gridsearch = 'yes'; %% search the grid for an optimal starting point
-    cfg.grid = leadfield_mag; %% supply the grid/leadfield
-    cfg.headmodel = headmodel_meg; %% supply the headmodel
-    cfg.dipfit.metric = 'rv'; %% the metric to minimize (the relative residual variance: proportion of variance left unexplained by the dipole model)
-    cfg.model = 'regional'; %% we assume that the dipole has a fixed position during the time points in the latency range
-    cfg.senstype = 'meg'; %% sensor type
-    cfg.channel = 'megmag'; %% which channels to use
-    cfg.nonlinear = 'yes'; %% do a non-linear search
-
-    % magnetometer fits
-    cfg.latency = early_latency; %% specify the latency
-    cfg.numdipoles = 1; %% we only expect contralateral activity
-    cfg.symmetry = []; %% empty for single dipole fit
-    dipoles_mag_early{event_index} = ft_dipolefitting(cfg, timelockeds{event_index});
-    
-    cfg.latency = late_latency;
-    cfg.numdipoles = 2; %% we expect bilateral activity
-    cfg.symmetry = 'x'; %% we expect it to be symmetrical in the x-direction (ear-to-ear)
-    dipoles_mag_late{event_index} = ft_dipolefitting(cfg, timelockeds{event_index});
- 
-    % gradiometer fits
-    cfg.channel = 'meggrad';
-    cfg.grid = leadfield_grad;
-
-    cfg.latency = early_latency;
-    cfg.numdipoles = 1;
-    cfg.symmetry = [];
-    dipoles_grad_early{event_index} = ft_dipolefitting(cfg, timelockeds{event_index});
-    
-    cfg.latency = late_latency;
-    cfg.numdipoles = 2;
-    cfg.symmetry = 'x';
-    dipoles_grad_late{event_index} = ft_dipolefitting(cfg, timelockeds{event_index});
-    
-    
+if corr_thresh ~= 0.0
+%     quant = 0.95;
+    quant = corr_thresh;
+else
+    quant = 0.0;
 end
 
-disp('Done')
+% visual detection - corr_thresh
+% ICA and SPC detection - prctile(ValMax,corr_thresh_prctile);
+corr_thresh = quantile(ValMax, quant);
+ind_m = find((ValMax > corr_thresh));
+% channel_type_loop
+disp(['Subcorr threshold: ', num2str(corr_thresh), ' Number of spike found: ', ...
+    num2str(length(ind_m))]);
+
+
