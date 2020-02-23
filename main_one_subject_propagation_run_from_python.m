@@ -14,10 +14,8 @@ function main_one_subject_propagation_run_from_python(cortex, G3, MRI, channels,
 % OUTPUTS:
 %
 % sources - .mat file with sources
-% clusters - .csv file with clusters
-% results - .mat
-% roc - .xlsx file with ROC curves
-%
+% cluster - .mat
+% parameters - .mat
 % _______________________________________________________
 %
 
@@ -54,23 +52,27 @@ for data_n = 1:parameters.N_data
 
 
     [t1_IndMax, t1_ValMax, t1_spikeind, t1_spike_ind, t1_ind_m, t1_spike_clust] = ...
-        dip_fit_one_block(t1_IndMax, t1_ValMax, t1_spikeind, t1_spike_ind, t1_ind_m, t1_spike_clust, ...
-            block_size, block_begin, block_end, Data, G3, channels, channel_idx, ...
-            parameters.t1, parameters.t2, parameters.t3, MRI, cortex)
+        dip_fit_one_block(t1_IndMax, t1_ValMax, t1_spikeind, t1_spike_ind, ...
+            t1_ind_m, t1_spike_clust, block_size, block_begin, block_end,  ...
+            Data, G3, channels, channel_idx, parameters.t1, parameters.t2,...
+            parameters.t3, MRI, cortex, paths.detections, ...
+            data_n, parameters.corr_thresh);
     [t3_IndMax, t3_ValMax, t3_spikeind, t3_spike_ind, t3_ind_m, t3_spike_clust] = ...
-        dip_fit_one_block(t3_IndMax, t3_ValMax, t3_spikeind, t3_spike_ind, t3_ind_m, t3_spike_clust, ...
-            block_size, block_begin, block_end, Data, G3, channels, channel_idx, ...
-            parameters.t1, parameters.t2, parameters.t3, MRI, cortex)
+        dip_fit_one_block(t3_IndMax, t3_ValMax, t3_spikeind, t3_spike_ind, ...
+            t3_ind_m, t3_spike_clust, block_size, block_begin, block_end, ...
+            Data, G3, channels, channel_idx, 0, 0,...
+            parameters.t3, MRI, cortex, paths.detections, ...
+            data_n, parameters.corr_thresh);
 
 end
 
 %% Clustering t1
-IndMax      = t1_IndMax  
-ValMax      = t1_ValMax  
-ind_m       = t1_ind_m   
-spikeind    = t1_spikeind
-spike_clust = t1_spike_clust
-spike_ind   = t1_spike_ind
+IndMax      = t1_IndMax;
+ValMax      = t1_ValMax; 
+ind_m       = t1_ind_m; 
+spikeind    = t1_spikeind;
+spike_clust = t1_spike_clust;
+spike_ind   = t1_spike_ind;
 save(paths.sources_saving_path_t1, 'IndMax','ValMax','ind_m','spikeind')
 try
     cluster_t1 = clustering(spike_ind, ... 
@@ -93,12 +95,12 @@ catch
 end
 
 %% Clustering t3
-IndMax      = t3_IndMax  
-ValMax      = t3_ValMax  
-ind_m       = t3_ind_m   
-spikeind    = t3_spikeind
-spike_clust = t3_spike_clust
-spike_ind   = t3_spike_ind
+IndMax      = t3_IndMax;
+ValMax      = t3_ValMax; 
+ind_m       = t3_ind_m; 
+spikeind    = t3_spikeind;
+spike_clust = t3_spike_clust;
+spike_ind   = t3_spike_ind;
 save(paths.sources_saving_path_t3, 'IndMax','ValMax','ind_m','spikeind')
 try
     cluster_t3 = clustering(spike_ind, ... 
@@ -126,9 +128,10 @@ end
 
 function [IndMax, ValMax, spikeind, spike_ind, ind_m, spike_clust] = ...
     dip_fit_one_block(IndMax, ValMax, spikeind, spike_ind, ind_m, spike_clust, ...
-     block_size, block_begin, block_end, Data, G3, channels, channel_idx, t1, t2, t3, MRI, cortex)
+     block_size, block_begin, block_end, Data, G3, channels, channel_idx, t1, ...
+     t2, t3, MRI, cortex, detections, data_n, corr_thresh)
 
-    spc_data            = load(paths.detections);
+    spc_data            = load(detections);
     spike_ind_n         = int64(spc_data.spikes.ind');
     spike_clust_n       = spc_data.spikes.clusters';
     spike_clust_n       = spike_clust_n(spike_ind_n>block_begin & spike_ind_n<block_end);
@@ -136,12 +139,12 @@ function [IndMax, ValMax, spikeind, spike_ind, ind_m, spike_clust] = ...
 
     if isempty(spike_ind_n) ~= 1    
         [IndMax_n, ValMax_n, ind_m_n, spikeind_n] = dip_fit(spike_ind_n, Data, ...
-            G3, channels, channel_idx, t1, t2, t3, MRI, cortex);
+            G3, channels, channel_idx, t1, t2, t3, MRI, cortex, corr_thresh);
 
         l = length(spikeind);
         IndMax   = [IndMax IndMax_n];
         ValMax   = [ValMax ValMax_n];
-        spikeind = [spikeind; spikeind_n    + block_size*(data_n-1)];
+        spikeind = [spikeind; int64(spikeind_n)    + block_size*(data_n-1)];
         spike_ind = [spike_ind; spike_ind_n + block_size*(data_n-1)];
         ind_m    = [ind_m  ind_m_n  + l(1)];
         spike_clust = [spike_clust; spike_clust_n];

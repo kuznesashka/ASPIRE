@@ -35,6 +35,9 @@ addpath(([paths.fieldtrip filesep 'plotting']));
 addpath(([paths.fieldtrip filesep 'utilities' filesep 'private']));
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 
+if paths_params.propagation == 1
+    addpath(([paths.fieldtrip filesep 'utilities']));
+end
 % -------------------------------------------------------------------------
 %% Paths -- subject info
 % -------------------------------------------------------------------------
@@ -122,9 +125,9 @@ save(paths.affine_saving_path, 'affine')
 if paths_params.propagation ~= 1
 	main_one_subject_run_from_python(cortex, G3, MRI, channels, paths, parameters);
 else
-	parameters.t1 = paths_params.t1
-	parameters.t2 = paths_params.t2
-	parameters.t3 = paths_params.t3
+	parameters.t1 = paths_params.t1;
+	parameters.t2 = paths_params.t2;
+	parameters.t3 = paths_params.t3;
 	main_one_subject_propagation_run_from_python(cortex, G3, MRI, channels, paths, parameters);
 end
 end
