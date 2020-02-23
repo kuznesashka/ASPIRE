@@ -96,7 +96,7 @@ parameters.rap_music.f_high_RAP = 200;
 parameters.rap_music.spikydata  = 0; % spikydata -- indicatior, showing whether you want to fit
 parameters.rap_music.RAP        = 'not';
 parameters.prctile              = 85; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
-parameters.corr_thresh          = 0.95; % threshold for visual detections
+parameters.corr_thresh          = 0.80; % threshold for visual detections
 
 % -------------------------------------------------------------------------
 %% Parameters for clustering
@@ -128,6 +128,8 @@ else
 	parameters.t1 = paths_params.t1;
 	parameters.t2 = paths_params.t2;
 	parameters.t3 = paths_params.t3;
+    paths.sources_saving_path_t1 = paths_params.sources_saving_path_t1;
+    paths.sources_saving_path_t3 = paths_params.sources_saving_path_t3;
 	main_one_subject_propagation_run_from_python(cortex, G3, MRI, channels, paths, parameters);
 end
 end
