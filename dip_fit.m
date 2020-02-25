@@ -92,12 +92,12 @@ for i = 1:length(spike_ind)
     switch (DipoleModel)
     case 'moving'
                 dipPos = cat(1, ftDipole.dip.pos)';
-                dipMom = reshape(cat(2, ftDipole.dip.mom), 3, []);
-                dipRv  = cat(2, ftDipole.dip.rv);
+                % dipMom = reshape(cat(2, ftDipole.dip.mom), 3, []);
+                % dipRv  = cat(2, ftDipole.dip.rv);
     case 'regional'
                 dipPos = repmat(ftDipole.dip.pos, nTime, 1)';
-                dipMom = reshape(ftDipole.dip.mom, 3, []);
-                dipRv  = ftDipole.dip.rv;
+                % dipMom = reshape(ftDipole.dip.mom, 3, []);
+                % dipRv  = ftDipole.dip.rv;
     end
     Goodness  = 1 - dipRv;
     mri_cord = cs_convert(MRI, 'scs', 'voxel', dipPos);
