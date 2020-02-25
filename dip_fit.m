@@ -93,7 +93,7 @@ for i = 1:length(spike_ind)
     case 'moving'
                 dipPos = cat(1, ftDipole.dip.pos)';
                 % dipMom = reshape(cat(2, ftDipole.dip.mom), 3, []);
-                % dipRv  = cat(2, ftDipole.dip.rv);
+                dipRv  = cat(2, ftDipole.dip.rv);
     case 'regional'
                 dipPos = repmat(ftDipole.dip.pos, nTime, 1)';
                 % dipMom = reshape(ftDipole.dip.mom, 3, []);
