@@ -105,7 +105,7 @@ parameters.corr_thresh          = 0.80; % threshold for visual detections
 if paths_params.propagation ~= 1
 	parameters.clustering.THR_DIST = 0.01;
 else
-	parameters.clustering.THR_DIST = 0.01;
+	parameters.clustering.THR_DIST = 0.02;
 end
 % N_MIN - minimum number of sources in one cluster
 parameters.clustering.N_MIN    = 3;
