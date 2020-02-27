@@ -1,4 +1,4 @@
-function main(paths_params)
+function main_run_from_python(paths_params)
 
 %% -------------------------------------------------------------------------
 % Main with parameters
@@ -35,7 +35,7 @@ addpath(([paths.fieldtrip filesep 'plotting']));
 addpath(([paths.fieldtrip filesep 'utilities' filesep 'private']));
 warning('off', 'MATLAB:MKDIR:DirectoryExists');
 
-if paths_params.propagation == 1
+if paths_params.propagation > 0
     addpath(([paths.fieldtrip filesep 'utilities']));
 end
 % -------------------------------------------------------------------------
@@ -122,15 +122,28 @@ affine = MRI.InitTransf{2};
 save(paths.voxels_saving_path, 'Voxels')
 save(paths.affine_saving_path, 'affine')
 %% run the main function
-if paths_params.propagation ~= 1
+if paths_params.propagation == 0
 	main_one_subject_run_from_python(cortex, G3, MRI, channels, paths, parameters);
-else
+elseif paths_params.propagation == 1
 	parameters.t1 = paths_params.t1;
 	parameters.t2 = paths_params.t2;
 	parameters.t3 = paths_params.t3;
     paths.sources_saving_path_t1 = paths_params.sources_saving_path_t1;
     paths.sources_saving_path_t3 = paths_params.sources_saving_path_t3;
 	main_one_subject_propagation_run_from_python(cortex, G3, MRI, channels, paths, parameters);
+elseif paths_params.propagation == 2
+    switch parameters.channel_type % channels you want to analyse ('grad' or 'mag')
+        case 1, channel_type = 'grad';
+            channel_idx     = setdiff(1:306, 3:3:306);
+        case 2, channel_type = 'mag';
+            channel_idx     = 3:3:306;
+    end
+    Data = load(parameters.Data_0);
+    evoked_data = load(paths_params.evoked);
+    dip_fit_average(Data, evoked_data, G3, channels, channel_idx, ...
+                    paths_params.t1, paths_params.t2, ...
+                    paths_params.t3, paths_params.t4, MRI, cortex, ...
+                    paths_params.evoked_saving_path)
 end
 end
 
