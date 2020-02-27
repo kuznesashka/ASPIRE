@@ -144,10 +144,13 @@ elseif paths_params.propagation == 2
     end
     Data = load(parameters.Data_0);
     evoked_data = load(paths_params.evoked);
-    dip_fit_average(Data, evoked_data, G3, channels, channel_idx, ...
-                    paths_params.t1, paths_params.t2, ...
-                    paths_params.t3, paths_params.t4, MRI, cortex, ...
-                    paths_params.evoked_saving_path)
+    t1= paths_params.t1;
+    t2= paths_params.t2;
+    t3= paths_params.t3;
+    t4= paths_params.t4;
+    t = [t1 int64((t1+t2)/2) t2 int64((t2+t3)/2) t3 int64((t3+t4)/2) t4];
+    dip_fit_average(Data, evoked_data, G3, channels, channel_idx, t,...
+                    MRI, cortex, paths_params.evoked_saving_path)
 end
 end
 

@@ -1,5 +1,5 @@
 function dip_fit_average(Data, evoked_data, G3, channels, channel_idx, ...
-    			t1, ~, ~, t4, MRI, cortex, save_evoked)
+    			t, MRI, cortex, save_evoked)
 
 % -------------------------------------------------------------------------
 % Dipole fitting
@@ -56,13 +56,29 @@ else
         cfg.dipfit.optimfun = 'fminsearch';
 end
 
-for i = 1:ceil((t4-t1)/10)
-
+for i = 1:length(t)
     timelockeds.time   = 1;
-    timelockeds.avg    = mean(evoked_data.evoked(:,t1+(i-1)*10:t1+i*10),2);
+    switch i
+        case 1, spikeind(i) = t(i);
+            timelockeds.avg = evoked_data.evoked(:,t(i));
+        case 2, spikeind(i) = t(i);
+            timelockeds.avg = evoked_data.evoked(:,t(i-1):t(i));
+        case 3, spikeind(i) = t(i);
+            timelockeds.avg = evoked_data.evoked(:,t(i));
+        case 4, spikeind(i) = t(i);
+            timelockeds.avg = evoked_data.evoked(:,t(i-1):t(i));
+        case 5, spikeind(i) = t(i);
+            timelockeds.avg = evoked_data.evoked(:,t(i));
+        case 6, spikeind(i) = t(i);
+            timelockeds.avg = evoked_data.evoked(:,t(i-1):t(i)); 
+        case 7, spikeind(i) = t(i);
+            timelockeds.avg = evoked_data.evoked(:,t(i));
+    end
     timelockeds.label  = ftData.label;
     timelockeds.dimord = 'chan_time';
-    timelockeds        = copyfields(ftData, timelockeds, {'grad', 'elec', 'opto', 'cfg', 'trialinfo', 'topo', 'topodimord', 'topolabel', 'unmixing', 'unmixingdimord'});
+    timelockeds        = copyfields(ftData, timelockeds, ...
+        {'grad', 'elec', 'opto', 'cfg', 'trialinfo', 'topo',...
+        'topodimord', 'topolabel', 'unmixing', 'unmixingdimord'});
    
     ftDipole = ft_dipolefitting(cfg, timelockeds);
     nTime = length(ftDipole.time);
@@ -83,9 +99,7 @@ for i = 1:ceil((t4-t1)/10)
     %find the smallest distance:
     IndMax(i)   = find(distances == min(distances));
     ValMax(i)   = Goodness;
-    spikeind(i) = t1+(i-1)*10+5;
 end
-
 save(save_evoked, 'IndMax','ValMax','spikeind')
 
 
