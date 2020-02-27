@@ -15,13 +15,6 @@ function dip_fit_average(Data, evoked_data, G3, channels, channel_idx, ...
 %     MRI : structure from bst
 %     cortes : 
 %
-% OUTPUTS:
-%
-%     IndMax : locations of fitted dipoles (indices of cortex.Vertices array)
-%     ValMax : values of subspace correlation (Goodness)
-%     ind_m : indices of spikes survived the subcorr threshold
-%     spikeind : time indices. If t1==0 equivalent of spike_ind
-%              If t1 ~= 0 spikeind = spike_ind - (t3-t1)
 % _______________________________________________________
 %
 IndMax   = [];
@@ -51,10 +44,10 @@ cfg.nonlinear   = 'yes';
 % cfg.grid.inside = ones(size(GridLoc,1),1);
 % cfg.grid.unit   = 'm';
 % cfg.grid.resolution = 2;
-cfg.grid.unit   = 'cm';
+% cfg.grid.unit   = 'cm';
 cfg.symmetry    = [];
 cfg.feedback    = 'textbar';
-cfg.gridsearch  = 'yes';
+cfg.gridsearch  = 'no';
 cfg.senstype    = 'MEG';
 
 if exist('fminunc', 'file')

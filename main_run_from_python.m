@@ -117,9 +117,11 @@ G3              = load(paths.G3);
 
 %%
 Voxels = cs_convert(MRI, 'scs', 'voxel', cortex.Vertices);
+Voxels_mni = cs_convert(MRI, 'scs', 'mni', cortex.Vertices);
 affine = MRI.InitTransf{2};
 
 save(paths.voxels_saving_path, 'Voxels')
+save(paths.voxels_mni_saving_path, 'Voxels_mni')
 save(paths.affine_saving_path, 'affine')
 %% run the main function
 if paths_params.propagation == 0
