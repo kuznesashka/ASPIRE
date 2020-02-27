@@ -118,11 +118,13 @@ G3              = load(paths.G3);
 %%
 Voxels = cs_convert(MRI, 'scs', 'voxel', cortex.Vertices);
 Voxels_mni = cs_convert(MRI, 'scs', 'mni', cortex.Vertices);
-affine = MRI.InitTransf{2};
+affine_scs = [MRI.SCS.R MRI.SCS.T; 0 0 0 1];
+affine_ncs = [MRI.NCS.R MRI.NCS.T; 0 0 0 1];
 
 save(paths.voxels_saving_path, 'Voxels')
 save(paths_params.voxels_mni_saving_path, 'Voxels_mni')
-save(paths.affine_saving_path, 'affine')
+save(paths.affine_saving_path, 'affine_scs')
+save(paths_params.affine_mni_saving_path, 'affine_ncs')
 %% run the main function
 if paths_params.propagation == 0
 	main_one_subject_run_from_python(cortex, G3, MRI, channels, paths, parameters);
