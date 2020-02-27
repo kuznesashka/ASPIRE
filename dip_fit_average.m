@@ -44,10 +44,10 @@ cfg.nonlinear   = 'yes';
 % cfg.grid.inside = ones(size(GridLoc,1),1);
 % cfg.grid.unit   = 'm';
 % cfg.grid.resolution = 2;
-% cfg.grid.unit   = 'cm';
+cfg.grid.unit   = 'cm';
 cfg.symmetry    = [];
 cfg.feedback    = 'textbar';
-cfg.gridsearch  = 'no';
+cfg.gridsearch  = 'yes';
 cfg.senstype    = 'MEG';
 
 if exist('fminunc', 'file')
