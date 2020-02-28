@@ -43,11 +43,12 @@ cfg.nonlinear   = 'yes';
 % cfg.grid.pos    = GridLoc;
 % cfg.grid.inside = ones(size(GridLoc,1),1);
 % cfg.grid.unit   = 'm';
-% cfg.grid.resolution = 2;
-% cfg.grid.unit   = 'cm';
+cfg.grid.resolution = 1;
+cfg.grid.unit   = 'cm';
+cfg.gridsearch  = 'yes';
 cfg.symmetry    = [];
 cfg.feedback    = 'textbar';
-cfg.gridsearch  = 'no';
+
 cfg.senstype    = 'MEG';
 
 if exist('fminunc', 'file')
@@ -99,6 +100,8 @@ for i = 1:length(t)
     %find the smallest distance:
     IndMax(i)   = find(distances == min(distances));
     ValMax(i)   = Goodness;
+    cfg.gridsearch  = 'no';
+    cfg.dip.pos     = ftDipole.dip.pos;
 end
 save(save_evoked, 'IndMax','ValMax','spikeind')
 
