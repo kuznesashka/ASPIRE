@@ -43,9 +43,9 @@ cfg.nonlinear   = 'yes';
 % cfg.grid.pos    = GridLoc;
 % cfg.grid.inside = ones(size(GridLoc,1),1);
 % cfg.grid.unit   = 'm';
-cfg.grid.resolution = 1;
-cfg.grid.unit   = 'cm';
-cfg.gridsearch  = 'yes';
+% cfg.grid.resolution = 1;
+% cfg.grid.unit   = 'cm';
+cfg.gridsearch  = 'no';
 cfg.symmetry    = [];
 cfg.feedback    = 'textbar';
 
