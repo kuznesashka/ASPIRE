@@ -97,8 +97,8 @@ parameters.rap_music.spikydata  = 0; % spikydata -- indicatior, showing whether 
 parameters.rap_music.RAP        = 'not';
 
 if paths_params.propagation == 0
-    parameters.prctile              = 90; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
-    parameters.corr_thresh          = 0.90; % threshold for visual detections
+    parameters.prctile              = 95; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
+    parameters.corr_thresh          = 0.95; % threshold for visual detections
 else
     parameters.prctile              = 85; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
     parameters.corr_thresh          = 0.80; % threshold for visual detections    
