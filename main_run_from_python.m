@@ -95,14 +95,18 @@ parameters.rap_music.f_low_RAP  = 10;
 parameters.rap_music.f_high_RAP = 200;
 parameters.rap_music.spikydata  = 0; % spikydata -- indicatior, showing whether you want to fit
 parameters.rap_music.RAP        = 'not';
-parameters.prctile              = 85; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
-parameters.corr_thresh          = 0.80; % threshold for visual detections
 
+if paths_params.propagation == 0
+    parameters.prctile              = 90; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
+    parameters.corr_thresh          = 0.90; % threshold for visual detections
+else
+    parameters.prctile              = 85; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
+    parameters.corr_thresh          = 0.80; % threshold for visual detections    
 % -------------------------------------------------------------------------
 %% Parameters for clustering
 % -------------------------------------------------------------------------
 % THR_DIST - maximal distance from the center of the cluster (radius) in m
-if paths_params.propagation ~= 1
+if paths_params.propagation == 0
 	parameters.clustering.THR_DIST = 0.01;
 else
 	parameters.clustering.THR_DIST = 0.02;
