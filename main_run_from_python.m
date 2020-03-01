@@ -108,7 +108,7 @@ end
 % -------------------------------------------------------------------------
 % THR_DIST - maximal distance from the center of the cluster (radius) in m
 if paths_params.propagation == 0
-	parameters.clustering.THR_DIST = 0.005;
+	parameters.clustering.THR_DIST = 0.01;
 else
 	parameters.clustering.THR_DIST = 0.02;
 end
