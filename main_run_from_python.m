@@ -108,12 +108,12 @@ end
 % -------------------------------------------------------------------------
 % THR_DIST - maximal distance from the center of the cluster (radius) in m
 if paths_params.propagation == 0
-	parameters.clustering.THR_DIST = 0.01;
+	parameters.clustering.THR_DIST = 0.005;
 else
 	parameters.clustering.THR_DIST = 0.02;
 end
 % N_MIN - minimum number of sources in one cluster
-parameters.clustering.N_MIN    = 3;
+parameters.clustering.N_MIN    = 5;
 
 cortex          = load(paths.cortex);
 MRI             = load(paths.MRI);
