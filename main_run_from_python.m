@@ -164,8 +164,9 @@ elseif paths_params.propagation == 3 %beamforming
             channel_idx     = 3:3:306;
     end
     Data = load(paths_params.atoms_epoch_data);
-    dip_ind = paths_params.dip_ind
-    VE   = source_reconstruction_atoms(Data, G3, channel_idx, dip_ind)
+    Data = Data.data;
+    dip_ind = paths_params.dip_ind;
+    VE   = source_reconstruction_atoms(Data', G3, channel_idx, dip_ind);
     save(paths_params.atoms_soure_data, 'VE')
 end
 end

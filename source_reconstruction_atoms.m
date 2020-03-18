@@ -16,15 +16,20 @@ function VE = source_reconstruction_atoms(Data, G3, channel_idx, dip_ind)
 
     % 2D forward operator
     [G2, ~] = G3toG2(G3, channel_idx);
-    VE 		= zeros(length(Data), length(dip_ind)) 
-
-    for i = 1:length(dip_ind) % all atoms locations
-        g = G2(:,(dip_ind(i)*2-1):dip_ind(i)*2); %[sensors x spikes_locationx2]
-        [U S ~] = svd(Data); % U:[204 x 204], S:[204xtime]
-        h = cumsum(diag(S)/sum(diag(S)));
-        n = min(find(h>=0.95));
-        [u s v] = svd(U(:,1:n)'*g); % project only main components, SVD them again: V is the oreintation of the source
-        g_fixed = g*v(1,:)'; % fixed orientation forward model
-        VE(:,i) = Data'*g_fixed; % estimated source signal
-    end    
+    VE 		= zeros(length(dip_ind), length(Data)); 
+    chunk_len = length(Data)/99;
+    for chunk = 1:99
+        chunk_begin = 1 + (chunk-1)*chunk_len;
+        chunk_end   = chunk_len + (chunk-1)*chunk_len;
+        chunk_data  = Data(:, chunk_begin:chunk_end);
+        for i = 1:length(dip_ind) % all atoms locations
+            g = G2(:,(dip_ind(i)*2-1):dip_ind(i)*2); %[sensors x spikes_locationx2]
+            [U S ~] = svd(chunk_data); % U:[204 x 204], S:[204xtime]
+            h = cumsum(diag(S)/sum(diag(S)));
+            n = min(find(h>=0.95));
+            [u s v] = svd(U(:,1:n)'*g); % project only main components, SVD them again: V is the oreintation of the source
+            g_fixed = g*v(1,:)'; % fixed orientation forward model
+            VE(i, chunk_begin:chunk_end) = chunk_data'*g_fixed; % estimated source signal
+        end
+    end
 end
