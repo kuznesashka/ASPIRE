@@ -156,7 +156,7 @@ elseif paths_params.propagation == 2 %dipole fit
     t = [t1 int64((t1+t2)/2) t2 int64((t2+t3)/2) t3 int64((t3+t4)/2) t4];
     dip_fit_average(Data, evoked_data, G3, channels, channel_idx, t,...
                     MRI, cortex, paths_params.evoked_saving_path)
-elseif paths_params.propagation == 2 %beamforming
+elseif paths_params.propagation == 3 %beamforming
     switch parameters.channel_type % channels you want to analyse ('grad' or 'mag')
         case 1, channel_type = 'grad';
             channel_idx     = setdiff(1:306, 3:3:306);
