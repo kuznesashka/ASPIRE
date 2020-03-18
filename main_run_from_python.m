@@ -168,6 +168,18 @@ elseif paths_params.propagation == 3 %beamforming
     dip_ind = paths_params.dip_ind;
     VE   = source_reconstruction_atoms(Data', G3, channel_idx, dip_ind);
     save(paths_params.atoms_soure_data, 'VE')
+    
+%     chunk_len = length(VE)/99;
+%     avg_VE = zeros(length(dip_ind), chunk_len);
+%     for chunk = 1:length(VE)/chunk_len
+%         chunk_begin = 1 + (chunk-1)*chunk_len;
+%         chunk_end   = chunk_len + (chunk-1)*chunk_len;
+%         avg_VE(:,:) = avg_VE(:,:) + VE(:,chunk_begin:chunk_end);
+%     end
+%     for i = 1:8
+%         figure(i)
+%         plot(avg_VE(i,:)/99);
+%     end
 end
 end
 
