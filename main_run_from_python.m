@@ -157,16 +157,17 @@ elseif paths_params.propagation == 2 %dipole fit
     dip_fit_average(Data, evoked_data, G3, channels, channel_idx, t,...
                     MRI, cortex, paths_params.evoked_saving_path)
 elseif paths_params.propagation == 3 %beamforming
+    Data = load(paths_params.atoms_epoch_data);
+    Data = Data.data;
     switch parameters.channel_type % channels you want to analyse ('grad' or 'mag')
         case 1, channel_type = 'grad';
             channel_idx     = setdiff(1:306, 3:3:306);
         case 2, channel_type = 'mag';
             channel_idx     = 3:3:306;
+            Data = Data * 100;
     end
-    Data = load(paths_params.atoms_epoch_data);
-    Data = Data.data;
     dip_ind = paths_params.dip_ind;
-    VE   = source_reconstruction_atoms(Data', G3, channel_idx, dip_ind);
+    VE   = source_reconstruction_atoms(Data', G3, channel_idx, dip_ind, 99);
     save(paths_params.atoms_soure_data, 'VE')
     
 %     chunk_len = length(VE)/99;
@@ -180,6 +181,7 @@ elseif paths_params.propagation == 3 %beamforming
 %         figure(i)
 %         plot(avg_VE(i,:)/99);
 %     end
+%    VE   = source_reconstruction_atoms(data, G3, channel_idx, dip_ind, 1);
 end
 end
 
