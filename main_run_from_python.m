@@ -140,7 +140,7 @@ elseif paths_params.propagation == 1
     paths.sources_saving_path_t1 = paths_params.sources_saving_path_t1;
     paths.sources_saving_path_t3 = paths_params.sources_saving_path_t3;
 	main_one_subject_propagation_run_from_python(cortex, G3, MRI, channels, paths, parameters);
-elseif paths_params.propagation == 2
+elseif paths_params.propagation == 2 %dipole fit
     switch parameters.channel_type % channels you want to analyse ('grad' or 'mag')
         case 1, channel_type = 'grad';
             channel_idx     = setdiff(1:306, 3:3:306);
@@ -156,6 +156,15 @@ elseif paths_params.propagation == 2
     t = [t1 int64((t1+t2)/2) t2 int64((t2+t3)/2) t3 int64((t3+t4)/2) t4];
     dip_fit_average(Data, evoked_data, G3, channels, channel_idx, t,...
                     MRI, cortex, paths_params.evoked_saving_path)
+elseif paths_params.propagation == 2 %beamforming
+    switch parameters.channel_type % channels you want to analyse ('grad' or 'mag')
+        case 1, channel_type = 'grad';
+            channel_idx     = setdiff(1:306, 3:3:306);
+        case 2, channel_type = 'mag';
+            channel_idx     = 3:3:306;
+    end
+    Data = load(parameters.Data_0);
+
 end
 end
 
