@@ -16,7 +16,7 @@ function VE = source_reconstruction_atoms(Data, G3, channel_idx, dip_ind)
 
     % 2D forward operator
     [G2, ~] = G3toG2(G3, channel_idx);
-    VE 		= zeros(length(Date), length(dip_ind)) 
+    VE 		= zeros(length(Data), length(dip_ind)) 
 
     for i = 1:length(dip_ind) % all atoms locations
         g = G2(:,(dip_ind(i)*2-1):dip_ind(i)*2); %[sensors x spikes_locationx2]
