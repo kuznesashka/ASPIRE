@@ -164,10 +164,10 @@ elseif paths_params.propagation == 3 %beamforming
             channel_idx     = setdiff(1:306, 3:3:306);
         case 2, channel_type = 'mag';
             channel_idx     = 3:3:306;
-            Data = Data * 100;
+            % Data = Data * 100;
     end
     dip_ind = paths_params.dip_ind;
-    VE   = source_reconstruction_atoms(Data', G3, channel_idx, dip_ind, 99);
+    VE   = source_reconstruction_atoms(Data', G3, channel_idx, dip_ind);
     save(paths_params.atoms_soure_data, 'VE')
     
 %     chunk_len = length(VE)/99;
