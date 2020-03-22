@@ -17,7 +17,7 @@ function VE = source_reconstruction_atoms(Data, G3, channel_idx, dip_ind)
     % 2D forward operator
     [G2, ~] = G3toG2(G3, channel_idx);
     VE 		= zeros(length(dip_ind), length(Data)); 
-    chunk_len = length(Data)/1001;
+    chunk_len = length(Data)/1000;
     for chunk = 1:length(VE)/chunk_len
         chunk_begin = 1 + (chunk-1)*chunk_len;
         chunk_end   = chunk_len + (chunk-1)*chunk_len;
