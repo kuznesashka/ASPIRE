@@ -184,11 +184,18 @@ elseif paths_params.propagation == 3 %beamforming
 
 elseif paths_params.propagation == 4 %RAP MUSIC
     evoked_data = load(paths_params.evoked);
+    switch parameters.channel_type % channels you want to analyse ('grad' or 'mag')
+        case 1, channel_type = 'grad';
+            channel_idx     = setdiff(1:306, 3:3:306);
+        case 2, channel_type = 'mag';
+            channel_idx     = 3:3:306;
+            % Data = Data * 100;
+    end    
     ValMax = [];
     IndMax = [];
     Sources = [];
     [Valmax, Indmax, Sources] = RAP_MUSIC_scan_atoms(evoked_data, G3.Gain(channel_idx,:), ...
-        G2, corr_thresh, G3);
+        G2, corr_thresh, G3, channel_idx);
     save(paths_params.rap_save, 'Valmax', 'Indmax', 'Sources')
 
 end
