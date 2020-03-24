@@ -1,4 +1,4 @@
-function [Valmax, Indmax, Sources] = RAP_MUSIC_scan_atoms(spike, Gain, G2, ...
+function [Valmax, Indmax, Sources] = RAP_MUSIC_scan_atoms(spike, ...
     thresh, G3, channel_idx)
 % -------------------------------------------------------
 % RAP-MUSIC scan
@@ -16,6 +16,10 @@ function [Valmax, Indmax, Sources] = RAP_MUSIC_scan_atoms(spike, Gain, G2, ...
 % Aleksandra Kuznetsova, kuznesashka@gmail.com
 % Alexei Ossadtchi, ossadtchi@gmail.com
 
+% 2D forward operator
+[G2, ~] = G3toG2(G3, channel_idx);
+Gain = G3.Gain(channel_idx,:)
+
 [Ns, Nsrc2] = size(G2);
 Nsrc = Nsrc2/2;
 
@@ -27,7 +31,7 @@ h = cumsum(diag(S)/sum(diag(S)));
 n = find(h>=0.95);
 corr = MUSIC_scan(G2, U(:,1:n(1)));
 [valmax, indmax] = max(corr);
-source_ts = source_reconstruction_atom(spike, G3, indmax, channel_idx);
+source_ts = source_reconstruction_atom(spike, G2, indmax, channel_idx);
 Sources = [Sources source_ts];
 
 while valmax > thresh
@@ -55,16 +59,14 @@ while valmax > thresh
     n = find(h>=0.95);
     corr = MUSIC_scan(G2, U(:,1:n(1)));
     [valmax, indmax] = max(corr);
-    source_ts = source_reconstruction_atom(spike_proj, G3, indmax, channel_idx);
+    source_ts = source_reconstruction_atom(spike_proj, G2, indmax, channel_idx);
     Sources = [Sources source_ts];
 end
 
 end
 
 
-function source_ts = source_reconstruction_atom(Data, G3, dip_ind, channel_idx)
-    % 2D forward operator
-    [G2, ~] = G3toG2(G3, channel_idx);
+function source_ts = source_reconstruction_atom(Data, G2, dip_ind, channel_idx)
     g = G2(:,(dip_ind*2-1):dip_ind*2); %[sensors x spikes_locationx2]
     [U S ~] = svd(Data); % U:[204 x 204], S:[204xtime]
     h = cumsum(diag(S)/sum(diag(S)));

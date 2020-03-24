@@ -194,8 +194,8 @@ elseif paths_params.propagation == 4 %RAP MUSIC
     ValMax = [];
     IndMax = [];
     Sources = [];
-    [Valmax, Indmax, Sources] = RAP_MUSIC_scan_atoms(evoked_data, G3.Gain(channel_idx,:), ...
-        G2, corr_thresh, G3, channel_idx);
+    [Valmax, Indmax, Sources] = RAP_MUSIC_scan_atoms(evoked_data, ...
+        corr_thresh, G3, channel_idx);
     save(paths_params.rap_save, 'Valmax', 'Indmax', 'Sources')
 
 end
