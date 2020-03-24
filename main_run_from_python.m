@@ -101,7 +101,7 @@ if paths_params.propagation == 0
     parameters.corr_thresh          = 0.95; % threshold for visual detections
 else
     parameters.prctile              = 85; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
-    parameters.corr_thresh          = 0.95; % threshold for visual detections
+    parameters.corr_thresh          = 0.8; % threshold for visual detections
 end
 % -------------------------------------------------------------------------
 %% Parameters for clustering
