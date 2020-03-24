@@ -18,7 +18,7 @@ function [Valmax, Indmax, Sources] = RAP_MUSIC_scan_atoms(spike, ...
 
 % 2D forward operator
 [G2, ~] = G3toG2(G3, channel_idx);
-Gain = G3.Gain(channel_idx,:)
+Gain = G3.Gain(channel_idx,:);
 
 [Ns, Nsrc2] = size(G2);
 Nsrc = Nsrc2/2;
