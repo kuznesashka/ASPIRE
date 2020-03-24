@@ -169,7 +169,6 @@ elseif paths_params.propagation == 3 %beamforming
     dip_ind = paths_params.dip_ind;
     VE   = source_reconstruction_atoms(Data', G3, channel_idx, dip_ind);
     save(paths_params.atoms_soure_data, 'VE')
-    
 %     chunk_len = length(VE)/99;
 %     avg_VE = zeros(length(dip_ind), chunk_len);
 %     for chunk = 1:length(VE)/chunk_len
@@ -182,6 +181,16 @@ elseif paths_params.propagation == 3 %beamforming
 %         plot(avg_VE(i,:)/99);
 %     end
 %    VE   = source_reconstruction_atoms(data, G3, channel_idx, dip_ind, 1);
+
+elseif paths_params.propagation == 4 %RAP MUSIC
+    evoked_data = load(paths_params.evoked);
+    ValMax = [];
+    IndMax = [];
+    Sources = [];
+    [Valmax, Indmax, Sources] = RAP_MUSIC_scan_atoms(spike, G3.Gain(channel_idx,:), ...
+        G2, corr_thresh, G3);
+    save(paths_params.rap_save, 'Valmax', 'Indmax', 'Sources')
+
 end
 end
 
