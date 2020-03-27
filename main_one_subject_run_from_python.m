@@ -139,13 +139,20 @@ for data_n = 1:parameters.N_data
             spike_ind = [spike_ind; spike_ind_n + block_size*(data_n-1)];
         end
         ind_m    = [ind_m  ind_m_n  + l(1)];
-        spike_clust = [spike_clust; spike_clust_n];
+        
+        if  parameters.spikes_detection ~= 1
+            spike_clust = [spike_clust; spike_clust_n];
+        end
     end
+end
+
+if parameters.spikes_detection == 1
+    spike_clust = zeros(size(spike_ind))
 end
 save(paths.sources_saving_path, 'IndMax','ValMax','ind_m','spikeind')
 %% 4. Clustering
 clear cluster
-if parameters.spikes_detection == 1 % for manual spikes
+if parameters.spikes_detection == 0 % for manual spikes before
     %Nmin = 1;
     if size(IndMax) ~= size(spike_ind)
         spike_ind  = spike_ind';
