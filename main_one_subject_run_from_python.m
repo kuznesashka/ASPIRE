@@ -42,8 +42,8 @@ for data_n = 1:parameters.N_data
         case 2, Data = load(parameters.Data_1);
         case 3, Data = load(parameters.Data_2);
     end
-    block_begin = 41+block_size*(data_n-1);
-    block_end   = block_size*(data_n)-30;
+    block_begin = 41+block_size*(data_n-1); % 41 ms to avoid detections at the very begining
+    block_end   = block_size*(data_n)-30; % 41 ms to avoid detections at the very end
     %% 2. Spike detection
     switch parameters.spikes_detection
         case 1 % visual markings
@@ -51,9 +51,13 @@ for data_n = 1:parameters.N_data
             manual_data       = load(paths.detections);
             picked_components = []; % ICA relevant
             picked_comp_top   = []; % ICA relevant
-            spcirc_clust      = []; % SPC relevant (maybe delete)
-            spike_ind         = manual_data(:,1);
-            spike_ind         = spike_ind(spike_ind<600-30)*1000;
+            spike_ind_n       = int64(manual_data.spikes.ind'*1000);
+            spike_clust_n     = zeros(size(spike_ind_n))';
+            
+            spike_clust_n     = spike_clust_n(spike_ind_n>block_begin & ...
+                spike_ind_n<block_end);
+            spike_ind_n         = spike_ind_n(spike_ind_n>block_begin & ...
+                spike_ind_n<block_end) - block_size*(data_n-1);    
 
         case 2 % ICA based
             [spike_ind_n, picked_components, picked_comp_top,component_indicatior] = ...
@@ -63,14 +67,18 @@ for data_n = 1:parameters.N_data
                               parameters.detection.ICA.decision, ...
                               parameters.detection.ICA.f_low, ...
                               parameters.detection.ICA.f_high);
-            % save(paths.detections,'spike_ind', 'picked_components', 'picked_comp_top','component_indicatior')
-            % load(paths.detections,'spike_ind', 'picked_components', 'picked_comp_top','component_indicatior')
+            % save(paths.detections,'spike_ind', 'picked_components', ...
+            % 'picked_comp_top','component_indicatior')
+            % load(paths.detections,'spike_ind', 'picked_components', ...
+            % 'picked_comp_top','component_indicatior')
             spcirc_clust       = [];
             picked_components  = []; % ICA relevant
             picked_comp_top    = []; % ICA relevant
             spike_clust_n      = zeros(size(spike_ind_n))';
-            spike_clust_n      = spike_clust_n(spike_ind_n>41 & spike_ind_n<block_size-30);
-            spike_ind_n        = int64(spike_ind_n(spike_ind_n>41 & spike_ind_n<block_size-30));
+            spike_clust_n      = spike_clust_n(spike_ind_n > 41 ...
+                & spike_ind_n<block_size-30);
+            spike_ind_n        = int64(spike_ind_n(spike_ind_n > 41 ...
+                & spike_ind_n<block_size-30));
 
         case 3 % Spiking circus based
             %spcirc_data = csvread([paths.path_SPC_detections,'_', channel_type, '.csv'],1,0);
@@ -80,23 +88,30 @@ for data_n = 1:parameters.N_data
             spike_ind_n         = spc_data.spikes.ind';
             spike_clust_n     = spc_data.spikes.clusters';
 
-            spike_clust_n       = spike_clust_n(spike_ind_n>block_begin & spike_ind_n<block_end);
-            spike_ind_n         = spike_ind_n(spike_ind_n>block_begin & spike_ind_n<block_end) - block_size*(data_n-1);
-            [spike_ind_n, spike_clust_n] = spykingcircus_cleaner(spike_ind_n,spike_clust_n);
+            spike_clust_n       = spike_clust_n(spike_ind_n>block_begin & ...
+                spike_ind_n<block_end);
+            spike_ind_n         = spike_ind_n(spike_ind_n>block_begin & ...
+                spike_ind_n<block_end) - block_size*(data_n-1);
+            [spike_ind_n, spike_clust_n] = spykingcircus_cleaner(spike_ind_n, spike_clust_n);
 
         case 4 % AlphaCSC based
             %spcirc_data = csvread([paths.path_SPC_detections,'_', channel_type, '.csv'],1,0);
             spc_data          = load(paths.detections);
             picked_components = []; % ICA relevant
             picked_comp_top   = []; % ICA relevant
-            spike_ind_n         = int64(spc_data.spikes.ind');
+            spike_ind_n       = int64(spc_data.spikes.ind');
             spike_clust_n     = spc_data.spikes.clusters';
 
-            spike_clust_n       = spike_clust_n(spike_ind_n>block_begin & spike_ind_n<block_end);
-            spike_ind_n         = spike_ind_n(spike_ind_n>block_begin & spike_ind_n<block_end) - block_size*(data_n-1);                    
+            spike_clust_n       = spike_clust_n(spike_ind_n>block_begin & ...
+                spike_ind_n<block_end);
+            spike_ind_n         = spike_ind_n(spike_ind_n>block_begin & ...
+                spike_ind_n<block_end) - block_size*(data_n-1);                    
     end
 
-    %%--------------------- Two main values from the detection part: spike_ind, spike_clust + picked_components, picked_comp_top
+    %%------------------------------------------------------------------%%
+    % Two main values from the detection part: 
+    %  spike_ind, spike_clust + picked_components, picked_comp_top
+    % ------------------------------------------------------------------ %
     %% 3. RAP-MUSIC (2) dipole fitting
     if isempty(spike_ind_n) ~= 1
         [IndMax_n, ValMax_n, ind_m_n, spikeind_n] = ...

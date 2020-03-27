@@ -99,6 +99,10 @@ parameters.rap_music.RAP        = 'not';
 if paths_params.propagation == 0
     parameters.prctile              = 95; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
     parameters.corr_thresh          = 0.95; % threshold for visual detections
+    if parameters.spikes_detection == 1 %visual
+        parameters.prctile              = 0;
+        parameters.corr_thresh          = 0;        
+    end
 else
     parameters.prctile              = 85; % prctile(ValMax,85); -- threshold for ICA and Spyking Circus
     parameters.corr_thresh          = 0.8; % threshold for visual detections
@@ -114,6 +118,11 @@ else
 end
 % N_MIN - minimum number of sources in one cluster
 parameters.clustering.N_MIN    = 5;
+
+if parameters.spikes_detection == 1 %visual
+    parameters.clustering.THR_DIST = 0.02;
+    parameters.clustering.N_MIN     = 10;
+end
 
 cortex          = load(paths.cortex);
 MRI             = load(paths.MRI);
@@ -132,14 +141,18 @@ save(paths.affine_saving_path, 'affine_scs')
 save(paths_params.affine_mni_saving_path, 'affine_ncs')
 %% run the main function
 if paths_params.propagation == 0
-	main_one_subject_run_from_python(cortex, G3, MRI, channels, paths, parameters);
+	main_one_subject_run_from_python(cortex, G3, MRI, channels,...
+        paths, parameters);
+
 elseif paths_params.propagation == 1
 	parameters.t1 = paths_params.t1;
 	parameters.t2 = paths_params.t2;
 	parameters.t3 = paths_params.t3;
     paths.sources_saving_path_t1 = paths_params.sources_saving_path_t1;
     paths.sources_saving_path_t3 = paths_params.sources_saving_path_t3;
-	main_one_subject_propagation_run_from_python(cortex, G3, MRI, channels, paths, parameters);
+	main_one_subject_propagation_run_from_python(cortex, G3, MRI,...
+        channels, paths, parameters);
+
 elseif paths_params.propagation == 2 %dipole fit
     switch parameters.channel_type % channels you want to analyse ('grad' or 'mag')
         case 1, channel_type = 'grad';
@@ -156,6 +169,7 @@ elseif paths_params.propagation == 2 %dipole fit
     t = [t1 int64((t1+t2)/2) t2 int64((t2+t3)/2) t3 int64((t3+t4)/2) t4];
     dip_fit_average(Data, evoked_data, G3, channels, channel_idx, t,...
                     MRI, cortex, paths_params.evoked_saving_path)
+
 elseif paths_params.propagation == 3 %beamforming
     Data = load(paths_params.atoms_epoch_data);
     Data = Data.data;
@@ -169,18 +183,6 @@ elseif paths_params.propagation == 3 %beamforming
     dip_ind = paths_params.dip_ind;
     VE   = source_reconstruction_atoms(Data', G3, channel_idx, dip_ind);
     save(paths_params.atoms_soure_data, 'VE')
-%     chunk_len = length(VE)/99;
-%     avg_VE = zeros(length(dip_ind), chunk_len);
-%     for chunk = 1:length(VE)/chunk_len
-%         chunk_begin = 1 + (chunk-1)*chunk_len;
-%         chunk_end   = chunk_len + (chunk-1)*chunk_len;
-%         avg_VE(:,:) = avg_VE(:,:) + VE(:,chunk_begin:chunk_end);
-%     end
-%     for i = 1:8
-%         figure(i)
-%         plot(avg_VE(i,:)/99);
-%     end
-%    VE   = source_reconstruction_atoms(data, G3, channel_idx, dip_ind, 1);
 
 elseif paths_params.propagation == 4 %RAP MUSIC
     evoked_data = load(paths_params.evoked);
