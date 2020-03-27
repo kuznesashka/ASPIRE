@@ -34,6 +34,13 @@ corr = MUSIC_scan(G2, U(:,1:n(1)));
 source_ts = source_reconstruction_atom(spike, G2, indmax, channel_idx);
 Sources = [Sources source_ts];
 
+% Error estimation
+% A = Gain(:,(indmax*3-2):indmax*3);
+% spike_estimated =  (repmat(source_ts,1,3)\(A ))' ;
+% error = 1 - norm(spike  - spike_estimated )/norm(spike)
+
+% error = norm(spike/norm(spike) - spike_estimated/norm(spike_estimated))
+
 while valmax > thresh
     Valmax = [Valmax, valmax];
     Indmax = [Indmax, indmax];
