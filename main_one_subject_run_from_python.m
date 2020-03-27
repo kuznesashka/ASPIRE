@@ -52,7 +52,7 @@ for data_n = 1:parameters.N_data
             picked_components = []; % ICA relevant
             picked_comp_top   = []; % ICA relevant
             spike_ind_n       = int64(manual_data.spikes.ind'*1000);
-            spike_clust_n     = zeros(size(spike_ind_n))';
+            spike_clust_n     = zeros(size(spike_ind_n));
             
             spike_clust_n     = spike_clust_n(spike_ind_n>block_begin & ...
                 spike_ind_n<block_end);
@@ -139,9 +139,8 @@ for data_n = 1:parameters.N_data
             spike_ind = [spike_ind; spike_ind_n + block_size*(data_n-1)];
         end
         ind_m    = [ind_m  ind_m_n  + l(1)];
-        
         spike_clust = [spike_clust; spike_clust_n];
-
+        
     end
 end
 
