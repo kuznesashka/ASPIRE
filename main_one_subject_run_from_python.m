@@ -140,15 +140,11 @@ for data_n = 1:parameters.N_data
         end
         ind_m    = [ind_m  ind_m_n  + l(1)];
         
-        if  parameters.spikes_detection ~= 1
-            spike_clust = [spike_clust; spike_clust_n];
-        end
+        spike_clust = [spike_clust; spike_clust_n];
+
     end
 end
 
-if parameters.spikes_detection == 1
-    spike_clust = zeros(size(spike_ind))
-end
 save(paths.sources_saving_path, 'IndMax','ValMax','ind_m','spikeind')
 %% 4. Clustering
 clear cluster
