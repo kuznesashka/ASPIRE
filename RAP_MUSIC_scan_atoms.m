@@ -31,8 +31,9 @@ h = cumsum(diag(S)/sum(diag(S)));
 n = find(h>=0.95);
 corr = MUSIC_scan(G2, U(:,1:n(1)));
 [valmax, indmax] = max(corr);
-source_ts = source_reconstruction_atom(spike, G2, indmax, channel_idx);
+[source_ts, gof] = source_reconstruction_atom(spike, G2, indmax, channel_idx);
 Sources = [Sources source_ts];
+exp_var_gof = gof;
 
 % Error estimation
 % A = Gain(:,(indmax*3-2):indmax*3);
@@ -41,7 +42,7 @@ Sources = [Sources source_ts];
 
 % error = norm(spike/norm(spike) - spike_estimated/norm(spike_estimated))
 
-while valmax > thresh
+for n = 1:5
     Valmax = [Valmax, valmax];
     Indmax = [Indmax, indmax];
     
@@ -66,14 +67,16 @@ while valmax > thresh
     n = find(h>=0.95);
     corr = MUSIC_scan(G2, U(:,1:n(1)));
     [valmax, indmax] = max(corr);
-    source_ts = source_reconstruction_atom(spike_proj, G2, indmax, channel_idx);
+    [source_ts, gof_n] = source_reconstruction_atom(spike_proj, G2, indmax, channel_idx);
+    gof = (1-sum(exp_var_gof))*gof_n;
+    exp_var_gof = [exp_var_gof gof];
     Sources = [Sources source_ts];
 end
 
 end
 
 
-function source_ts = source_reconstruction_atom(Data, G2, dip_ind, channel_idx)
+function [source_ts, gof] = source_reconstruction_atom(Data, G2, dip_ind, channel_idx)
     g = G2(:,(dip_ind*2-1):dip_ind*2); %[sensors x spikes_locationx2]
     [U S ~] = svd(Data); % U:[204 x 204], S:[204xtime]
     h = cumsum(diag(S)/sum(diag(S)));
@@ -81,7 +84,14 @@ function source_ts = source_reconstruction_atom(Data, G2, dip_ind, channel_idx)
     [u s v] = svd(U(:,1:n)'*g); % project only main components, SVD them again: V is the oreintation of the source
     g_fixed = g*v(1,:)'; % fixed orientation forward model
     source_ts = Data'*g_fixed; % estimated source signal
-
+    
+    % gof 
+    source_est = Data'*g;
+    linvg =  inv(g'*g)*g';
+    Data_est = source_est*linvg;
+    % linvg*g %check, it shsource_est*linvgould be I 2 x 2
+    gof = norm(Data_est-Data')/norm(Data'); % [0,1] where 1 is perfect and 0 is bad
+    % figure, plot([Data_est(:,100)';  Data(100,:)]')
 end
 
 
