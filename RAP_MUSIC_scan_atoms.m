@@ -93,7 +93,7 @@ function [source_ts, gof] = source_reconstruction_atom(Data, G2, dip_ind, channe
     Data_est = source_est*linvg;
     % linvg*g %check, it shsource_est*linvgould be I 2 x 2
     gof = norm(Data_est-Data')/norm(Data'); % [0,1] where 1 is perfect and 0 is bad
-    figure, plot([Data_est(:,100)';  Data(100,:)]')
+    figure, plot([Data_est(:,10)';  Data(10,:)]')
 end
 
 
