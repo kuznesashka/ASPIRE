@@ -121,7 +121,7 @@ parameters.clustering.N_MIN    = 5;
 
 if parameters.spikes_detection == 1 %visual
     parameters.clustering.THR_DIST = 0.02;
-    parameters.clustering.N_MIN     = 10;
+    parameters.clustering.N_MIN     = 5;
 end
 
 cortex          = load(paths.cortex);
