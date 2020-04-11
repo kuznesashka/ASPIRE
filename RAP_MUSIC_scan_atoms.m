@@ -44,7 +44,7 @@ exp_var_gof = gof;
 
 % error = norm(spike/norm(spike) - spike_estimated/norm(spike_estimated))
 
-for n = 1:5
+while valmax > 0.95
     Valmax = [Valmax, valmax];
     Indmax = [Indmax, indmax];
     
