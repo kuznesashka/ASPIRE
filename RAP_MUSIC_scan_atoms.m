@@ -44,11 +44,10 @@ exp_var_gof = gof;
 % error = 1 - norm(spike  - spike_estimated )/norm(spike)
 
 % error = norm(spike/norm(spike) - spike_estimated/norm(spike_estimated))
-
-while valmax > 0.95
-    Valmax = [Valmax, valmax];
-    Indmax = [Indmax, indmax];
-    try
+try
+    while valmax > 0.95
+        Valmax = [Valmax, valmax];
+        Indmax = [Indmax, indmax];
         A = Gain(:,(Indmax*3-2):Indmax*3);
         P = eye(Ns, Ns)-A*inv(A'*A)*A';
         spike_proj = P*spike;
@@ -74,11 +73,11 @@ while valmax > 0.95
         gof = (1-sum(exp_var_gof))*gof_n;
         exp_var_gof = [exp_var_gof gof];
         Sources = [Sources source_ts];
-    catch
-        disp('End of the dipole fitting')
+        
     end
+catch
+    disp('End of the dipole fitting')
 end
-
 end
 
 
