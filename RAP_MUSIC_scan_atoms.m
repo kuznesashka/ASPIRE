@@ -71,7 +71,7 @@ try
         [valmax, indmax] = max(corr);
         [source_ts, gof_n] = source_reconstruction_atom(spike_proj, G2, indmax, channel_idx);
         gof = (1-(exp_var_gof(end)))*gof_n;
-        %gof = (1-sum(exp_var_gof))*gof_n;
+        % gof = (1-sum(exp_var_gof))*gof_n;
 
         exp_var_gof = [exp_var_gof gof];
         Sources = [Sources source_ts];
