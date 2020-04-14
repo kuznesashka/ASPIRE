@@ -48,7 +48,7 @@ try
     while valmax > 0.95
         Valmax = [Valmax, valmax];
         Indmax = [Indmax, indmax];
-        A = Gain(:,(Indmax*3-2):Indmax*3);
+        A = Gain(:,(indmax*3-2):indmax*3);
         P = eye(Ns, Ns)-A*inv(A'*A)*A';
         spike_proj = P*spike;
         G_proj = P*Gain;
@@ -70,7 +70,9 @@ try
         corr = MUSIC_scan(G2, U(:,1:n(1)));
         [valmax, indmax] = max(corr);
         [source_ts, gof_n] = source_reconstruction_atom(spike_proj, G2, indmax, channel_idx);
-        gof = (1-sum(exp_var_gof))*gof_n;
+        gof = (1-(exp_var_gof(end)))*gof_n;
+        %gof = (1-sum(exp_var_gof))*gof_n;
+
         exp_var_gof = [exp_var_gof gof];
         Sources = [Sources source_ts];
         
