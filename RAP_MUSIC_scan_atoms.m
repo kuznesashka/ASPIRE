@@ -33,6 +33,7 @@ h = cumsum(diag(S)/sum(diag(S)));
 n = find(h>=0.95);
 corr = MUSIC_scan(G2, U(:,1:n(1)));
 [valmax, indmax] = max(corr);
+% indmax = 12053;
 [source_ts, gof] = source_reconstruction_atom(spike, G2, indmax, channel_idx);
 Sources = [Sources source_ts];
 exp_var_gof = gof;
@@ -48,7 +49,7 @@ while valmax > 0.95
     Valmax = [Valmax, valmax];
     Indmax = [Indmax, indmax];
     
-    A = Gain(:,(indmax*3-2):indmax*3);
+    A = Gain(:,(Indmax*3-2):Indmax*3);
     P = eye(Ns, Ns)-A*inv(A'*A)*A';
     spike_proj = P*spike;
     G_proj = P*Gain;
