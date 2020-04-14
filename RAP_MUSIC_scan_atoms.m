@@ -48,32 +48,35 @@ exp_var_gof = gof;
 while valmax > 0.95
     Valmax = [Valmax, valmax];
     Indmax = [Indmax, indmax];
-    
-    A = Gain(:,(Indmax*3-2):Indmax*3);
-    P = eye(Ns, Ns)-A*inv(A'*A)*A';
-    spike_proj = P*spike;
-    G_proj = P*Gain;
-    Gain = G_proj;
-    
-    G2 = zeros(Ns,2*Nsrc);
-    range = 1:2;
-    for i = 1:Nsrc
-        g = [G_proj(:,1+3*(i-1)) G_proj(:,2+3*(i-1)) G_proj(:,3+3*(i-1))];
-        [u sv v] = svd(g);
-        gt = g*v(:,1:2);
-        G2(:,range) = gt*diag(1./sqrt(sum(gt.^2,1)));
-        range = range + 2;
+    try
+        A = Gain(:,(Indmax*3-2):Indmax*3);
+        P = eye(Ns, Ns)-A*inv(A'*A)*A';
+        spike_proj = P*spike;
+        G_proj = P*Gain;
+        Gain = G_proj;
+        
+        G2 = zeros(Ns,2*Nsrc);
+        range = 1:2;
+        for i = 1:Nsrc
+            g = [G_proj(:,1+3*(i-1)) G_proj(:,2+3*(i-1)) G_proj(:,3+3*(i-1))];
+            [u sv v] = svd(g);
+            gt = g*v(:,1:2);
+            G2(:,range) = gt*diag(1./sqrt(sum(gt.^2,1)));
+            range = range + 2;
+        end
+        
+        [U,S,V] = svd(spike_proj);
+        h = cumsum(diag(S)/sum(diag(S)));
+        n = find(h>=0.95);
+        corr = MUSIC_scan(G2, U(:,1:n(1)));
+        [valmax, indmax] = max(corr);
+        [source_ts, gof_n] = source_reconstruction_atom(spike_proj, G2, indmax, channel_idx);
+        gof = (1-sum(exp_var_gof))*gof_n;
+        exp_var_gof = [exp_var_gof gof];
+        Sources = [Sources source_ts];
+    catch
+        disp('End of the dipole fitting')
     end
-
-    [U,S,V] = svd(spike_proj);
-    h = cumsum(diag(S)/sum(diag(S)));
-    n = find(h>=0.95);
-    corr = MUSIC_scan(G2, U(:,1:n(1)));
-    [valmax, indmax] = max(corr);
-    [source_ts, gof_n] = source_reconstruction_atom(spike_proj, G2, indmax, channel_idx);
-    gof = (1-sum(exp_var_gof))*gof_n;
-    exp_var_gof = [exp_var_gof gof];
-    Sources = [Sources source_ts];
 end
 
 end
