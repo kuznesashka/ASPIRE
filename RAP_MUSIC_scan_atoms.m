@@ -1,4 +1,4 @@
-function [Valmax, Indmax, Sources, exp_var_gof] = RAP_MUSIC_scan_atoms(spike, ...
+function [Valmax, Indmax, Sources, exp_var_gof, g_fixed_all] = RAP_MUSIC_scan_atoms(spike, ...
     thresh, G3, channel_idx)
 % -------------------------------------------------------
 % RAP-MUSIC scan
@@ -34,7 +34,10 @@ n = find(h>=0.95);
 corr = MUSIC_scan(G2, U(:,1:n(1)));
 [valmax, indmax] = max(corr);
 % indmax = 12053;
-[source_ts, gof] = source_reconstruction_atom(spike, G2, indmax, channel_idx);
+g_fixed_all = [];
+[source_ts, gof, g_fixed] = source_reconstruction_atom(spike, G2, ...
+    indmax, channel_idx);
+g_fixed_all = [g_fixed_all g_fixed];
 Sources = [Sources source_ts];
 exp_var_gof = gof;
 
@@ -69,7 +72,9 @@ try
         n = find(h>=0.95);
         corr = MUSIC_scan(G2, U(:,1:n(1)));
         [valmax, indmax] = max(corr);
-        [source_ts, gof_n] = source_reconstruction_atom(spike_proj, G2, indmax, channel_idx);
+        [source_ts, gof_n, g_fixed] = source_reconstruction_atom(spike_proj, ...
+            G2, indmax, channel_idx);
+        g_fixed_all = [g_fixed_all g_fixed];
         gof = (1-(exp_var_gof(end)))*gof_n;
         % gof = (1-sum(exp_var_gof))*gof_n;
 
@@ -83,7 +88,8 @@ end
 end
 
 
-function [source_ts, gof] = source_reconstruction_atom(Data, G2, dip_ind, channel_idx)
+function [source_ts, gof, g_fixed] = source_reconstruction_atom(Data, ...
+    G2, dip_ind, channel_idx)
     g = G2(:,(dip_ind*2-1):dip_ind*2); %[sensors x spikes_locationx2]
     [U S ~] = svd(Data); % U:[204 x 204], S:[204xtime]
     h = cumsum(diag(S)/sum(diag(S)));

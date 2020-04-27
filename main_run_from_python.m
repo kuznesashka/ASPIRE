@@ -194,9 +194,9 @@ elseif paths_params.propagation == 4 %RAP MUSIC
             channel_idx     = 3:3:306;
             % Data = Data * 100;
     end
-    [Valmax, Indmax, Sources, gof] = RAP_MUSIC_scan_atoms(evoked, ...
+    [Valmax, Indmax, Sources, gof, g_fix] = RAP_MUSIC_scan_atoms(evoked, ...
         parameters.corr_thresh, G3, channel_idx);
-    save(paths_params.rap_save, 'Valmax', 'Indmax', 'Sources', 'gof')
+    save(paths_params.rap_save, 'Valmax', 'Indmax', 'Sources', 'gof', 'g_fix')
 
 end
 end
